@@ -1,0 +1,25 @@
+{
+  "name": "@ekko-ds/tokens",
+  "version": "0.1.0",
+  "description": "Ekko Design System — design tokens (DTCG format)",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./css": "./dist/css/tokens.all.css",
+    "./css/base": "./dist/css/tokens.css",
+    "./css/dark": "./dist/css/tokens.dark.css",
+    "./js": "./dist/js/tokens.mjs",
+    "./json": "./dist/json/tokens.flat.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node build.js",
+    "dev": "node build.js --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "style-dictionary": "^5.4.0"
+  }
+}

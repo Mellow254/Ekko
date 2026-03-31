@@ -1,0 +1,232 @@
+/* Ensure the host participates in layout but doesn't override the button */
+:host {
+  display: inline-block;
+}
+
+:host([full-width]) {
+  display: block;
+  width: 100%;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ekko-button-shared-gap, 0.5em);
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  width: 100%;
+  font-family: var(--ekko-button-shared-font-family, system-ui, sans-serif);
+  font-weight: var(--ekko-button-shared-font-weight, 500);
+  line-height: var(--ekko-button-shared-line-height, 1);
+  letter-spacing: var(--ekko-button-shared-letter-spacing, 0.01em);
+  border-style: var(--ekko-button-shared-border-style, solid);
+  border-width: var(--ekko-button-shared-border-width, 1px);
+  border-radius: var(--ekko-button-shared-border-radius, 6px);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+
+  transition:
+    background-color var(--ekko-button-shared-transition-duration, 100ms) ease-out,
+    border-color var(--ekko-button-shared-transition-duration, 100ms) ease-out,
+    color var(--ekko-button-shared-transition-duration, 100ms) ease-out,
+    box-shadow var(--ekko-button-shared-transition-duration, 100ms) ease-out,
+    opacity var(--ekko-button-shared-transition-duration, 100ms) ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--ekko-button-shared-focus-ring-width, 2px) solid
+      var(--ekko-button-shared-focus-ring-color, #2563eb);
+    outline-offset: var(--ekko-button-shared-focus-ring-offset, 2px);
+  }
+}
+
+/* Sizes */
+:host([size="sm"]) .btn {
+  padding: var(--ekko-button-size-sm-padding-y, 4px) var(--ekko-button-size-sm-padding-x, 8px);
+  font-size: var(--ekko-button-size-sm-font-size, 0.875rem);
+  min-height: var(--ekko-button-size-sm-height, 32px);
+}
+
+:host([size="md"]) .btn {
+  padding: var(--ekko-button-size-md-padding-y, 8px) var(--ekko-button-size-md-padding-x, 16px);
+  font-size: var(--ekko-button-size-md-font-size, 0.875rem);
+  min-height: var(--ekko-button-size-md-height, 38px);
+}
+
+:host([size="lg"]) .btn {
+  padding: var(--ekko-button-size-lg-padding-y, 12px) var(--ekko-button-size-lg-padding-x, 24px);
+  font-size: var(--ekko-button-size-lg-font-size, 1rem);
+  min-height: var(--ekko-button-size-lg-height, 46px);
+}
+
+/* Icon sizes */
+:host([size="sm"]) ::slotted([slot="start"]),
+:host([size="sm"]) ::slotted([slot="end"]) {
+  width: var(--ekko-button-size-sm-icon-size, 14px);
+  height: var(--ekko-button-size-sm-icon-size, 14px);
+}
+
+:host([size="lg"]) ::slotted([slot="start"]),
+:host([size="lg"]) ::slotted([slot="end"]) {
+  width: var(--ekko-button-size-lg-icon-size, 18px);
+  height: var(--ekko-button-size-lg-icon-size, 18px);
+}
+
+::slotted([slot="start"]),
+::slotted([slot="end"]) {
+  flex-shrink: 0;
+  width: var(--ekko-button-size-md-icon-size, 16px);
+  height: var(--ekko-button-size-md-icon-size, 16px);
+}
+
+/* Variant primary  */
+:host([variant="primary"]) .btn {
+  background-color: var(--ekko-button-primary-background, #2563eb);
+  border-color: var(--ekko-button-primary-border, #2563eb);
+  color: var(--ekko-button-primary-text, #ffffff);
+}
+
+:host([variant="primary"]:not([disabled]):not([loading])) .btn:hover {
+  background-color: var(--ekko-button-primary-background-hover, #1d4ed8);
+  border-color: var(--ekko-button-primary-background-hover, #1d4ed8);
+}
+
+:host([variant="primary"]:not([disabled]):not([loading])) .btn:active {
+  background-color: var(--ekko-button-primary-background-active, #1e40af);
+  border-color: var(--ekko-button-primary-background-active, #1e40af);
+}
+
+/*  Variant secondary */
+:host([variant="secondary"]) .btn {
+  background-color: var(--ekko-button-secondary-background, #ffffff);
+  border-color: var(--ekko-button-secondary-border, #d4d4d4);
+  color: var(--ekko-button-secondary-text, #171717);
+}
+
+:host([variant="secondary"]:not([disabled]):not([loading])) .btn:hover {
+  background-color: var(--ekko-button-secondary-background-hover, #fafafa);
+}
+
+:host([variant="secondary"]:not([disabled]):not([loading])) .btn:active {
+  background-color: var(--ekko-button-secondary-background-active, #f5f5f5);
+}
+
+/*  Variant ghost */
+:host([variant="ghost"]) .btn {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--ekko-button-ghost-text, #404040);
+}
+
+:host([variant="ghost"]:not([disabled]):not([loading])) .btn:hover {
+  background-color: var(--ekko-button-ghost-background-hover, #f5f5f5);
+}
+
+:host([variant="ghost"]:not([disabled]):not([loading])) .btn:active {
+  background-color: var(--ekko-button-ghost-background-active, #e5e5e5);
+}
+
+/*  Variant danger */
+:host([variant="danger"]) .btn {
+  background-color: var(--ekko-button-danger-background, #dc2626);
+  border-color: var(--ekko-button-danger-border, #dc2626);
+  color: var(--ekko-button-danger-text, #ffffff);
+}
+
+:host([variant="danger"]:not([disabled]):not([loading])) .btn:hover {
+  background-color: var(--ekko-button-danger-background-hover, #b91c1c);
+  border-color: var(--ekko-button-danger-background-hover, #b91c1c);
+}
+
+:host([variant="danger"]:not([disabled]):not([loading])) .btn:active {
+  background-color: var(--ekko-button-danger-background-active, #991b1b);
+  border-color: var(--ekko-button-danger-background-active, #991b1b);
+}
+
+/*  Variant link  */
+:host([variant="link"]) .btn {
+  background-color: transparent;
+  border-color: transparent;
+  color: var(--ekko-color-text-link, #2563eb);
+  padding-left: 0;
+  padding-right: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+:host([variant="link"]:not([disabled])) .btn:hover {
+  color: var(--ekko-color-text-link-hover, #1d4ed8);
+}
+
+/*  Disabled state */
+:host([disabled]) .btn {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/*  Loading state  */
+:host([loading]) .btn {
+  cursor: wait;
+  position: relative;
+}
+
+.spinner {
+  display: none;
+  width: var(--ekko-button-shared-spinner-size, 1em);
+  height: var(--ekko-button-shared-spinner-size, 1em);
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: ekko-spin 0.6s linear infinite;
+}
+
+@keyframes ekko-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+:host([loading]) .spinner {
+  display: block;
+}
+
+:host([loading]) .btn-label {
+  opacity: var(--ekko-button-loading-label-opacity, 0.5);
+}
+
+:host([pressed="true"]) .btn {
+  filter: var(--ekko-button-pressed-filter, brightness(0.9));
+}
+
+/*  Icon-only button  */
+:host([icon-only]) .btn {
+  padding: var(--ekko-button-size-md-padding-y, 8px);
+  aspect-ratio: 1;
+}
+
+:host([icon-only][size="sm"]) .btn {
+  padding: var(--ekko-button-size-sm-padding-y, 4px);
+}
+
+:host([icon-only][size="lg"]) .btn {
+  padding: var(--ekko-button-size-lg-padding-y, 12px);
+}

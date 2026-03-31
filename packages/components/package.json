@@ -1,0 +1,56 @@
+{
+  "name": "@ekko-ds/components",
+  "version": "0.1.0",
+  "description": "Ekko Design System — headless Web Components",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/ekko-ds.esm.js",
+      "require": "./dist/ekko-ds.cjs.js"
+    },
+    "./button": {
+      "types": "./dist/types/button/index.d.ts",
+      "import": "./src/button/index.ts"
+    },
+    "./styles": {
+      "import": "./src/styles/index.css"
+    }
+  },
+  "main": "./dist/ekko-ds.cjs.js",
+  "module": "./dist/ekko-ds.esm.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly --outDir dist/types",
+    "dev": "vite build --watch",
+    "start": "vite",
+    "test": "web-test-runner",
+    "test:watch": "web-test-runner --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ekko-ds/tokens": "workspace:*"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.11.1",
+    "@esm-bundle/chai": "^4.3.4-fix.0",
+    "@types/mocha": "^10.0.10",
+    "@web/dev-server-esbuild": "^1.0.2",
+    "@web/test-runner": "^0.20.2",
+    "@web/test-runner-commands": "^0.9.0",
+    "@web/test-runner-playwright": "^0.11.1",
+    "axe-core": "^4.11.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.0.1"
+  }
+}

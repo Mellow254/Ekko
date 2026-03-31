@@ -1,0 +1,72 @@
+{
+  "color": {
+    "action": {
+      "$description": "Interactive control colours — buttons, links, focus rings.",
+      "primary": { "$type": "color", "$value": "{color.blue.600}" },
+      "primary-hover": { "$type": "color", "$value": "{color.blue.700}" },
+      "primary-active": { "$type": "color", "$value": "{color.blue.800}" },
+      "primary-disabled": { "$type": "color", "$value": "{color.neutral.300}" },
+      "primary-text": { "$type": "color", "$value": "{color.neutral.0}" },
+      "secondary": { "$type": "color", "$value": "{color.neutral.0}" },
+      "secondary-hover": { "$type": "color", "$value": "{color.neutral.50}" },
+      "secondary-active": { "$type": "color", "$value": "{color.neutral.100}" },
+      "secondary-border": { "$type": "color", "$value": "{color.neutral.300}" },
+      "secondary-text": { "$type": "color", "$value": "{color.neutral.900}" },
+      "ghost-hover": { "$type": "color", "$value": "{color.neutral.100}" },
+      "ghost-active": { "$type": "color", "$value": "{color.neutral.200}" },
+      "ghost-text": { "$type": "color", "$value": "{color.neutral.700}" },
+      "danger": { "$type": "color", "$value": "{color.red.600}" },
+      "danger-hover": { "$type": "color", "$value": "{color.red.700}" },
+      "danger-active": { "$type": "color", "$value": "{color.red.800}" },
+      "danger-text": { "$type": "color", "$value": "{color.neutral.0}" }
+    },
+    "surface": {
+      "$description": "Background layers from the page surface up.",
+      "page": { "$type": "color", "$value": "{color.neutral.50}" },
+      "default": { "$type": "color", "$value": "{color.neutral.0}" },
+      "raised": { "$type": "color", "$value": "{color.neutral.0}" },
+      "overlay": { "$type": "color", "$value": "{color.neutral.0}" },
+      "sunken": { "$type": "color", "$value": "{color.neutral.100}" },
+      "disabled": { "$type": "color", "$value": "{color.neutral.100}" }
+    },
+    "text": {
+      "$description": "Text hierarchy from primary down to disabled.",
+      "primary": { "$type": "color", "$value": "{color.neutral.900}" },
+      "secondary": { "$type": "color", "$value": "{color.neutral.600}" },
+      "tertiary": { "$type": "color", "$value": "{color.neutral.400}" },
+      "disabled": { "$type": "color", "$value": "{color.neutral.400}" },
+      "inverse": { "$type": "color", "$value": "{color.neutral.0}" },
+      "on-action": { "$type": "color", "$value": "{color.neutral.0}" },
+      "link": { "$type": "color", "$value": "{color.blue.600}" },
+      "link-hover": { "$type": "color", "$value": "{color.blue.700}" }
+    },
+    "border": {
+      "$description": "Border and divider colours.",
+      "default": { "$type": "color", "$value": "{color.neutral.200}" },
+      "strong": { "$type": "color", "$value": "{color.neutral.400}" },
+      "focus": { "$type": "color", "$value": "{color.blue.600}" },
+      "error": { "$type": "color", "$value": "{color.red.500}" },
+      "success": { "$type": "color", "$value": "{color.green.500}" },
+      "warning": { "$type": "color", "$value": "{color.amber.500}" }
+    },
+    "feedback": {
+      "$description": "Status and alert colours.",
+      "error": { "$type": "color", "$value": "{color.red.600}" },
+      "error-surface": { "$type": "color", "$value": "{color.red.50}" },
+      "error-border": { "$type": "color", "$value": "{color.red.200}" },
+      "error-text": { "$type": "color", "$value": "{color.red.700}" },
+      "success": { "$type": "color", "$value": "{color.green.600}" },
+      "success-surface": { "$type": "color", "$value": "{color.green.50}" },
+      "success-border": { "$type": "color", "$value": "{color.green.200}" },
+      "success-text": { "$type": "color", "$value": "{color.green.700}" },
+      "warning": { "$type": "color", "$value": "{color.amber.600}" },
+      "warning-surface": { "$type": "color", "$value": "{color.amber.50}" },
+      "warning-border": { "$type": "color", "$value": "{color.amber.200}" },
+      "warning-text": { "$type": "color", "$value": "{color.amber.700}" },
+      "info": { "$type": "color", "$value": "{color.blue.600}" },
+      "info-surface": { "$type": "color", "$value": "{color.blue.50}" },
+      "info-border": { "$type": "color", "$value": "{color.blue.200}" },
+      "info-text": { "$type": "color", "$value": "{color.blue.700}" }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "focus": {
+    "$description": "Focus ring tokens. Applied universally to all interactive components.",
+    "ring-color": { "$type": "color", "$value": "{color.blue.600}" },
+    "ring-width": {
+      "$type": "dimension",
+      "$value": { "value": 2, "unit": "px" }
+    },
+    "ring-offset": {
+      "$type": "dimension",
+      "$value": { "value": 2, "unit": "px" }
+    },
+    "ring-offset-color": {
+      "$type": "color",
+      "$value": "{color.surface.default}"
+    }
+  }
+}

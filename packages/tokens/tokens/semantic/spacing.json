@@ -1,0 +1,21 @@
+{
+  "space": {
+    "component": {
+      "$description": "Padding and gap values inside components.",
+      "xs": { "$type": "dimension", "$value": "{space.1}" },
+      "sm": { "$type": "dimension", "$value": "{space.2}" },
+      "md": { "$type": "dimension", "$value": "{space.3}" },
+      "lg": { "$type": "dimension", "$value": "{space.4}" },
+      "xl": { "$type": "dimension", "$value": "{space.6}" }
+    },
+    "layout": {
+      "$description": "Gaps and margins between components and sections.",
+      "xs": { "$type": "dimension", "$value": "{space.2}" },
+      "sm": { "$type": "dimension", "$value": "{space.4}" },
+      "md": { "$type": "dimension", "$value": "{space.8}" },
+      "lg": { "$type": "dimension", "$value": "{space.12}" },
+      "xl": { "$type": "dimension", "$value": "{space.16}" },
+      "2xl": { "$type": "dimension", "$value": "{space.24}" }
+    }
+  }
+}

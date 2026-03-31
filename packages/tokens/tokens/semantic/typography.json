@@ -1,0 +1,33 @@
+{
+  "font": {
+    "body": {
+      "family": { "$type": "fontFamily", "$value": "{font.family.sans}" },
+      "size": { "$type": "dimension", "$value": "{font.size.md}" },
+      "weight": { "$type": "fontWeight", "$value": "{font.weight.regular}" },
+      "leading": { "$type": "number", "$value": "{font.leading.normal}" }
+    },
+    "label": {
+      "family": { "$type": "fontFamily", "$value": "{font.family.sans}" },
+      "size": { "$type": "dimension", "$value": "{font.size.sm}" },
+      "weight": { "$type": "fontWeight", "$value": "{font.weight.medium}" },
+      "leading": { "$type": "number", "$value": "{font.leading.normal}" }
+    },
+    "code": {
+      "family": { "$type": "fontFamily", "$value": "{font.family.mono}" },
+      "size": { "$type": "dimension", "$value": "{font.size.sm}" }
+    },
+    "button": {
+      "$description": "Typography tokens for button labels.",
+      "leading": {
+        "$type": "number",
+        "$value": "{font.leading.none}",
+        "$description": "Line-height for button labels — compact single-line."
+      },
+      "tracking": {
+        "$type": "dimension",
+        "$value": "{font.tracking.tight}",
+        "$description": "Letter-spacing for button labels."
+      }
+    }
+  }
+}
