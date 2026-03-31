@@ -71,7 +71,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Install Playwright browsers
-        run: pnpm --filter @ekko-ds/components exec playwright install --with-deps chromium
+        run: npx --yes playwright install --with-deps chromium
+        working-directory: packages/components
 
       - name: Download token artifacts
         uses: actions/download-artifact@v4
