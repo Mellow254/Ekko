@@ -22,7 +22,7 @@ Ekko is a design system built entirely on native web platform features. Componen
 |---|---|
 | `@ekko-ds/tokens` | DTCG design tokens → CSS custom properties, JS constants |
 | `@ekko-ds/components` | Headless Web Components |
-| `@ekko-ds/docs` | Storybook 8 documentation |
+| `@ekko-ds/docs` | Storybook 10 documentation |
 
 ---
 
@@ -47,8 +47,10 @@ pnpm install
 pnpm build:tokens
 ```
 
-This runs Style Dictionary v4 and outputs:
-- `packages/tokens/dist/css/tokens.css` — CSS custom properties
+This runs Style Dictionary v5 and outputs:
+- `packages/tokens/dist/css/tokens.css` — CSS custom properties (light)
+- `packages/tokens/dist/css/tokens.dark.css` — dark mode overrides
+- `packages/tokens/dist/css/tokens.all.css` — combined light + dark
 - `packages/tokens/dist/js/tokens.mjs` — JS constants
 - `packages/tokens/dist/json/tokens.flat.json` — flat JSON for tooling
 
@@ -59,17 +61,6 @@ pnpm docs
 ```
 
 Opens Storybook at `http://localhost:6006`.
-
-### Run the no-build demo
-
-After building tokens:
-
-```bash
-cd packages/components
-npx serve ../docs/demo
-```
-
-Opens the component demo using native ES modules and import maps — no bundler involved.
 
 ### Run tests
 
@@ -198,31 +189,31 @@ chore:          update dependencies
 ekko-ds/
 ├── packages/
 │   ├── tokens/
-│   │   ├── src/
-│   │   │   ├── primitive.tokens.json
-│   │   │   ├── semantic.tokens.json
-│   │   │   ├── component.tokens.json
-│   │   │   └── brands/
-│   │   ├── config/
-│   │   │   └── style-dictionary.config.mjs
+│   │   ├── tokens/
+│   │   │   ├── base/        ← primitive values (colors, spacing, etc.)
+│   │   │   ├── semantic/    ← aliases to base (light/dark color schemes)
+│   │   │   └── component/   ← component-level tokens
+│   │   ├── utils/
+│   │   │   └── format.js    ← Style Dictionary custom formats
+│   │   ├── build.js         ← token build script
 │   │   └── dist/            ← generated, do not edit
 │   ├── components/
 │   │   ├── src/
 │   │   │   ├── button/
-│   │   │   │   ├── ekko-button.js
-│   │   │   │   ├── ekko-button.styles.js
-│   │   │   │   └── index.js
-│   │   │   └── utils/
+│   │   │   │   ├── index.ts
+│   │   │   │   └── index.css
+│   │   │   └── index.ts
 │   │   ├── tests/
+│   │   ├── vite.config.ts
 │   │   └── dist/            ← generated, do not edit
 │   └── docs/
 │       ├── .storybook/
-│       ├── src/stories/
-│       └── demo/
+│       └── src/stories/
 ├── .changeset/
 ├── .github/workflows/
 ├── turbo.json
 ├── biome.json
+├── tsconfig.json
 └── pnpm-workspace.yaml
 ```
 

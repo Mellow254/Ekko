@@ -3,8 +3,8 @@
  */
 
 export const getFileHeader = () => [
-  "Ekko Design System — CSS Custom Properties",
-  "Do not edit directly.",
+  'Ekko Design System — CSS Custom Properties',
+  'Do not edit directly.',
 ];
 
 /**
@@ -15,7 +15,7 @@ const partitionByMode = (dictionary) => {
   const light = [];
   const dark = [];
   for (const token of dictionary.allTokens) {
-    if (token.filePath.includes("dark")) {
+    if (token.filePath.includes('dark')) {
       dark.push(token);
     } else {
       light.push(token);
@@ -42,17 +42,17 @@ const formatProperty = (token, prefix) => {
  * Base and component tokens are not theme-aware and go in the light `:root` block.
  */
 export const themedCssFormat = ({ dictionary, options }) => {
-  const prefix = options?.prefix ?? "";
+  const prefix = options?.prefix ?? '';
   const { light, dark } = partitionByMode(dictionary);
 
-  const lightLines = light.map((t) => formatProperty(t, prefix)).join("\n");
-  const darkLines = dark.map((t) => formatProperty(t, prefix)).join("\n");
+  const lightLines = light.map((t) => formatProperty(t, prefix)).join('\n');
+  const darkLines = dark.map((t) => formatProperty(t, prefix)).join('\n');
 
-  let output = `/**\n * ${getFileHeader().join("\n * ")}\n */\n\n`;
+  let output = `/**\n * ${getFileHeader().join('\n * ')}\n */\n\n`;
   output += `:root {\n${lightLines}\n}\n`;
 
   if (darkLines) {
-    output += `\n@media (prefers-color-scheme: dark) {\n  :root {\n${darkLines.replace(/^ {2}/gm, "    ")}\n  }\n}\n`;
+    output += `\n@media (prefers-color-scheme: dark) {\n  :root {\n${darkLines.replace(/^ {2}/gm, '    ')}\n  }\n}\n`;
     output += `\n[data-theme="dark"] {\n${darkLines}\n}\n`;
   }
 
