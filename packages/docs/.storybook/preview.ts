@@ -6,16 +6,13 @@ const preview: Preview = {
   parameters: {
     // Accessibility addon — runs axe-core on every story
     a11y: {
+      test: 'error',
       config: {
         rules: [
-          // Enforce colour contrast at AA level
           { id: 'color-contrast', enabled: true },
-          // Require all interactive elements to have accessible names
           { id: 'button-name', enabled: true },
         ],
       },
-      // Fail the story if axe finds violations
-      manual: false,
     },
     // Default backgrounds that make token colour choices visible
     backgrounds: {

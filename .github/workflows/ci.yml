@@ -150,10 +150,10 @@ jobs:
           name: components-dist
           path: packages/components/dist/
 
-      - name: Build Storybook
-        run: pnpm --filter @ekko-ds/docs build-storybook
+      - name: Install Playwright browsers (a11y)
+        run: pnpm --filter @ekko-ds/docs exec playwright install --with-deps chromium
 
-      - name: Run axe accessibility scan
+      - name: Run accessibility tests
         run: pnpm --filter @ekko-ds/docs test:a11y
 
   release:
