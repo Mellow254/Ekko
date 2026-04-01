@@ -32,7 +32,7 @@ importers:
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.11.1
-        version: 4.11.1(playwright-core@1.58.2)
+        version: 4.11.1(playwright-core@1.59.0)
       '@esm-bundle/chai':
         specifier: ^4.3.4-fix.0
         version: 4.3.4-fix.0
@@ -54,6 +54,9 @@ importers:
       axe-core:
         specifier: ^4.11.1
         version: 4.11.1
+      playwright:
+        specifier: ^1.59.0
+        version: 1.59.0
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -2730,8 +2733,18 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  playwright-core@1.59.0:
+    resolution: {integrity: sha512-PW/X/IoZ6BMUUy8rpwHEZ8Kc0IiLIkgKYGNFaMs5KmQhcfLILNx9yCQD0rnWeWfz1PNeqcFP1BsihQhDOBCwZw==}
+    engines: {node: '>=18'}
+    hasBin: true
+
   playwright@1.58.2:
     resolution: {integrity: sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.59.0:
+    resolution: {integrity: sha512-wihGScriusvATUxmhfENxg0tj1vHEFeIwxlnPFKQTOQVd7aG08mUfvvniRP/PtQOC+2Bs52kBOC/Up1jTXeIbw==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -3371,10 +3384,10 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
-  '@axe-core/playwright@4.11.1(playwright-core@1.58.2)':
+  '@axe-core/playwright@4.11.1(playwright-core@1.59.0)':
     dependencies:
       axe-core: 4.11.1
-      playwright-core: 1.58.2
+      playwright-core: 1.59.0
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -4587,7 +4600,7 @@ snapshots:
     dependencies:
       '@web/test-runner-core': 0.13.4
       '@web/test-runner-coverage-v8': 0.8.0
-      playwright: 1.58.2
+      playwright: 1.59.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -6012,9 +6025,17 @@ snapshots:
 
   playwright-core@1.58.2: {}
 
+  playwright-core@1.59.0: {}
+
   playwright@1.58.2:
     dependencies:
       playwright-core: 1.58.2
+    optionalDependencies:
+      fsevents: 2.3.2
+
+  playwright@1.59.0:
+    dependencies:
+      playwright-core: 1.59.0
     optionalDependencies:
       fsevents: 2.3.2
 
