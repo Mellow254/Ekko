@@ -37,7 +37,7 @@
     "tracking": {
       "$type": "dimension",
       "$description": "Letter-spacing scale.",
-      "tight": { "$value": { "value": 0.01, "unit": "em" } }
+      "tight": { "$value": { "value": 0.01, "unit": "rem" } }
     }
   }
 }

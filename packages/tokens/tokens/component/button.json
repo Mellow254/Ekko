@@ -58,7 +58,7 @@
       },
       "spinner-size": {
         "$type": "dimension",
-        "$value": { "value": 1, "unit": "em" },
+        "$value": { "value": 1, "unit": "rem" },
         "$description": "Width and height of the loading spinner."
       },
       "transition-duration": { "$type": "duration", "$value": "{duration.fast}" },
@@ -82,22 +82,22 @@
         "padding-x": { "$type": "dimension", "$value": "{space.component.sm}" },
         "padding-y": { "$type": "dimension", "$value": "{space.component.xs}" },
         "font-size": { "$type": "dimension", "$value": "{font.size.sm}" },
-        "height": { "$type": "dimension", "$value": { "value": 32, "unit": "px" } },
-        "icon-size": { "$type": "dimension", "$value": { "value": 14, "unit": "px" } }
+        "height": { "$type": "dimension", "$value": { "value": 2, "unit": "rem" } },
+        "icon-size": { "$type": "dimension", "$value": { "value": 0.875, "unit": "rem" } }
       },
       "md": {
         "padding-x": { "$type": "dimension", "$value": "{space.component.lg}" },
         "padding-y": { "$type": "dimension", "$value": "{space.component.sm}" },
         "font-size": { "$type": "dimension", "$value": "{font.size.sm}" },
-        "height": { "$type": "dimension", "$value": { "value": 38, "unit": "px" } },
-        "icon-size": { "$type": "dimension", "$value": { "value": 16, "unit": "px" } }
+        "height": { "$type": "dimension", "$value": { "value": 2.375, "unit": "rem" } },
+        "icon-size": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } }
       },
       "lg": {
         "padding-x": { "$type": "dimension", "$value": "{space.component.xl}" },
         "padding-y": { "$type": "dimension", "$value": "{space.component.md}" },
         "font-size": { "$type": "dimension", "$value": "{font.size.md}" },
-        "height": { "$type": "dimension", "$value": { "value": 46, "unit": "px" } },
-        "icon-size": { "$type": "dimension", "$value": { "value": 18, "unit": "px" } }
+        "height": { "$type": "dimension", "$value": { "value": 2.875, "unit": "rem" } },
+        "icon-size": { "$type": "dimension", "$value": { "value": 1.125, "unit": "rem" } }
       }
     }
   }
