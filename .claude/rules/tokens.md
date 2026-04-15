@@ -63,12 +63,22 @@ Style Dictionary prefixes all tokens with `ekko`. The token path maps directly:
 - `button.primary.background` → `--ekko-button-primary-background`
 - `button.shared.border-radius` → `--ekko-button-shared-border-radius`
 
+## Unit Policy
+
+Every `dimension` token MUST use one of exactly two units:
+
+- **`rem`** — for anything that should scale with user zoom and root font-size: spacing (`space.*`), component padding/margin/gap, widths/heights, typography (`font.size.*`, `font.tracking.*`), icon sizes. `1rem === 16px` at the browser default.
+- **`px`** — for pixel-precise values that must NOT scale with zoom: `border-width`, `border-radius`, `outline-width`/`offset`, focus-ring width/offset, `box-shadow`/`text-shadow` offsets and blur, `text-underline-offset`, spinner/divider stroke widths.
+
+`em` is forbidden in token sources. Durations stay in `ms`. If you're unsure whether a value is "precise pixel" or "scalable layout," default to `rem`.
+
 ## Adding Component Tokens
 
 When adding tokens for a new component:
 1. Create `tokens/component/{name}.json` with a top-level key matching the component name
 2. Reference semantic tokens only — never base tokens directly
-3. Every CSS value in the component stylesheet should have a corresponding token with a hardcoded fallback in the `var()` call
+3. **Every numeric or color value in the component stylesheet MUST have a corresponding token with a hardcoded fallback in the `var()` call.** No exceptions for "small" values like `2px` borders, `0.125rem` gaps, or `1.4` line-heights — they all get tokens. The only CSS literals allowed without a token are keywords (`auto`, `none`, `transparent`, `currentColor`, `inherit`, `0`, display/layout keywords, and unitless `flex-shrink`/`flex-grow` factors).
+4. Follow the unit policy above (rem for layout/typography, px for precision).
 
 ## Build Pipeline
 

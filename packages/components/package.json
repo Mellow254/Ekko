@@ -10,12 +10,9 @@
       "import": "./dist/ekko-ds.esm.js",
       "require": "./dist/ekko-ds.cjs.js"
     },
-    "./button": {
-      "types": "./dist/types/button/index.d.ts",
-      "import": "./src/button/index.ts"
-    },
-    "./styles": {
-      "import": "./src/styles/index.css"
+    "./*": {
+      "types": "./dist/types/*/index.d.ts",
+      "import": "./dist/*/index.js"
     }
   },
   "main": "./dist/ekko-ds.cjs.js",
@@ -26,7 +23,8 @@
     "src"
   ],
   "sideEffects": [
-    "*.css"
+    "**/*.js",
+    "**/*.css"
   ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly --outDir dist/types",

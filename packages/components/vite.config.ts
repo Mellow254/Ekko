@@ -14,7 +14,38 @@ export default defineConfig({
       },
     },
     rollupOptions: {
-      // No external deps — zero runtime dependencies is a design goal
+      output: [
+        // The standard bundles
+        {
+          format: 'es',
+          entryFileNames: 'ekko-ds.esm.js',
+          dir: 'dist',
+        },
+        {
+          format: 'cjs',
+          entryFileNames: 'ekko-ds.cjs.js',
+          dir: 'dist',
+        },
+        // Preserved modules per-component
+        {
+          format: 'es',
+          dir: 'dist',
+          preserveModules: true,
+          preserveModulesRoot: 'src',
+          entryFileNames: (chunkInfo) => {
+            // The `?inline` CSS imports resolve to a virtual module whose
+            // facadeModuleId ends with `.css?inline`. If we let them keep the
+            // default `[name].js` they collide with the sibling `index.ts`
+            // (both want `dist/{component}/index.js`), and rollup silently
+            // renames the component to `index2.js` — breaking subpath imports.
+            const id = chunkInfo.facadeModuleId ?? '';
+            if (id.includes('?inline') || id.endsWith('.css')) {
+              return '[name].css.js';
+            }
+            return '[name].js';
+          },
+        },
+      ],
     },
     // Don't minify in library mode — consumers' bundlers will handle that
     minify: false,

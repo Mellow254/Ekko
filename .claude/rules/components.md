@@ -69,8 +69,10 @@ styles.replaceSync(css);
 The `?inline` suffix tells Vite to return the CSS as a string instead of injecting it into the document. The web test runner handles this via a custom `inlineCssPlugin` in `web-test-runner.config.js`.
 
 CSS rules:
-- ALL visual values via CSS custom properties with hardcoded fallbacks
-- Token naming: `--ekko-{component}-{variant}-{property}` for variant-specific, `--ekko-{component}-shared-{property}` for shared
+- **Every themeable value MUST be a CSS custom property with a hardcoded fallback.** This includes — but is not limited to — `padding`, `margin`, `gap`, `width`, `height`, `min-*`/`max-*`, `inset`/`top`/`right`/`bottom`/`left`, `border-*`, `border-radius`, `outline-*`, `text-underline-offset`, `box-shadow`, `text-shadow`, `font-size`, `line-height`, `letter-spacing`, `font-weight`, `font-family`, `color`, `background-*`, `opacity`, `filter`, `transition-duration`, and `z-index`. If you're about to type a numeric value (`0.5rem`, `2px`, `1.25`) or a color (`#...`) directly into a CSS rule, STOP — add a token in `packages/tokens/tokens/component/{name}.json` first and reference it via `var()`.
+- **Only the following values may appear as literals** (no token required): `0`, `auto`, `inherit`, `currentColor`, `transparent`, `none`, display/layout keywords (`flex`, `block`, `inline-flex`, `grid`, `absolute`, `relative`, etc.), `flex-shrink`/`flex-grow` numeric factors, `aspect-ratio`, `cursor` keywords, and `user-select`/`touch-action` keywords. Everything else is a token.
+- **Unit policy** (applies to every dimension value, including token fallbacks): use `rem` for anything that should scale with user zoom/font-size — spacing (padding/margin/gap), layout sizing (width/height/min-height), typography (font-size/letter-spacing). Use `px` for pixel-precise values that should NOT scale with zoom — border-width, border-radius, outline-width/offset, box-shadow/text-shadow offsets and blur, text-underline-offset. `em` is forbidden. `1rem === 16px` (browser default).
+- Token naming: `--ekko-{component}-{variant}-{property}` for variant-specific, `--ekko-{component}-shared-{property}` for shared, `--ekko-{component}-size-{sm|md|lg}-{property}` for size-specific.
 - `:host` sets `display: inline-block`; `:host([full-width])` sets `display: block; width: 100%`
 - Use `:host([attribute])` selectors, not class-based styling
 - Include `@media (prefers-reduced-motion: reduce)` to disable transitions/animations

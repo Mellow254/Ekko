@@ -12,7 +12,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--ekko-button-shared-gap, 0.5em);
+  gap: var(--ekko-button-shared-gap, 0.5rem);
   white-space: nowrap;
   text-decoration: none;
   vertical-align: middle;
@@ -20,7 +20,7 @@
   font-family: var(--ekko-button-shared-font-family, system-ui, sans-serif);
   font-weight: var(--ekko-button-shared-font-weight, 500);
   line-height: var(--ekko-button-shared-line-height, 1);
-  letter-spacing: var(--ekko-button-shared-letter-spacing, 0.01em);
+  letter-spacing: var(--ekko-button-shared-letter-spacing, 0.01rem);
   border-style: var(--ekko-button-shared-border-style, solid);
   border-width: var(--ekko-button-shared-border-width, 1px);
   border-radius: var(--ekko-button-shared-border-radius, 6px);
@@ -53,41 +53,43 @@
 
 /* Sizes */
 :host([size="sm"]) .btn {
-  padding: var(--ekko-button-size-sm-padding-y, 4px) var(--ekko-button-size-sm-padding-x, 8px);
+  padding: var(--ekko-button-size-sm-padding-y, 0.25rem)
+    var(--ekko-button-size-sm-padding-x, 0.5rem);
   font-size: var(--ekko-button-size-sm-font-size, 0.875rem);
-  min-height: var(--ekko-button-size-sm-height, 32px);
+  min-height: var(--ekko-button-size-sm-height, 2rem);
 }
 
 :host([size="md"]) .btn {
-  padding: var(--ekko-button-size-md-padding-y, 8px) var(--ekko-button-size-md-padding-x, 16px);
+  padding: var(--ekko-button-size-md-padding-y, 0.5rem) var(--ekko-button-size-md-padding-x, 1rem);
   font-size: var(--ekko-button-size-md-font-size, 0.875rem);
-  min-height: var(--ekko-button-size-md-height, 38px);
+  min-height: var(--ekko-button-size-md-height, 2.375rem);
 }
 
 :host([size="lg"]) .btn {
-  padding: var(--ekko-button-size-lg-padding-y, 12px) var(--ekko-button-size-lg-padding-x, 24px);
+  padding: var(--ekko-button-size-lg-padding-y, 0.75rem)
+    var(--ekko-button-size-lg-padding-x, 1.5rem);
   font-size: var(--ekko-button-size-lg-font-size, 1rem);
-  min-height: var(--ekko-button-size-lg-height, 46px);
+  min-height: var(--ekko-button-size-lg-height, 2.875rem);
 }
 
 /* Icon sizes */
 :host([size="sm"]) ::slotted([slot="start"]),
 :host([size="sm"]) ::slotted([slot="end"]) {
-  width: var(--ekko-button-size-sm-icon-size, 14px);
-  height: var(--ekko-button-size-sm-icon-size, 14px);
+  width: var(--ekko-button-size-sm-icon-size, 0.875rem);
+  height: var(--ekko-button-size-sm-icon-size, 0.875rem);
 }
 
 :host([size="lg"]) ::slotted([slot="start"]),
 :host([size="lg"]) ::slotted([slot="end"]) {
-  width: var(--ekko-button-size-lg-icon-size, 18px);
-  height: var(--ekko-button-size-lg-icon-size, 18px);
+  width: var(--ekko-button-size-lg-icon-size, 1.125rem);
+  height: var(--ekko-button-size-lg-icon-size, 1.125rem);
 }
 
 ::slotted([slot="start"]),
 ::slotted([slot="end"]) {
   flex-shrink: 0;
-  width: var(--ekko-button-size-md-icon-size, 16px);
-  height: var(--ekko-button-size-md-icon-size, 16px);
+  width: var(--ekko-button-size-md-icon-size, 1rem);
+  height: var(--ekko-button-size-md-icon-size, 1rem);
 }
 
 /* Variant primary  */
@@ -162,7 +164,7 @@
   padding-left: 0;
   padding-right: 0;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: var(--ekko-button-link-text-underline-offset, 2px);
 }
 
 :host([variant="link"]:not([disabled])) .btn:hover {
@@ -183,9 +185,9 @@
 
 .spinner {
   display: none;
-  width: var(--ekko-button-shared-spinner-size, 1em);
-  height: var(--ekko-button-shared-spinner-size, 1em);
-  border: 2px solid currentColor;
+  width: var(--ekko-button-shared-spinner-size, 1rem);
+  height: var(--ekko-button-shared-spinner-size, 1rem);
+  border: var(--ekko-button-shared-spinner-border-width, 2px) solid currentColor;
   border-top-color: transparent;
   border-radius: 50%;
   flex-shrink: 0;
@@ -219,14 +221,14 @@
 
 /*  Icon-only button  */
 :host([icon-only]) .btn {
-  padding: var(--ekko-button-size-md-padding-y, 8px);
+  padding: var(--ekko-button-size-md-padding-y, 0.5rem);
   aspect-ratio: 1;
 }
 
 :host([icon-only][size="sm"]) .btn {
-  padding: var(--ekko-button-size-sm-padding-y, 4px);
+  padding: var(--ekko-button-size-sm-padding-y, 0.25rem);
 }
 
 :host([icon-only][size="lg"]) .btn {
-  padding: var(--ekko-button-size-lg-padding-y, 12px);
+  padding: var(--ekko-button-size-lg-padding-y, 0.75rem);
 }
