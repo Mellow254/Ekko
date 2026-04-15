@@ -107,7 +107,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--ekko-input-shared-placeholder, #737373);
+  color: var(--ekko-input-shared-adornment-text, #525252);
   width: var(--ekko-input-shared-adornment-size, 1rem);
   height: var(--ekko-input-shared-adornment-size, 1rem);
   font-size: var(--ekko-input-size-md-font-size, 0.875rem);
@@ -119,16 +119,6 @@
 
 ::slotted([slot="end"]) {
   margin-inline-end: var(--ekko-input-size-md-padding-x, 0.75rem);
-}
-
-.slot-start,
-.slot-end {
-  display: inline-flex;
-}
-
-.slot-start:not(.has-content),
-.slot-end:not(.has-content) {
-  display: none;
 }
 
 /* Remove duplicate padding when adornment is present */

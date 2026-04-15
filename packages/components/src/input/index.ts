@@ -284,14 +284,14 @@ export class EkkoInput extends HTMLElement {
           <span class="required-indicator" aria-hidden="true" hidden>*</span>
         </label>
         <div class="control" part="control">
-          <span class="slot-start"><slot name="start"></slot></span>
+          <slot name="start"></slot>
           <input
             part="base"
             class="input"
             id="${this.#inputId}"
             type="text"
           />
-          <span class="slot-end"><slot name="end"></slot></span>
+          <slot name="end"></slot>
         </div>
         <div class="help" id="${this.#helpId}" part="help" hidden></div>
         <div class="error" id="${this.#errorId}" part="error" role="alert" hidden></div>
@@ -412,14 +412,8 @@ export class EkkoInput extends HTMLElement {
   #handleSlotChange(): void {
     const hasStart = this.#startSlot.assignedNodes({ flatten: true }).length > 0;
     const hasEnd = this.#endSlot.assignedNodes({ flatten: true }).length > 0;
-
     this.#control.classList.toggle('has-start', hasStart);
     this.#control.classList.toggle('has-end', hasEnd);
-
-    const startWrap = this.#shadow.querySelector('.slot-start') as HTMLElement;
-    const endWrap = this.#shadow.querySelector('.slot-end') as HTMLElement;
-    startWrap.classList.toggle('has-content', hasStart);
-    endWrap.classList.toggle('has-content', hasEnd);
   }
 
   #handleInput(event: Event): void {
