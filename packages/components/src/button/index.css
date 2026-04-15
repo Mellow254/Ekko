@@ -164,7 +164,7 @@
   padding-left: 0;
   padding-right: 0;
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: var(--ekko-button-link-text-underline-offset, 2px);
 }
 
 :host([variant="link"]:not([disabled])) .btn:hover {
@@ -187,7 +187,7 @@
   display: none;
   width: var(--ekko-button-shared-spinner-size, 1rem);
   height: var(--ekko-button-shared-spinner-size, 1rem);
-  border: 2px solid currentColor;
+  border: var(--ekko-button-shared-spinner-border-width, 2px) solid currentColor;
   border-top-color: transparent;
   border-radius: 50%;
   flex-shrink: 0;

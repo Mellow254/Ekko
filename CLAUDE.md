@@ -48,6 +48,8 @@ When adding a new package, always install the latest version unless a specific v
 - **TypeScript**: Strict mode enabled. No `any` types. All source files are `.ts`.
 - **Biome v2**: Handles formatting and linting. Config in `biome.json`. A PostToolUse hook auto-runs `biome check --fix` after every file edit.
 - **Comments**: Only where the logic isn't self-evident. No decorative section dividers, no obvious comments, no trailing summaries.
+- **CSS values are tokens, not literals.** Every numeric, dimension, or color value in a component stylesheet MUST come from a CSS custom property with a hardcoded fallback (e.g. `padding: var(--ekko-input-size-md-padding-y, 0.5rem)`). This applies to **all** properties that accept a themeable value — `padding`, `margin`, `gap`, `width`/`height`, `border-*`, `border-radius`, `outline-*`, `box-shadow`, `text-shadow`, `text-underline-offset`, `font-size`, `line-height`, `letter-spacing`, colors, etc. The only literals allowed are keywords (`auto`, `none`, `transparent`, `currentColor`, `inherit`, `0`, display/layout keywords) and unitless flex factors. If you need a new value, add a token to `packages/tokens/tokens/component/{name}.json` first, then reference it. See `.claude/rules/components.md` and `.claude/rules/tokens.md`.
+- **CSS units**: only `rem` and `px`. Use `rem` for anything that should scale with zoom (spacing, sizing, typography) — `1rem === 16px` at browser default. Use `px` for precision values that must not scale (borders, radii, outlines, shadows, underline offsets). `em` is forbidden.
 
 ## Versioning & Release
 

@@ -17,6 +17,14 @@
       "text-disabled": { "$type": "color", "$value": "{color.text.disabled}" },
       "label-text": { "$type": "color", "$value": "{color.text.primary}" },
       "label-font-weight": { "$type": "fontWeight", "$value": "{font.weight.medium}" },
+      "label-line-height": { "$type": "number", "$value": "{font.leading.tight}" },
+      "message-line-height": { "$type": "number", "$value": "{font.leading.snug}" },
+      "required-indicator-gap": {
+        "$type": "dimension",
+        "$value": { "value": 0.125, "unit": "rem" }
+      },
+      "adornment-size": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+      "color-picker-padding": { "$type": "dimension", "$value": "{space.component.xs}" },
       "hint-text": { "$type": "color", "$value": "{color.text.secondary}" },
       "error-text": { "$type": "color", "$value": "{color.feedback.error-text}" },
       "font-family": { "$type": "fontFamily", "$value": "{font.body.family}" },

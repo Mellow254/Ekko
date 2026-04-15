@@ -19,7 +19,7 @@
   color: var(--ekko-input-shared-label-text, #171717);
   font-weight: var(--ekko-input-shared-label-font-weight, 500);
   font-size: var(--ekko-input-size-md-font-size, 0.875rem);
-  line-height: 1.2;
+  line-height: var(--ekko-input-shared-label-line-height, 1.25);
 }
 
 :host([size="sm"]) .label {
@@ -32,7 +32,7 @@
 
 .required-indicator {
   color: var(--ekko-input-shared-error-text, #dc2626);
-  margin-inline-start: 0.125rem;
+  margin-inline-start: var(--ekko-input-shared-required-indicator-gap, 0.125rem);
 }
 
 .control {
@@ -108,8 +108,8 @@
   align-items: center;
   justify-content: center;
   color: var(--ekko-input-shared-placeholder, #737373);
-  width: 1rem;
-  height: 1rem;
+  width: var(--ekko-input-shared-adornment-size, 1rem);
+  height: var(--ekko-input-shared-adornment-size, 1rem);
   font-size: var(--ekko-input-size-md-font-size, 0.875rem);
 }
 
@@ -173,7 +173,7 @@
 .help,
 .error {
   font-size: var(--ekko-input-size-sm-font-size, 0.75rem);
-  line-height: 1.4;
+  line-height: var(--ekko-input-shared-message-line-height, 1.375);
 }
 
 .help {
@@ -191,7 +191,7 @@
 
 /* Type-specific tweaks */
 :host([type="color"]) .input {
-  padding: 0.25rem;
+  padding: var(--ekko-input-shared-color-picker-padding, 0.25rem);
   min-height: var(--ekko-input-size-md-height, 2.375rem);
   cursor: pointer;
 }

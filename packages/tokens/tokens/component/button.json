@@ -61,10 +61,22 @@
         "$value": { "value": 1, "unit": "rem" },
         "$description": "Width and height of the loading spinner."
       },
+      "spinner-border-width": {
+        "$type": "dimension",
+        "$value": { "value": 2, "unit": "px" },
+        "$description": "Border width of the loading spinner ring."
+      },
       "transition-duration": { "$type": "duration", "$value": "{duration.fast}" },
       "focus-ring-color": { "$type": "color", "$value": "{focus.ring-color}" },
       "focus-ring-width": { "$type": "dimension", "$value": "{focus.ring-width}" },
       "focus-ring-offset": { "$type": "dimension", "$value": "{focus.ring-offset}" }
+    },
+    "link": {
+      "text-underline-offset": {
+        "$type": "dimension",
+        "$value": { "value": 2, "unit": "px" },
+        "$description": "Underline offset for the link variant."
+      }
     },
     "pressed": {
       "filter": {
