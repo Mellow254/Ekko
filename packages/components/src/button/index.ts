@@ -44,7 +44,13 @@ export class EkkoButton extends HTMLElement {
   }
 
   connectedCallback(): void {
-    // setting default attributes
+    this.#upgradeProperty('variant');
+    this.#upgradeProperty('size');
+    this.#upgradeProperty('disabled');
+    this.#upgradeProperty('loading');
+    this.#upgradeProperty('type');
+    this.#upgradeProperty('pressed');
+
     if (!this.hasAttribute('variant')) {
       this.variant = 'primary';
     }
@@ -173,6 +179,14 @@ export class EkkoButton extends HTMLElement {
       this.#btn.setAttribute('aria-describedby', ariaDescribedby);
     } else {
       this.#btn.removeAttribute('aria-describedby');
+    }
+  }
+
+  #upgradeProperty(prop: string): void {
+    if (Object.hasOwn(this, prop)) {
+      const value = (this as Record<string, unknown>)[prop];
+      delete (this as Record<string, unknown>)[prop];
+      (this as Record<string, unknown>)[prop] = value;
     }
   }
 

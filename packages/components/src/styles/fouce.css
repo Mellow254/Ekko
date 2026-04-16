@@ -1,0 +1,16 @@
+/*
+ * FOUCE (Flash of Undefined Custom Element) prevention
+ *
+ * Import this stylesheet to hide Ekko components until their definitions are
+ * registered. This prevents a flash of undefined content when components are
+ * lazy-loaded.
+ *
+ * Usage:
+ *   import '@ekko-ds/components/fouce.css';
+*/
+
+ekko-button:not(:defined),
+ekko-input:not(:defined) {
+  opacity: 0;
+  visibility: hidden;
+}

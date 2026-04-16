@@ -121,6 +121,17 @@ export class EkkoInput extends HTMLElement {
   }
 
   connectedCallback(): void {
+    this.#upgradeProperty('type');
+    this.#upgradeProperty('size');
+    this.#upgradeProperty('value');
+    this.#upgradeProperty('name');
+    this.#upgradeProperty('placeholder');
+    this.#upgradeProperty('disabled');
+    this.#upgradeProperty('readOnly');
+    this.#upgradeProperty('required');
+    this.#upgradeProperty('invalid');
+    this.#upgradeProperty('label');
+
     if (!this.hasAttribute('type')) {
       this.type = 'text';
     }
@@ -406,6 +417,14 @@ export class EkkoInput extends HTMLElement {
       this.#input.setAttribute('aria-describedby', describedByParts.join(' '));
     } else {
       this.#input.removeAttribute('aria-describedby');
+    }
+  }
+
+  #upgradeProperty(prop: string): void {
+    if (Object.hasOwn(this, prop)) {
+      const value = (this as Record<string, unknown>)[prop];
+      delete (this as Record<string, unknown>)[prop];
+      (this as Record<string, unknown>)[prop] = value;
     }
   }
 

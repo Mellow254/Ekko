@@ -1,6 +1,11 @@
 :host {
   display: inline-block;
   font-family: var(--ekko-input-shared-font-family, system-ui, sans-serif);
+  contain: content;
+}
+
+:host([hidden]) {
+  display: none;
 }
 
 :host([full-width]) {

@@ -1,6 +1,11 @@
 /* Ensure the host participates in layout but doesn't override the button */
 :host {
   display: inline-block;
+  contain: content;
+}
+
+:host([hidden]) {
+  display: none;
 }
 
 :host([full-width]) {
