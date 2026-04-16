@@ -1,3 +1,4 @@
+import { EkkoBase } from '../base';
 import css from './index.css?inline';
 
 const styles = new CSSStyleSheet();
@@ -11,7 +12,7 @@ export interface EkkoClickEventDetail {
   originalEvent: Event;
 }
 
-export class EkkoButton extends HTMLElement {
+export class EkkoButton extends EkkoBase {
   static get observedAttributes(): string[] {
     return [
       'variant',
@@ -27,29 +28,24 @@ export class EkkoButton extends HTMLElement {
     ];
   }
 
-  #shadow: ShadowRoot;
   #btn: HTMLButtonElement;
   #clickHandler: (event: Event) => void;
 
   constructor() {
-    super();
+    super(styles);
+    this.shadow.innerHTML = this.#template();
 
-    this.#shadow = this.attachShadow({ mode: 'open' });
-    this.#shadow.adoptedStyleSheets = [styles];
-    this.#shadow.innerHTML = this.#template();
-
-    this.#btn = this.#shadow.querySelector('.btn') as HTMLButtonElement;
-
+    this.#btn = this.shadow.querySelector('.btn') as HTMLButtonElement;
     this.#clickHandler = this.#handleClick.bind(this);
   }
 
   connectedCallback(): void {
-    this.#upgradeProperty('variant');
-    this.#upgradeProperty('size');
-    this.#upgradeProperty('disabled');
-    this.#upgradeProperty('loading');
-    this.#upgradeProperty('type');
-    this.#upgradeProperty('pressed');
+    this.upgradeProperty('variant');
+    this.upgradeProperty('size');
+    this.upgradeProperty('disabled');
+    this.upgradeProperty('loading');
+    this.upgradeProperty('type');
+    this.upgradeProperty('pressed');
 
     if (!this.hasAttribute('variant')) {
       this.variant = 'primary';
@@ -122,15 +118,9 @@ export class EkkoButton extends HTMLElement {
 
   #template(): string {
     return `
-      <button
-        part="base"
-        class="btn"
-        type="${this.getAttribute('type') ?? 'button'}"
-      >
+      <button part="base" class="btn" type="button">
         <slot name="start"></slot>
-        <span class="btn-label">
-          <slot></slot>
-        </span>
+        <span class="btn-label"><slot></slot></span>
         <div class="spinner" aria-hidden="true"></div>
         <slot name="end"></slot>
       </button>
@@ -167,27 +157,8 @@ export class EkkoButton extends HTMLElement {
       this.#btn.removeAttribute('aria-pressed');
     }
 
-    const ariaLabel = this.getAttribute('aria-label');
-    if (ariaLabel) {
-      this.#btn.setAttribute('aria-label', ariaLabel);
-    } else {
-      this.#btn.removeAttribute('aria-label');
-    }
-
-    const ariaDescribedby = this.getAttribute('aria-describedby');
-    if (ariaDescribedby) {
-      this.#btn.setAttribute('aria-describedby', ariaDescribedby);
-    } else {
-      this.#btn.removeAttribute('aria-describedby');
-    }
-  }
-
-  #upgradeProperty(prop: string): void {
-    if (Object.hasOwn(this, prop)) {
-      const value = (this as Record<string, unknown>)[prop];
-      delete (this as Record<string, unknown>)[prop];
-      (this as Record<string, unknown>)[prop] = value;
-    }
+    this.forwardAriaLabel(this.#btn);
+    this.forwardAriaDescribedby(this.#btn);
   }
 
   #handleClick(event: Event): void {

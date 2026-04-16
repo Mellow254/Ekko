@@ -1,3 +1,4 @@
+import { EkkoBase } from '../base';
 import css from './index.css?inline';
 
 const styles = new CSSStyleSheet();
@@ -54,7 +55,7 @@ const FORWARDED_ATTRIBUTES = [
   'spellcheck',
 ] as const;
 
-export class EkkoInput extends HTMLElement {
+export class EkkoInput extends EkkoBase {
   static formAssociated = true;
 
   static get observedAttributes(): string[] {
@@ -74,7 +75,6 @@ export class EkkoInput extends HTMLElement {
     ];
   }
 
-  #shadow: ShadowRoot;
   #input: HTMLInputElement;
   #labelEl: HTMLLabelElement;
   #labelText: HTMLSpanElement;
@@ -92,26 +92,27 @@ export class EkkoInput extends HTMLElement {
   #errorId: string;
 
   constructor() {
-    super();
-
-    this.#shadow = this.attachShadow({ mode: 'open' });
-    this.#shadow.adoptedStyleSheets = [styles];
-
     const uid = Math.random().toString(36).slice(2, 10);
-    this.#inputId = `ekko-input-${uid}`;
-    this.#helpId = `ekko-input-help-${uid}`;
-    this.#errorId = `ekko-input-error-${uid}`;
+    const inputId = `ekko-input-${uid}`;
+    const helpId = `ekko-input-help-${uid}`;
+    const errorId = `ekko-input-error-${uid}`;
 
-    this.#shadow.innerHTML = this.#template();
+    super(styles);
 
-    this.#labelEl = this.#shadow.querySelector('.label') as HTMLLabelElement;
-    this.#labelText = this.#shadow.querySelector('.label-text') as HTMLSpanElement;
-    this.#control = this.#shadow.querySelector('.control') as HTMLElement;
-    this.#input = this.#shadow.querySelector('.input') as HTMLInputElement;
-    this.#helpEl = this.#shadow.querySelector('.help') as HTMLElement;
-    this.#errorEl = this.#shadow.querySelector('.error') as HTMLElement;
-    this.#startSlot = this.#shadow.querySelector('slot[name="start"]') as HTMLSlotElement;
-    this.#endSlot = this.#shadow.querySelector('slot[name="end"]') as HTMLSlotElement;
+    this.#inputId = inputId;
+    this.#helpId = helpId;
+    this.#errorId = errorId;
+
+    this.shadow.innerHTML = this.#template();
+
+    this.#labelEl = this.shadow.querySelector('.label') as HTMLLabelElement;
+    this.#labelText = this.shadow.querySelector('.label-text') as HTMLSpanElement;
+    this.#control = this.shadow.querySelector('.control') as HTMLElement;
+    this.#input = this.shadow.querySelector('.input') as HTMLInputElement;
+    this.#helpEl = this.shadow.querySelector('.help') as HTMLElement;
+    this.#errorEl = this.shadow.querySelector('.error') as HTMLElement;
+    this.#startSlot = this.shadow.querySelector('slot[name="start"]') as HTMLSlotElement;
+    this.#endSlot = this.shadow.querySelector('slot[name="end"]') as HTMLSlotElement;
 
     this.#internals = this.attachInternals();
 
@@ -121,16 +122,16 @@ export class EkkoInput extends HTMLElement {
   }
 
   connectedCallback(): void {
-    this.#upgradeProperty('type');
-    this.#upgradeProperty('size');
-    this.#upgradeProperty('value');
-    this.#upgradeProperty('name');
-    this.#upgradeProperty('placeholder');
-    this.#upgradeProperty('disabled');
-    this.#upgradeProperty('readOnly');
-    this.#upgradeProperty('required');
-    this.#upgradeProperty('invalid');
-    this.#upgradeProperty('label');
+    this.upgradeProperty('type');
+    this.upgradeProperty('size');
+    this.upgradeProperty('value');
+    this.upgradeProperty('name');
+    this.upgradeProperty('placeholder');
+    this.upgradeProperty('disabled');
+    this.upgradeProperty('readOnly');
+    this.upgradeProperty('required');
+    this.upgradeProperty('invalid');
+    this.upgradeProperty('label');
 
     if (!this.hasAttribute('type')) {
       this.type = 'text';
@@ -397,6 +398,8 @@ export class EkkoInput extends HTMLElement {
     }
   }
 
+  // Input keeps its own ARIA logic: composed aria-describedby with help/error
+  // IDs, and conditional aria-label removal when a visible label exists.
   #syncAccessibility(): void {
     const ariaLabel = this.getAttribute('aria-label');
     if (ariaLabel) {
@@ -417,14 +420,6 @@ export class EkkoInput extends HTMLElement {
       this.#input.setAttribute('aria-describedby', describedByParts.join(' '));
     } else {
       this.#input.removeAttribute('aria-describedby');
-    }
-  }
-
-  #upgradeProperty(prop: string): void {
-    if (Object.hasOwn(this, prop)) {
-      const value = (this as Record<string, unknown>)[prop];
-      delete (this as Record<string, unknown>)[prop];
-      (this as Record<string, unknown>)[prop] = value;
     }
   }
 

@@ -1,0 +1,13 @@
+:host {
+  display: inline-block;
+  contain: none;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([full-width]) {
+  display: block;
+  width: 100%;
+}
