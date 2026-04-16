@@ -10,7 +10,8 @@
 */
 
 ekko-button:not(:defined),
-ekko-input:not(:defined) {
+ekko-input:not(:defined),
+ekko-checkbox:not(:defined) {
   opacity: 0;
   visibility: hidden;
 }
