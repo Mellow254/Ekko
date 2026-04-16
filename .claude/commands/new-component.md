@@ -10,17 +10,21 @@ Follow these steps in order:
 
 2. **Styles** — Create `packages/components/src/$ARGUMENTS/index.css`
    - All values via `--ekko-$ARGUMENTS-*` CSS custom properties with hardcoded fallbacks
-   - Include: `:host` display with `contain: content`, `:host([hidden]) { display: none }`, `:host([full-width])`, size variants (sm/md/lg), `:focus-visible` ring, disabled state (opacity 0.5, cursor not-allowed), loading state with spinner, `@media (prefers-reduced-motion: reduce)`
+   - Do NOT include `:host` display/contain, `:host([hidden])`, or `:host([full-width])` — these are provided by the `EkkoBase` base stylesheet
+   - Include: size variants (sm/md/lg), `:focus-visible` ring, disabled state (opacity 0.5, cursor not-allowed), loading state with spinner, `@media (prefers-reduced-motion: reduce)`
    - Use `:host([attribute])` selectors, not class-based styling
 
 3. **Component implementation** — Create `packages/components/src/$ARGUMENTS/index.ts`
    - Follow the exact class structure from `packages/components/src/button/index.ts`
-   - Import CSS via `import css from './index.css?inline'` and adopt via `CSSStyleSheet`
+   - Import `{ EkkoBase }` from `'../base'` and CSS via `import css from './index.css?inline'`
+   - Extend `EkkoBase` instead of `HTMLElement`
+   - In constructor, call `super(styles)` then `this.shadow.innerHTML = this.#template()`, then cache element refs via `this.shadow.querySelector()`
+   - Include `#template(): string` private method returning the component HTML with `part="base"` on the inner interactive element
    - Export type aliases for attribute values
    - Export an interface for the custom event detail
-   - Include `#upgradeProperty()` private method — call it for every public property setter in `connectedCallback()`, before setting default attributes
+   - Call `this.upgradeProperty()` (inherited) for every public property setter in `connectedCallback()`, before setting default attributes
    - Include `aria-label` and `aria-describedby` in `observedAttributes`
-   - Implement `#syncAccessibility(): void` with proper ARIA forwarding
+   - Implement `#syncAccessibility(): void` — use inherited `this.forwardAriaLabel(target)` and `this.forwardAriaDescribedby(target)` for ARIA forwarding
    - Self-register with `customElements.define`
 
 4. **FOUCE** — Add `ekko-$ARGUMENTS:not(:defined)` to the selector list in `packages/components/src/styles/fouce.css`

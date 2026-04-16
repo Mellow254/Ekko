@@ -1,3 +1,4 @@
+import { EkkoBase } from '../base';
 import css from './index.css?inline';
 
 const styles = new CSSStyleSheet();
@@ -11,39 +12,34 @@ export interface EkkoChangeEventDetail {
   originalEvent: Event;
 }
 
-export class EkkoCheckbox extends HTMLElement {
+export class EkkoCheckbox extends EkkoBase {
   static formAssociated = true;
 
   static get observedAttributes(): string[] {
     return ['checked', 'disabled', 'name', 'value', 'size', 'aria-label', 'aria-describedby'];
   }
 
-  #shadow: ShadowRoot;
   #input: HTMLInputElement;
   #internals: ElementInternals;
   #changeHandler: (event: Event) => void;
   #defaultChecked = false;
 
   constructor() {
-    super();
+    super(styles);
+    this.shadow.innerHTML = this.#template();
 
-    this.#shadow = this.attachShadow({ mode: 'open' });
-    this.#shadow.adoptedStyleSheets = [styles];
-    this.#shadow.innerHTML = this.#template();
-
-    this.#input = this.#shadow.querySelector('.input') as HTMLInputElement;
+    this.#input = this.shadow.querySelector('.input') as HTMLInputElement;
     this.#internals = this.attachInternals();
-
     this.#changeHandler = this.#handleChange.bind(this);
   }
 
   connectedCallback(): void {
-    this.#upgradeProperty('checked');
-    this.#upgradeProperty('indeterminate');
-    this.#upgradeProperty('disabled');
-    this.#upgradeProperty('name');
-    this.#upgradeProperty('value');
-    this.#upgradeProperty('size');
+    this.upgradeProperty('checked');
+    this.upgradeProperty('indeterminate');
+    this.upgradeProperty('disabled');
+    this.upgradeProperty('name');
+    this.upgradeProperty('value');
+    this.upgradeProperty('size');
 
     if (!this.hasAttribute('size')) {
       this.size = 'md';
@@ -136,15 +132,9 @@ export class EkkoCheckbox extends HTMLElement {
   #template(): string {
     return `
       <label class="label">
-        <input
-          part="base"
-          class="input"
-          type="checkbox"
-        />
+        <input part="base" class="input" type="checkbox" />
         <span class="box" aria-hidden="true"></span>
-        <span class="label-text">
-          <slot></slot>
-        </span>
+        <span class="label-text"><slot></slot></span>
       </label>
     `;
   }
@@ -160,19 +150,8 @@ export class EkkoCheckbox extends HTMLElement {
       this.#input.removeAttribute('aria-disabled');
     }
 
-    const ariaLabel = this.getAttribute('aria-label');
-    if (ariaLabel) {
-      this.#input.setAttribute('aria-label', ariaLabel);
-    } else {
-      this.#input.removeAttribute('aria-label');
-    }
-
-    const ariaDescribedby = this.getAttribute('aria-describedby');
-    if (ariaDescribedby) {
-      this.#input.setAttribute('aria-describedby', ariaDescribedby);
-    } else {
-      this.#input.removeAttribute('aria-describedby');
-    }
+    this.forwardAriaLabel(this.#input);
+    this.forwardAriaDescribedby(this.#input);
   }
 
   #syncFormValue(): void {
@@ -194,14 +173,6 @@ export class EkkoCheckbox extends HTMLElement {
         },
       })
     );
-  }
-
-  #upgradeProperty(prop: string): void {
-    if (Object.hasOwn(this, prop)) {
-      const value = (this as Record<string, unknown>)[prop];
-      delete (this as Record<string, unknown>)[prop];
-      (this as Record<string, unknown>)[prop] = value;
-    }
   }
 }
 

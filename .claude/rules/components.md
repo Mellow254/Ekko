@@ -9,8 +9,12 @@ paths:
 ## File Structure
 
 Every component lives at `src/{name}/` with exactly two files:
-- `index.ts` — HTMLElement subclass, type exports, and self-registration
+- `index.ts` — EkkoBase subclass, type exports, and self-registration
 - `index.css` — Native CSS stylesheet (imported via `?inline` for Shadow DOM adoption)
+
+A shared `src/base/` provides:
+- `index.ts` — `EkkoBase` class extending `HTMLElement` with Shadow DOM setup, `upgradeProperty()`, and ARIA forwarding helpers
+- `index.css` — Shared `:host` rules (display, contain, hidden, full-width) adopted automatically by all components
 
 A shared `src/css.d.ts` declares the `*.css?inline` module type.
 
@@ -28,22 +32,21 @@ A shared `src/css.d.ts` declares the `*.css?inline` module type.
 
 Follow this order to match the established pattern in `src/button/index.ts`:
 
-1. `import css from './index.css?inline'` — CSS imported as string via Vite's `?inline` suffix
+1. `import { EkkoBase } from '../base'` and `import css from './index.css?inline'`
 2. Constructable stylesheet setup — `new CSSStyleSheet()` + `replaceSync(css)`
 3. **Type exports** — `ButtonVariant`, `ButtonSize`, event detail interfaces
-4. `export class Ekko{Name} extends HTMLElement`
+4. `export class Ekko{Name} extends EkkoBase`
 5. `static get observedAttributes(): string[]` — include all reflected attributes AND forwarded ARIA attributes (`aria-label`, `aria-describedby`)
-6. **Private fields** — use `#` prefix with explicit types (e.g., `#shadow: ShadowRoot`)
-7. **`constructor()`** — `attachShadow({mode:'open'})` → `adoptedStyleSheets = [styles]` → `innerHTML = this.#template()` → cache element refs with type assertions
-8. **`connectedCallback(): void`** — call `#upgradeProperty()` for each public property, set default attributes, add event listeners, call `#syncAccessibility()`
+6. **Private fields** — use `#` prefix with explicit types. Note: `shadow` is a protected field inherited from `EkkoBase` — do NOT redeclare it
+7. **`constructor()`** — call `super(styles)` with the component stylesheet, then `this.shadow.innerHTML = this.#template()`, then cache element refs via `this.shadow.querySelector()` with type assertions
+12. **`#template(): string`** — return HTML string with `part="base"` on the inner interactive element
+8. **`connectedCallback(): void`** — call `this.upgradeProperty()` (inherited) for each public property, set default attributes, add event listeners, call `#syncAccessibility()`
 9. **`disconnectedCallback(): void`** — remove event listeners
 10. **`attributeChangedCallback(_name: string, oldValue: string | null, newValue: string | null): void`** — guard `if (oldValue === newValue) return`, then `#syncAccessibility()`
 11. **Typed property getters/setters** — cast getAttribute results to union types
-12. **`#template(): string`** — return HTML string with `part="base"` on the inner interactive element
-13. **`#syncAccessibility(): void`** — sync all ARIA attributes from host to inner element
-14. **`#handleClick(event: Event): void`** — event handler with disabled/loading guard, toggle logic, form participation, and custom event dispatch
-15. **`#upgradeProperty(prop: string): void`** — lazy property upgrade utility (see Web.dev Best Practices below)
-16. **Self-registration** — `if (!customElements.get('ekko-{name}')) customElements.define('ekko-{name}', Ekko{Name})`
+12. **`#syncAccessibility(): void`** — sync all ARIA attributes from host to inner element. Use inherited `this.forwardAriaLabel(target)` and `this.forwardAriaDescribedby(target)` for standard forwarding
+13. **Event handler(s)** — e.g., `#handleClick(event: Event): void` with disabled/loading guard, toggle logic, form participation, and custom event dispatch
+14. **Self-registration** — `if (!customElements.get('ekko-{name}')) customElements.define('ekko-{name}', Ekko{Name})`
 
 ## ARIA Contract
 
@@ -69,13 +72,14 @@ styles.replaceSync(css);
 
 The `?inline` suffix tells Vite to return the CSS as a string instead of injecting it into the document. The web test runner handles this via a custom `inlineCssPlugin` in `web-test-runner.config.js`.
 
+The `EkkoBase` constructor automatically adopts both the shared base stylesheet (`src/base/index.css`) and the component stylesheet. The base stylesheet provides `:host`, `:host([hidden])`, and `:host([full-width])` — **do NOT duplicate these in component CSS**.
+
 CSS rules:
 - **Every themeable value MUST be a CSS custom property with a hardcoded fallback.** This includes — but is not limited to — `padding`, `margin`, `gap`, `width`, `height`, `min-*`/`max-*`, `inset`/`top`/`right`/`bottom`/`left`, `border-*`, `border-radius`, `outline-*`, `text-underline-offset`, `box-shadow`, `text-shadow`, `font-size`, `line-height`, `letter-spacing`, `font-weight`, `font-family`, `color`, `background-*`, `opacity`, `filter`, `transition-duration`, and `z-index`. If you're about to type a numeric value (`0.5rem`, `2px`, `1.25`) or a color (`#...`) directly into a CSS rule, STOP — add a token in `packages/tokens/tokens/component/{name}.json` first and reference it via `var()`.
 - **Only the following values may appear as literals** (no token required): `0`, `auto`, `inherit`, `currentColor`, `transparent`, `none`, display/layout keywords (`flex`, `block`, `inline-flex`, `grid`, `absolute`, `relative`, etc.), `flex-shrink`/`flex-grow` numeric factors, `aspect-ratio`, `cursor` keywords, and `user-select`/`touch-action` keywords. Everything else is a token.
 - **Unit policy** (applies to every dimension value, including token fallbacks): use `rem` for anything that should scale with user zoom/font-size — spacing (padding/margin/gap), layout sizing (width/height/min-height), typography (font-size/letter-spacing). Use `px` for pixel-precise values that should NOT scale with zoom — border-width, border-radius, outline-width/offset, box-shadow/text-shadow offsets and blur, text-underline-offset. `em` is forbidden. `1rem === 16px` (browser default).
 - Token naming: `--ekko-{component}-{variant}-{property}` for variant-specific, `--ekko-{component}-shared-{property}` for shared, `--ekko-{component}-size-{sm|md|lg}-{property}` for size-specific.
-- `:host` sets `display: inline-block` and `contain: content`; `:host([full-width])` sets `display: block; width: 100%`
-- `:host([hidden]) { display: none }` MUST be present — custom elements with explicit `display` ignore the `hidden` attribute without this
+- `:host` display, `contain`, `:host([hidden])`, and `:host([full-width])` are provided by `EkkoBase`'s base stylesheet — do NOT add these to component CSS
 - Use `:host([attribute])` selectors, not class-based styling
 - Include `@media (prefers-reduced-motion: reduce)` to disable transitions/animations
 - Focus ring via `:focus-visible` using `--ekko-{component}-shared-focus-ring-*` tokens
@@ -85,23 +89,13 @@ CSS rules:
 Every component MUST follow these patterns from the [web.dev custom elements best practices](https://web.dev/articles/custom-elements-best-practices):
 
 ### Hidden attribute support
-Every component's CSS MUST include `:host([hidden]) { display: none }`. Without this, the `hidden` attribute has no effect on custom elements that set an explicit `display` value on `:host`.
+`EkkoBase`'s base stylesheet includes `:host([hidden]) { display: none }`. Without this, the `hidden` attribute has no effect on custom elements that set an explicit `display` value on `:host`.
 
 ### Layout containment
-Every component's CSS MUST include `contain: content` on `:host`. This tells the browser the element's subtree is independent for layout, paint, and style — enabling significant rendering optimizations. Note: components with intentionally overflowing content (dropdowns, tooltips, popovers) should use `contain: none` instead.
+`EkkoBase`'s base stylesheet sets `contain: none` on `:host`. Components that do not need outlines or focus rings to paint outside the host box may opt in to `contain: content` in their own CSS for rendering optimization.
 
 ### Lazy property upgrade
-Every component MUST call `#upgradeProperty(prop)` in `connectedCallback()` for each public property with a setter, **BEFORE** setting default attributes. This handles the case where a framework sets properties on the element before the custom element definition loads:
-
-```ts
-#upgradeProperty(prop: string): void {
-  if (Object.hasOwn(this, prop)) {
-    const value = (this as Record<string, unknown>)[prop];
-    delete (this as Record<string, unknown>)[prop];
-    (this as Record<string, unknown>)[prop] = value;
-  }
-}
-```
+Every component MUST call `this.upgradeProperty(prop)` (inherited from `EkkoBase`) in `connectedCallback()` for each public property with a setter, **BEFORE** setting default attributes. This handles the case where a framework sets properties on the element before the custom element definition loads.
 
 ### Don't override author-set global attributes
 In `connectedCallback()`, always guard default attribute assignments with `if (!this.hasAttribute(...))` so consumer-provided values are never overwritten. For `tabindex` and `role`, check with `hasAttribute` before setting defaults.
