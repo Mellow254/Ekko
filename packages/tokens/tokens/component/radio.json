@@ -1,0 +1,59 @@
+{
+  "radio": {
+    "$description": "ekko-radio tokens",
+    "shared": {
+      "background": { "$type": "color", "$value": "{color.surface.default}" },
+      "background-hover": { "$type": "color", "$value": "{color.surface.sunken}" },
+      "background-checked": { "$type": "color", "$value": "{color.action.primary}" },
+      "background-checked-hover": { "$type": "color", "$value": "{color.action.primary-hover}" },
+      "border": { "$type": "color", "$value": "{color.border.default}" },
+      "border-hover": { "$type": "color", "$value": "{color.border.strong}" },
+      "border-checked": { "$type": "color", "$value": "{color.action.primary}" },
+      "dot-color": { "$type": "color", "$value": "{color.text.inverse}" },
+      "label-text": { "$type": "color", "$value": "{color.text.primary}" },
+      "label-text-disabled": { "$type": "color", "$value": "{color.text.disabled}" },
+      "border-width": { "$type": "dimension", "$value": { "value": 1, "unit": "px" } },
+      "border-style": { "$type": "other", "$value": "solid" },
+      "border-radius": { "$type": "dimension", "$value": "{radius.component.full}" },
+      "font-family": { "$type": "fontFamily", "$value": "{font.body.family}" },
+      "font-weight": { "$type": "fontWeight", "$value": "{font.weight.regular}" },
+      "line-height": { "$type": "number", "$value": "{font.leading.tight}" },
+      "letter-spacing": {
+        "$type": "dimension",
+        "$value": "{font.button.tracking}",
+        "$description": "Letter-spacing for radio labels."
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.component.sm}",
+        "$description": "Gap between the radio circle and the label text."
+      },
+      "transition-duration": { "$type": "duration", "$value": "{duration.fast}" },
+      "focus-ring-color": { "$type": "color", "$value": "{focus.ring-color}" },
+      "focus-ring-width": { "$type": "dimension", "$value": "{focus.ring-width}" },
+      "focus-ring-offset": { "$type": "dimension", "$value": "{focus.ring-offset}" },
+      "disabled-opacity": {
+        "$type": "number",
+        "$value": 0.5,
+        "$description": "Opacity for disabled state."
+      }
+    },
+    "size": {
+      "sm": {
+        "circle-size": { "$type": "dimension", "$value": { "value": 0.875, "unit": "rem" } },
+        "dot-size": { "$type": "dimension", "$value": { "value": 0.375, "unit": "rem" } },
+        "font-size": { "$type": "dimension", "$value": "{font.size.xs}" }
+      },
+      "md": {
+        "circle-size": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+        "dot-size": { "$type": "dimension", "$value": { "value": 0.5, "unit": "rem" } },
+        "font-size": { "$type": "dimension", "$value": "{font.size.sm}" }
+      },
+      "lg": {
+        "circle-size": { "$type": "dimension", "$value": { "value": 1.25, "unit": "rem" } },
+        "dot-size": { "$type": "dimension", "$value": { "value": 0.625, "unit": "rem" } },
+        "font-size": { "$type": "dimension", "$value": "{font.size.md}" }
+      }
+    }
+  }
+}
