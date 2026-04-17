@@ -17,6 +17,7 @@ ekko-radio:not(:defined),
 ekko-select:not(:defined),
 ekko-switch:not(:defined),
 ekko-textarea:not(:defined),
+ekko-toggletip:not(:defined),
 ekko-tooltip:not(:defined) {
   opacity: 0;
   visibility: hidden;
