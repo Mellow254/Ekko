@@ -3,5 +3,6 @@ export { EkkoCheckbox } from './checkbox';
 export { EkkoDialog } from './dialog';
 export { EkkoInput } from './input';
 export { EkkoRadio } from './radio';
+export { EkkoSelect } from './select';
 export { EkkoSwitch } from './switch';
 export { EkkoTextarea } from './textarea';

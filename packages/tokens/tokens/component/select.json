@@ -1,0 +1,97 @@
+{
+  "select": {
+    "$description": "ekko-select tokens",
+    "shared": {
+      "background": { "$type": "color", "$value": "{color.surface.default}" },
+      "background-disabled": { "$type": "color", "$value": "{color.surface.disabled}" },
+      "background-readonly": { "$type": "color", "$value": "{color.surface.sunken}" },
+      "border": { "$type": "color", "$value": "{color.border.default}" },
+      "border-hover": { "$type": "color", "$value": "{color.border.strong}" },
+      "border-focus": { "$type": "color", "$value": "{color.border.focus}" },
+      "border-error": { "$type": "color", "$value": "{color.border.error}" },
+      "border-width": { "$type": "dimension", "$value": { "value": 1, "unit": "px" } },
+      "border-style": { "$type": "other", "$value": "solid" },
+      "border-radius": { "$type": "dimension", "$value": "{radius.component.md}" },
+      "text": { "$type": "color", "$value": "{color.text.primary}" },
+      "placeholder": {
+        "$type": "color",
+        "$value": "{color.text.secondary}",
+        "$description": "Placeholder text color. Uses secondary (not tertiary) so the dim hint in the trigger meets WCAG AA contrast (4.5:1)."
+      },
+      "text-disabled": { "$type": "color", "$value": "{color.text.disabled}" },
+      "label-text": { "$type": "color", "$value": "{color.text.primary}" },
+      "label-font-weight": { "$type": "fontWeight", "$value": "{font.weight.medium}" },
+      "label-line-height": { "$type": "number", "$value": "{font.leading.tight}" },
+      "message-line-height": { "$type": "number", "$value": "{font.leading.snug}" },
+      "required-indicator-gap": {
+        "$type": "dimension",
+        "$value": { "value": 0.125, "unit": "rem" }
+      },
+      "chevron-color": { "$type": "color", "$value": "{color.text.secondary}" },
+      "chevron-size": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+      "chevron-gap": { "$type": "dimension", "$value": "{space.component.sm}" },
+      "picker-background": { "$type": "color", "$value": "{color.surface.overlay}" },
+      "picker-border": { "$type": "color", "$value": "{color.border.default}" },
+      "picker-border-width": { "$type": "dimension", "$value": { "value": 1, "unit": "px" } },
+      "picker-border-radius": { "$type": "dimension", "$value": "{radius.component.md}" },
+      "picker-padding": { "$type": "dimension", "$value": "{space.component.xs}" },
+      "picker-gap": {
+        "$type": "dimension",
+        "$value": { "value": 4, "unit": "px" },
+        "$description": "Vertical gap between the trigger button and the picker."
+      },
+      "picker-shadow-offset-y": { "$type": "dimension", "$value": { "value": 8, "unit": "px" } },
+      "picker-shadow-blur": { "$type": "dimension", "$value": { "value": 24, "unit": "px" } },
+      "picker-shadow-spread": { "$type": "dimension", "$value": { "value": -8, "unit": "px" } },
+      "picker-shadow-color": {
+        "$type": "color",
+        "$value": "#000000",
+        "$description": "Fallback color used inside rgba() for the picker drop-shadow."
+      },
+      "picker-shadow-opacity": { "$type": "number", "$value": 0.18 },
+      "picker-max-height": { "$type": "dimension", "$value": { "value": 18, "unit": "rem" } },
+      "option-padding-y": { "$type": "dimension", "$value": "{space.component.sm}" },
+      "option-padding-x": { "$type": "dimension", "$value": "{space.component.md}" },
+      "option-gap": { "$type": "dimension", "$value": "{space.component.sm}" },
+      "option-border-radius": { "$type": "dimension", "$value": "{radius.component.sm}" },
+      "option-text": { "$type": "color", "$value": "{color.text.primary}" },
+      "option-text-disabled": { "$type": "color", "$value": "{color.text.disabled}" },
+      "option-background-hover": { "$type": "color", "$value": "{color.surface.sunken}" },
+      "option-background-checked": { "$type": "color", "$value": "{color.action.primary}" },
+      "option-text-checked": { "$type": "color", "$value": "{color.action.primary-text}" },
+      "checkmark-color": { "$type": "color", "$value": "{color.action.primary}" },
+      "checkmark-size": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+      "optgroup-label-text": { "$type": "color", "$value": "{color.text.secondary}" },
+      "optgroup-label-font-weight": { "$type": "fontWeight", "$value": "{font.weight.semibold}" },
+      "optgroup-label-padding-y": { "$type": "dimension", "$value": "{space.component.xs}" },
+      "hint-text": { "$type": "color", "$value": "{color.text.secondary}" },
+      "error-text": { "$type": "color", "$value": "{color.feedback.error-text}" },
+      "font-family": { "$type": "fontFamily", "$value": "{font.body.family}" },
+      "gap": { "$type": "dimension", "$value": "{space.component.sm}" },
+      "transition-duration": { "$type": "duration", "$value": "{duration.fast}" },
+      "focus-ring-color": { "$type": "color", "$value": "{focus.ring-color}" },
+      "focus-ring-width": { "$type": "dimension", "$value": "{focus.ring-width}" },
+      "focus-ring-offset": { "$type": "dimension", "$value": "{focus.ring-offset}" }
+    },
+    "size": {
+      "sm": {
+        "padding-x": { "$type": "dimension", "$value": "{space.component.sm}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.xs}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.xs}" },
+        "height": { "$type": "dimension", "$value": { "value": 2, "unit": "rem" } }
+      },
+      "md": {
+        "padding-x": { "$type": "dimension", "$value": "{space.component.md}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.sm}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.sm}" },
+        "height": { "$type": "dimension", "$value": { "value": 2.375, "unit": "rem" } }
+      },
+      "lg": {
+        "padding-x": { "$type": "dimension", "$value": "{space.component.lg}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.md}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.md}" },
+        "height": { "$type": "dimension", "$value": { "value": 2.875, "unit": "rem" } }
+      }
+    }
+  }
+}
