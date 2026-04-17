@@ -31,7 +31,7 @@ Follow these steps in order:
 
 5. **Barrel export** — Add the named export to `packages/components/src/index.ts`
 
-6. **Package export** — Add a subpath export `"./$ARGUMENTS"` to `packages/components/package.json` under `exports` with `types` field pointing to `./dist/types/$ARGUMENTS/index.d.ts`
+6. **Package export** — Do NOT touch `packages/components/package.json`. The existing `"./*"` wildcard entry already resolves `@ekko-ds/components/$ARGUMENTS` to `./dist/$ARGUMENTS/index.js` and `./dist/types/$ARGUMENTS/index.d.ts`. Adding an explicit `"./$ARGUMENTS"` entry is redundant — no existing component has one.
 
 7. **Tests** — Create `packages/components/tests/ekko-$ARGUMENTS.test.ts`
    - Import `type { Ekko{Name} }` from the component

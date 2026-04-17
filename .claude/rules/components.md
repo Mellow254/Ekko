@@ -114,7 +114,7 @@ Custom events use `ekko-{action}` naming (e.g., `ekko-click`, `ekko-change`). Al
 
 After creating a component:
 1. Add named export to `src/index.ts`
-2. Add subpath export `"./{name}"` to `package.json` under `exports` with `types` field pointing to `./dist/types/{name}/index.d.ts`
+2. **Do NOT modify `packages/components/package.json`.** The existing `"./*"` wildcard entry in `exports` already resolves every subpath (`@ekko-ds/components/{name}` → `./dist/{name}/index.js` with types at `./dist/types/{name}/index.d.ts`). No component-specific entry is needed. If you're ever tempted to add one, check the existing exports map first — none of the shipped components has one.
 
 ## Test Expectations
 
