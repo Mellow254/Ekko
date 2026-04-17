@@ -1,0 +1,196 @@
+:host {
+  position: relative;
+}
+
+.tooltip {
+  box-sizing: border-box;
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ekko-tooltip-shared-gap, 0.25rem);
+  max-width: var(--ekko-tooltip-shared-max-width, 16rem);
+  padding: var(--ekko-tooltip-size-md-padding-y, 0.5rem)
+    var(--ekko-tooltip-size-md-padding-x, 0.75rem);
+  background-color: var(--ekko-tooltip-shared-background, #171717);
+  color: var(--ekko-tooltip-shared-text, #ffffff);
+  border-width: var(--ekko-tooltip-shared-border-width, 1px);
+  border-style: var(--ekko-tooltip-shared-border-style, solid);
+  border-color: var(--ekko-tooltip-shared-border, #171717);
+  border-radius: var(--ekko-tooltip-shared-border-radius, 4px);
+  box-shadow: 0 var(--ekko-tooltip-shared-shadow-offset-y, 4px)
+    var(--ekko-tooltip-shared-shadow-blur, 12px) var(--ekko-tooltip-shared-shadow-spread, -2px)
+    rgba(0, 0, 0, var(--ekko-tooltip-shared-shadow-opacity, 0.18));
+  font-family: var(--ekko-tooltip-shared-font-family, system-ui, sans-serif);
+  font-size: var(--ekko-tooltip-size-md-font-size, 0.875rem);
+  font-weight: var(--ekko-tooltip-shared-font-weight, 500);
+  line-height: var(--ekko-tooltip-shared-line-height, 1.375);
+  letter-spacing: var(--ekko-tooltip-shared-letter-spacing, 0.01rem);
+  z-index: var(--ekko-tooltip-shared-z-index, 400);
+  width: max-content;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ekko-tooltip-shared-transition-duration, 100ms) ease-out,
+    visibility 0s linear var(--ekko-tooltip-shared-transition-duration, 100ms);
+}
+
+:host([open]:not([disabled])) .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--ekko-tooltip-shared-transition-duration, 100ms) ease-out,
+    visibility 0s linear 0s;
+}
+
+.tooltip:focus-visible {
+  outline: var(--ekko-tooltip-shared-focus-ring-width, 2px) solid
+    var(--ekko-tooltip-shared-focus-ring-color, #2563eb);
+  outline-offset: var(--ekko-tooltip-shared-focus-ring-offset, 2px);
+}
+
+.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+:host([placement="top"]) .tooltip {
+  bottom: calc(100% + var(--ekko-tooltip-shared-offset, 0.5rem));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([placement="top"]) .arrow {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: var(--ekko-tooltip-shared-arrow-size, 6px)
+    var(--ekko-tooltip-shared-arrow-size, 6px) 0 var(--ekko-tooltip-shared-arrow-size, 6px);
+  border-top-color: var(--ekko-tooltip-shared-background, #171717);
+}
+
+:host([placement="bottom"]) .tooltip {
+  top: calc(100% + var(--ekko-tooltip-shared-offset, 0.5rem));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([placement="bottom"]) .arrow {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 var(--ekko-tooltip-shared-arrow-size, 6px)
+    var(--ekko-tooltip-shared-arrow-size, 6px) var(--ekko-tooltip-shared-arrow-size, 6px);
+  border-bottom-color: var(--ekko-tooltip-shared-background, #171717);
+}
+
+:host([placement="left"]) .tooltip {
+  right: calc(100% + var(--ekko-tooltip-shared-offset, 0.5rem));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([placement="left"]) .arrow {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: var(--ekko-tooltip-shared-arrow-size, 6px) 0
+    var(--ekko-tooltip-shared-arrow-size, 6px) var(--ekko-tooltip-shared-arrow-size, 6px);
+  border-left-color: var(--ekko-tooltip-shared-background, #171717);
+}
+
+:host([placement="right"]) .tooltip {
+  left: calc(100% + var(--ekko-tooltip-shared-offset, 0.5rem));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([placement="right"]) .arrow {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: var(--ekko-tooltip-shared-arrow-size, 6px)
+    var(--ekko-tooltip-shared-arrow-size, 6px) var(--ekko-tooltip-shared-arrow-size, 6px) 0;
+  border-right-color: var(--ekko-tooltip-shared-background, #171717);
+}
+
+:host([size="sm"]) .tooltip {
+  padding: var(--ekko-tooltip-size-sm-padding-y, 0.25rem)
+    var(--ekko-tooltip-size-sm-padding-x, 0.5rem);
+  font-size: var(--ekko-tooltip-size-sm-font-size, 0.75rem);
+}
+
+:host([size="lg"]) .tooltip {
+  padding: var(--ekko-tooltip-size-lg-padding-y, 0.5rem) var(--ekko-tooltip-size-lg-padding-x, 1rem);
+  font-size: var(--ekko-tooltip-size-lg-font-size, 1rem);
+}
+
+:host([variant="inverse"]) .tooltip {
+  background-color: var(--ekko-tooltip-inverse-background, #ffffff);
+  color: var(--ekko-tooltip-inverse-text, #171717);
+  border-color: var(--ekko-tooltip-inverse-border, #e5e5e5);
+}
+
+:host([variant="inverse"][placement="top"]) .arrow {
+  border-top-color: var(--ekko-tooltip-inverse-background, #ffffff);
+}
+
+:host([variant="inverse"][placement="bottom"]) .arrow {
+  border-bottom-color: var(--ekko-tooltip-inverse-background, #ffffff);
+}
+
+:host([variant="inverse"][placement="left"]) .arrow {
+  border-left-color: var(--ekko-tooltip-inverse-background, #ffffff);
+}
+
+:host([variant="inverse"][placement="right"]) .arrow {
+  border-right-color: var(--ekko-tooltip-inverse-background, #ffffff);
+}
+
+:host([disabled]) {
+  cursor: not-allowed;
+}
+
+:host([disabled]) .tooltip {
+  opacity: var(--ekko-tooltip-shared-disabled-opacity, 0.5);
+}
+
+.spinner {
+  display: none;
+  width: var(--ekko-tooltip-shared-spinner-size, 0.75rem);
+  height: var(--ekko-tooltip-shared-spinner-size, 0.75rem);
+  border-width: var(--ekko-tooltip-shared-spinner-border-width, 2px);
+  border-style: solid;
+  border-color: currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: ekko-tooltip-spin 600ms linear infinite;
+}
+
+:host([loading]) .spinner {
+  display: block;
+}
+
+:host([loading]) .label {
+  opacity: var(--ekko-tooltip-shared-disabled-opacity, 0.5);
+}
+
+@keyframes ekko-tooltip-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}

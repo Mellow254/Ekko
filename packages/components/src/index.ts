@@ -6,3 +6,4 @@ export { EkkoRadio } from './radio';
 export { EkkoSelect } from './select';
 export { EkkoSwitch } from './switch';
 export { EkkoTextarea } from './textarea';
+export { EkkoTooltip } from './tooltip';
