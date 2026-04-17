@@ -1,0 +1,201 @@
+:host {
+  display: contents;
+}
+
+.dialog {
+  box-sizing: border-box;
+  position: fixed;
+  inset: 0;
+  width: var(--ekko-dialog-size-md-width, 28rem);
+  max-width: calc(100vw - var(--ekko-dialog-size-md-padding-x, 1.5rem) * 2);
+  max-height: calc(100vh - var(--ekko-dialog-size-md-padding-y, 1.5rem) * 2);
+  margin: auto;
+  padding: var(--ekko-dialog-size-md-padding-y, 1.5rem) var(--ekko-dialog-size-md-padding-x, 1.5rem);
+  background: var(--ekko-dialog-shared-background, #ffffff);
+  color: var(--ekko-dialog-shared-text, #171717);
+  border-width: var(--ekko-dialog-shared-border-width, 1px);
+  border-style: var(--ekko-dialog-shared-border-style, solid);
+  border-color: var(--ekko-dialog-shared-border, #e5e5e5);
+  border-radius: var(--ekko-dialog-shared-border-radius, 12px);
+  box-shadow: 0 var(--ekko-dialog-shared-shadow-offset-y, 10px)
+    var(--ekko-dialog-shared-shadow-blur, 25px) var(--ekko-dialog-shared-shadow-spread, -5px)
+    rgba(0, 0, 0, var(--ekko-dialog-shared-shadow-opacity, 0.15));
+  font-family: var(--ekko-dialog-shared-font-family, system-ui, sans-serif);
+  font-size: var(--ekko-dialog-size-md-font-size, 1rem);
+  font-weight: var(--ekko-dialog-shared-font-weight, 400);
+  line-height: var(--ekko-dialog-shared-line-height, 1.5);
+  letter-spacing: var(--ekko-dialog-shared-letter-spacing, 0.01rem);
+  z-index: var(--ekko-dialog-shared-z-index, 200);
+  overflow: auto;
+}
+
+.dialog::backdrop {
+  background-color: rgba(0, 0, 0, var(--ekko-dialog-shared-backdrop-opacity, 0.5));
+  transition: opacity var(--ekko-dialog-shared-transition-duration, 200ms) ease-out;
+}
+
+.dialog:focus-visible {
+  outline: var(--ekko-dialog-shared-focus-ring-width, 2px) solid
+    var(--ekko-dialog-shared-focus-ring-color, #2563eb);
+  outline-offset: var(--ekko-dialog-shared-focus-ring-offset, 2px);
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ekko-dialog-shared-gap, 0.75rem);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ekko-dialog-shared-gap, 0.75rem);
+  padding-right: calc(
+    var(--ekko-dialog-shared-close-size, 1.75rem) +
+    var(--ekko-dialog-shared-gap, 0.75rem)
+  );
+}
+
+:host([hide-close]) .header {
+  padding-right: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ekko-dialog-size-md-title-font-size, 1.125rem);
+  font-weight: var(--ekko-dialog-shared-title-font-weight, 600);
+  line-height: var(--ekko-dialog-shared-title-line-height, 1.25);
+  color: var(--ekko-dialog-shared-title-color, #171717);
+}
+
+.description {
+  margin: 0;
+  color: var(--ekko-dialog-shared-description-color, #525252);
+  line-height: var(--ekko-dialog-shared-description-line-height, 1.375);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ekko-dialog-shared-gap, 0.75rem);
+}
+
+.footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--ekko-dialog-shared-gap, 0.75rem);
+  flex-wrap: wrap;
+}
+
+.close {
+  position: absolute;
+  top: var(--ekko-dialog-shared-close-offset, 0.5rem);
+  right: var(--ekko-dialog-shared-close-offset, 0.5rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ekko-dialog-shared-close-size, 1.75rem);
+  height: var(--ekko-dialog-shared-close-size, 1.75rem);
+  padding: 0;
+  background: transparent;
+  color: var(--ekko-dialog-shared-close-color, #525252);
+  border: 0;
+  border-radius: var(--ekko-dialog-shared-close-border-radius, 6px);
+  cursor: pointer;
+  transition:
+    color var(--ekko-dialog-shared-transition-duration, 200ms) ease-out,
+    background-color var(--ekko-dialog-shared-transition-duration, 200ms) ease-out;
+}
+
+.close:hover {
+  color: var(--ekko-dialog-shared-close-color-hover, #171717);
+  background-color: var(--ekko-dialog-shared-close-background-hover, #f5f5f5);
+}
+
+.close:focus-visible {
+  outline: var(--ekko-dialog-shared-focus-ring-width, 2px) solid
+    var(--ekko-dialog-shared-focus-ring-color, #2563eb);
+  outline-offset: var(--ekko-dialog-shared-focus-ring-offset, 2px);
+}
+
+.close-icon {
+  width: var(--ekko-dialog-shared-close-icon-size, 1rem);
+  height: var(--ekko-dialog-shared-close-icon-size, 1rem);
+}
+
+:host([hide-close]) .close {
+  display: none;
+}
+
+:host([size="sm"]) .dialog {
+  width: var(--ekko-dialog-size-sm-width, 20rem);
+  padding: var(--ekko-dialog-size-sm-padding-y, 1rem) var(--ekko-dialog-size-sm-padding-x, 1rem);
+  font-size: var(--ekko-dialog-size-sm-font-size, 0.875rem);
+}
+
+:host([size="sm"]) .title {
+  font-size: var(--ekko-dialog-size-sm-title-font-size, 1rem);
+}
+
+:host([size="lg"]) .dialog {
+  width: var(--ekko-dialog-size-lg-width, 36rem);
+  padding: var(--ekko-dialog-size-lg-padding-y, 1.5rem) var(--ekko-dialog-size-lg-padding-x, 1.5rem);
+  font-size: var(--ekko-dialog-size-lg-font-size, 1rem);
+}
+
+:host([size="lg"]) .title {
+  font-size: var(--ekko-dialog-size-lg-title-font-size, 1.25rem);
+}
+
+:host([disabled]) .dialog {
+  opacity: var(--ekko-dialog-shared-disabled-opacity, 0.5);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+:host([loading]) .body,
+:host([loading]) .footer {
+  opacity: var(--ekko-dialog-shared-disabled-opacity, 0.5);
+  pointer-events: none;
+}
+
+.spinner {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--ekko-dialog-shared-spinner-size, 1.5rem);
+  height: var(--ekko-dialog-shared-spinner-size, 1.5rem);
+  margin-top: calc(var(--ekko-dialog-shared-spinner-size, 1.5rem) / -2);
+  margin-left: calc(var(--ekko-dialog-shared-spinner-size, 1.5rem) / -2);
+  border-width: var(--ekko-dialog-shared-spinner-border-width, 2px);
+  border-style: solid;
+  border-color: var(--ekko-dialog-shared-border, #e5e5e5);
+  border-top-color: var(--ekko-dialog-shared-focus-ring-color, #2563eb);
+  border-radius: 9999px;
+  animation: ekko-dialog-spin 600ms linear infinite;
+}
+
+:host([loading]) .spinner {
+  display: block;
+}
+
+@keyframes ekko-dialog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog,
+  .dialog::backdrop,
+  .close {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}

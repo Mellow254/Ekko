@@ -1,0 +1,96 @@
+{
+  "dialog": {
+    "$description": "ekko-dialog tokens",
+    "shared": {
+      "background": { "$type": "color", "$value": "{color.surface.overlay}" },
+      "text": { "$type": "color", "$value": "{color.text.primary}" },
+      "border": { "$type": "color", "$value": "{color.border.default}" },
+      "border-width": { "$type": "dimension", "$value": { "value": 1, "unit": "px" } },
+      "border-style": { "$type": "other", "$value": "solid" },
+      "border-radius": { "$type": "dimension", "$value": "{radius.component.lg}" },
+      "font-family": { "$type": "fontFamily", "$value": "{font.body.family}" },
+      "font-weight": { "$type": "fontWeight", "$value": "{font.weight.regular}" },
+      "line-height": { "$type": "number", "$value": "{font.leading.normal}" },
+      "letter-spacing": { "$type": "dimension", "$value": "{font.tracking.tight}" },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.component.md}",
+        "$description": "Vertical gap between header, body, and footer sections."
+      },
+      "title-font-weight": { "$type": "fontWeight", "$value": "{font.weight.semibold}" },
+      "title-line-height": { "$type": "number", "$value": "{font.leading.tight}" },
+      "title-color": { "$type": "color", "$value": "{color.text.primary}" },
+      "description-color": { "$type": "color", "$value": "{color.text.secondary}" },
+      "description-line-height": { "$type": "number", "$value": "{font.leading.snug}" },
+      "backdrop-color": {
+        "$type": "color",
+        "$value": "#000000",
+        "$description": "Fallback color used inside rgba() for the ::backdrop overlay."
+      },
+      "backdrop-opacity": {
+        "$type": "number",
+        "$value": 0.5,
+        "$description": "Opacity applied to the ::backdrop overlay behind a modal dialog."
+      },
+      "shadow-offset-y": { "$type": "dimension", "$value": { "value": 10, "unit": "px" } },
+      "shadow-blur": { "$type": "dimension", "$value": { "value": 25, "unit": "px" } },
+      "shadow-spread": { "$type": "dimension", "$value": { "value": -5, "unit": "px" } },
+      "shadow-color": {
+        "$type": "color",
+        "$value": "#000000",
+        "$description": "Fallback color used inside rgba() for the dialog drop-shadow."
+      },
+      "shadow-opacity": { "$type": "number", "$value": 0.15 },
+      "transition-duration": { "$type": "duration", "$value": "{duration.normal}" },
+      "focus-ring-color": { "$type": "color", "$value": "{focus.ring-color}" },
+      "focus-ring-width": { "$type": "dimension", "$value": "{focus.ring-width}" },
+      "focus-ring-offset": { "$type": "dimension", "$value": "{focus.ring-offset}" },
+      "close-size": {
+        "$type": "dimension",
+        "$value": { "value": 1.75, "unit": "rem" },
+        "$description": "Width and height of the close button."
+      },
+      "close-offset": {
+        "$type": "dimension",
+        "$value": { "value": 0.5, "unit": "rem" },
+        "$description": "Distance from the top/right edge to the close button."
+      },
+      "close-border-radius": { "$type": "dimension", "$value": "{radius.component.sm}" },
+      "close-color": { "$type": "color", "$value": "{color.text.secondary}" },
+      "close-color-hover": { "$type": "color", "$value": "{color.text.primary}" },
+      "close-background-hover": { "$type": "color", "$value": "{color.surface.sunken}" },
+      "close-icon-size": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+      "disabled-opacity": { "$type": "number", "$value": 0.5 },
+      "spinner-size": { "$type": "dimension", "$value": { "value": 1.5, "unit": "rem" } },
+      "spinner-border-width": { "$type": "dimension", "$value": { "value": 2, "unit": "px" } },
+      "z-index": {
+        "$type": "number",
+        "$value": 200,
+        "$description": "Stacking context for modal dialogs."
+      }
+    },
+    "size": {
+      "sm": {
+        "width": { "$type": "dimension", "$value": { "value": 20, "unit": "rem" } },
+        "padding-x": { "$type": "dimension", "$value": "{space.component.lg}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.lg}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.sm}" },
+        "title-font-size": { "$type": "dimension", "$value": "{font.size.md}" }
+      },
+      "md": {
+        "width": { "$type": "dimension", "$value": { "value": 28, "unit": "rem" } },
+        "padding-x": { "$type": "dimension", "$value": "{space.component.xl}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.xl}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.md}" },
+        "title-font-size": { "$type": "dimension", "$value": "{font.size.lg}" }
+      },
+      "lg": {
+        "width": { "$type": "dimension", "$value": { "value": 36, "unit": "rem" } },
+        "padding-x": { "$type": "dimension", "$value": "{space.component.xl}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.xl}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.md}" },
+        "title-font-size": { "$type": "dimension", "$value": "{font.size.xl}" }
+      }
+    }
+  }
+}

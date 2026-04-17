@@ -101,6 +101,275 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/button/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "EkkoButton",
+          "members": [
+            {
+              "kind": "field",
+              "name": "#btn",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLButtonElement"
+              },
+              "default": "this.shadow.querySelector('.btn')"
+            },
+            {
+              "kind": "field",
+              "name": "#clickHandler",
+              "privacy": "private",
+              "type": {
+                "text": "(event: Event) => void"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "variant",
+              "type": {
+                "text": "ButtonVariant"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "ButtonSize"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "type",
+              "type": {
+                "text": "ButtonType"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "pressed",
+              "type": {
+                "text": "string | null"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#template",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncAccessibility",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "description": "Keep the inner button's ARIA attributes in sync with the host element's\nstate. Called on connect and on every attribute change."
+            },
+            {
+              "kind": "method",
+              "name": "#handleClick",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "innerHTML"
+            },
+            {
+              "kind": "field",
+              "name": "shadow",
+              "type": {
+                "text": "ShadowRoot"
+              },
+              "privacy": "protected",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "upgradeProperty",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "prop",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaLabel",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaDescribedby",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "adoptedStyleSheets",
+              "type": {
+                "text": "array"
+              },
+              "default": "[baseStyles, componentStyles]",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ekko-click",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "variant"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "loading"
+            },
+            {
+              "name": "pressed"
+            },
+            {
+              "name": "type"
+            },
+            {
+              "name": "full-width"
+            },
+            {
+              "name": "icon-only"
+            },
+            {
+              "name": "aria-label"
+            },
+            {
+              "name": "aria-describedby"
+            }
+          ],
+          "superclass": {
+            "name": "EkkoBase",
+            "module": "/src/base"
+          },
+          "tagName": "ekko-button",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EkkoButton",
+          "declaration": {
+            "name": "EkkoButton",
+            "module": "src/button/index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ekko-button",
+          "declaration": {
+            "name": "EkkoButton",
+            "module": "src/button/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/checkbox/index.ts",
       "declarations": [
         {
@@ -430,25 +699,42 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/button/index.ts",
+      "path": "src/radio/index.ts",
       "declarations": [
         {
           "kind": "class",
           "description": "",
-          "name": "EkkoButton",
+          "name": "EkkoRadio",
           "members": [
             {
               "kind": "field",
-              "name": "#btn",
-              "privacy": "private",
+              "name": "formAssociated",
               "type": {
-                "text": "HTMLButtonElement"
+                "text": "boolean"
               },
-              "default": "this.shadow.querySelector('.btn')"
+              "static": true,
+              "default": "true"
             },
             {
               "kind": "field",
-              "name": "#clickHandler",
+              "name": "#input",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLInputElement"
+              },
+              "default": "this.shadow.querySelector('.input')"
+            },
+            {
+              "kind": "field",
+              "name": "#internals",
+              "privacy": "private",
+              "type": {
+                "text": "ElementInternals"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#changeHandler",
               "privacy": "private",
               "type": {
                 "text": "(event: Event) => void"
@@ -456,16 +742,26 @@
             },
             {
               "kind": "field",
-              "name": "variant",
+              "name": "#keydownHandler",
+              "privacy": "private",
               "type": {
-                "text": "ButtonVariant"
+                "text": "(event: KeyboardEvent) => void"
               }
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "#defaultChecked",
+              "privacy": "private",
               "type": {
-                "text": "ButtonSize"
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
               }
             },
             {
@@ -477,24 +773,83 @@
             },
             {
               "kind": "field",
-              "name": "loading",
+              "name": "required",
               "type": {
                 "text": "boolean"
               }
             },
             {
               "kind": "field",
-              "name": "type",
+              "name": "name",
               "type": {
-                "text": "ButtonType"
+                "text": "string"
               }
             },
             {
               "kind": "field",
-              "name": "pressed",
+              "name": "value",
               "type": {
-                "text": "string | null"
+                "text": "string"
               }
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "RadioSize"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
             },
             {
               "kind": "method",
@@ -514,12 +869,21 @@
                 "type": {
                   "text": "void"
                 }
-              },
-              "description": "Keep the inner button's ARIA attributes in sync with the host element's\nstate. Called on connect and on every attribute change."
+              }
             },
             {
               "kind": "method",
-              "name": "#handleClick",
+              "name": "#syncFormValue",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#handleChange",
               "privacy": "private",
               "return": {
                 "type": {
@@ -534,6 +898,63 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "#handleKeyDown",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "KeyboardEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#uncheckSiblings",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "refreshTabindex",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#updateGroupTabindex",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#getGroupMembers",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "EkkoRadio[]"
+                }
+              }
             },
             {
               "kind": "field",
@@ -632,7 +1053,7 @@
           ],
           "events": [
             {
-              "name": "ekko-click",
+              "name": "ekko-change",
               "type": {
                 "text": "CustomEvent"
               }
@@ -640,28 +1061,22 @@
           ],
           "attributes": [
             {
-              "name": "variant"
-            },
-            {
-              "name": "size"
+              "name": "checked"
             },
             {
               "name": "disabled"
             },
             {
-              "name": "loading"
+              "name": "required"
             },
             {
-              "name": "pressed"
+              "name": "name"
             },
             {
-              "name": "type"
+              "name": "value"
             },
             {
-              "name": "full-width"
-            },
-            {
-              "name": "icon-only"
+              "name": "size"
             },
             {
               "name": "aria-label"
@@ -674,25 +1089,25 @@
             "name": "EkkoBase",
             "module": "/src/base"
           },
-          "tagName": "ekko-button",
+          "tagName": "ekko-radio",
           "customElement": true
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "EkkoButton",
+          "name": "EkkoRadio",
           "declaration": {
-            "name": "EkkoButton",
-            "module": "src/button/index.ts"
+            "name": "EkkoRadio",
+            "module": "src/radio/index.ts"
           }
         },
         {
           "kind": "custom-element-definition",
-          "name": "ekko-button",
+          "name": "ekko-radio",
           "declaration": {
-            "name": "EkkoButton",
-            "module": "src/button/index.ts"
+            "name": "EkkoRadio",
+            "module": "src/radio/index.ts"
           }
         }
       ]
@@ -1356,42 +1771,69 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/radio/index.ts",
+      "path": "src/dialog/index.ts",
       "declarations": [
         {
           "kind": "class",
           "description": "",
-          "name": "EkkoRadio",
+          "name": "EkkoDialog",
           "members": [
             {
               "kind": "field",
-              "name": "formAssociated",
+              "name": "#dialog",
+              "privacy": "private",
               "type": {
-                "text": "boolean"
+                "text": "HTMLDialogElement"
               },
-              "static": true,
-              "default": "true"
+              "default": "this.shadow.querySelector('.dialog')"
             },
             {
               "kind": "field",
-              "name": "#input",
+              "name": "#headingEl",
               "privacy": "private",
               "type": {
-                "text": "HTMLInputElement"
+                "text": "HTMLHeadingElement"
               },
-              "default": "this.shadow.querySelector('.input')"
+              "default": "this.shadow.querySelector('.title')"
             },
             {
               "kind": "field",
-              "name": "#internals",
+              "name": "#descriptionEl",
               "privacy": "private",
               "type": {
-                "text": "ElementInternals"
+                "text": "HTMLParagraphElement"
+              },
+              "default": "this.shadow.querySelector('.description')"
+            },
+            {
+              "kind": "field",
+              "name": "#closeBtn",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLButtonElement"
+              },
+              "default": "this.shadow.querySelector('.close')"
+            },
+            {
+              "kind": "field",
+              "name": "#headerEl",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "default": "this.shadow.querySelector('.header')"
+            },
+            {
+              "kind": "field",
+              "name": "#closeHandler",
+              "privacy": "private",
+              "type": {
+                "text": "() => void"
               }
             },
             {
               "kind": "field",
-              "name": "#changeHandler",
+              "name": "#cancelHandler",
               "privacy": "private",
               "type": {
                 "text": "(event: Event) => void"
@@ -1399,26 +1841,57 @@
             },
             {
               "kind": "field",
-              "name": "#keydownHandler",
+              "name": "#backdropHandler",
               "privacy": "private",
               "type": {
-                "text": "(event: KeyboardEvent) => void"
+                "text": "(event: MouseEvent) => void"
               }
             },
             {
               "kind": "field",
-              "name": "#defaultChecked",
+              "name": "#closeButtonHandler",
               "privacy": "private",
               "type": {
-                "text": "boolean"
-              },
-              "default": "false"
+                "text": "(event: Event) => void"
+              }
             },
             {
               "kind": "field",
-              "name": "checked",
+              "name": "#headingId",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "`ekko-dialog-heading-${uid}`"
+            },
+            {
+              "kind": "field",
+              "name": "#descriptionId",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "`ekko-dialog-description-${uid}`"
+            },
+            {
+              "kind": "field",
+              "name": "open",
               "type": {
                 "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "modal",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "DialogSize"
               }
             },
             {
@@ -1430,43 +1903,67 @@
             },
             {
               "kind": "field",
-              "name": "required",
+              "name": "loading",
               "type": {
                 "text": "boolean"
               }
             },
             {
               "kind": "field",
-              "name": "name",
+              "name": "hideClose",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "closeOnBackdrop",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "heading",
               "type": {
                 "text": "string"
               }
             },
             {
               "kind": "field",
-              "name": "value",
+              "name": "description",
               "type": {
                 "text": "string"
               }
             },
             {
               "kind": "field",
-              "name": "size",
+              "name": "returnValue",
               "type": {
-                "text": "RadioSize"
+                "text": "string"
               }
-            },
-            {
-              "kind": "field",
-              "name": "form",
-              "type": {
-                "text": "HTMLFormElement | null"
-              },
-              "readonly": true
             },
             {
               "kind": "method",
-              "name": "focus",
+              "name": "show",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "showModal",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "close",
               "return": {
                 "type": {
                   "text": "void"
@@ -1474,36 +1971,10 @@
               },
               "parameters": [
                 {
-                  "name": "options",
+                  "name": "returnValue",
                   "optional": true,
                   "type": {
-                    "text": "FocusOptions"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "formResetCallback",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "formDisabledCallback",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "disabled",
-                  "type": {
-                    "text": "boolean"
+                    "text": "string"
                   }
                 }
               ]
@@ -1520,6 +1991,66 @@
             },
             {
               "kind": "method",
+              "name": "#openDialog",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncAll",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncHeader",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncHeading",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncDescription",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncCloseLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
               "name": "#syncAccessibility",
               "privacy": "private",
               "return": {
@@ -1530,7 +2061,7 @@
             },
             {
               "kind": "method",
-              "name": "#syncFormValue",
+              "name": "#handleClose",
               "privacy": "private",
               "return": {
                 "type": {
@@ -1540,7 +2071,7 @@
             },
             {
               "kind": "method",
-              "name": "#handleChange",
+              "name": "#handleCancel",
               "privacy": "private",
               "return": {
                 "type": {
@@ -1558,7 +2089,7 @@
             },
             {
               "kind": "method",
-              "name": "#handleKeyDown",
+              "name": "#handleCloseButton",
               "privacy": "private",
               "return": {
                 "type": {
@@ -1569,49 +2100,46 @@
                 {
                   "name": "event",
                   "type": {
-                    "text": "KeyboardEvent"
+                    "text": "Event"
                   }
                 }
               ]
             },
             {
               "kind": "method",
-              "name": "#uncheckSiblings",
+              "name": "#handleBackdropClick",
               "privacy": "private",
               "return": {
                 "type": {
                   "text": "void"
                 }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "refreshTabindex",
-              "return": {
-                "type": {
-                  "text": "void"
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "MouseEvent"
+                  }
                 }
-              }
+              ]
             },
             {
               "kind": "method",
-              "name": "#updateGroupTabindex",
+              "name": "#dispatchOpen",
               "privacy": "private",
               "return": {
                 "type": {
                   "text": "void"
                 }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#getGroupMembers",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "EkkoRadio[]"
+              },
+              "parameters": [
+                {
+                  "name": "modal",
+                  "type": {
+                    "text": "boolean"
+                  }
                 }
-              }
+              ]
             },
             {
               "kind": "field",
@@ -1710,7 +2238,13 @@
           ],
           "events": [
             {
-              "name": "ekko-change",
+              "name": "ekko-close",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "ekko-open",
               "type": {
                 "text": "CustomEvent"
               }
@@ -1718,22 +2252,37 @@
           ],
           "attributes": [
             {
-              "name": "checked"
+              "name": "open"
+            },
+            {
+              "name": "modal"
+            },
+            {
+              "name": "size"
             },
             {
               "name": "disabled"
             },
             {
-              "name": "required"
+              "name": "loading"
             },
             {
-              "name": "name"
+              "name": "hide-close"
             },
             {
-              "name": "value"
+              "name": "close-on-backdrop"
             },
             {
-              "name": "size"
+              "name": "heading"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "close-label"
+            },
+            {
+              "name": "alert"
             },
             {
               "name": "aria-label"
@@ -1746,25 +2295,25 @@
             "name": "EkkoBase",
             "module": "/src/base"
           },
-          "tagName": "ekko-radio",
+          "tagName": "ekko-dialog",
           "customElement": true
         }
       ],
       "exports": [
         {
           "kind": "js",
-          "name": "EkkoRadio",
+          "name": "EkkoDialog",
           "declaration": {
-            "name": "EkkoRadio",
-            "module": "src/radio/index.ts"
+            "name": "EkkoDialog",
+            "module": "src/dialog/index.ts"
           }
         },
         {
           "kind": "custom-element-definition",
-          "name": "ekko-radio",
+          "name": "ekko-dialog",
           "declaration": {
-            "name": "EkkoRadio",
-            "module": "src/radio/index.ts"
+            "name": "EkkoDialog",
+            "module": "src/dialog/index.ts"
           }
         }
       ]
