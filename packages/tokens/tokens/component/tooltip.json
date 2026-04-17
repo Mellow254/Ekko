@@ -1,0 +1,87 @@
+{
+  "tooltip": {
+    "$description": "ekko-tooltip tokens",
+    "shared": {
+      "background": { "$type": "color", "$value": "{color.neutral.900}" },
+      "text": { "$type": "color", "$value": "{color.text.inverse}" },
+      "border": { "$type": "color", "$value": "{color.neutral.900}" },
+      "border-width": { "$type": "dimension", "$value": { "value": 1, "unit": "px" } },
+      "border-style": { "$value": "solid" },
+      "border-radius": { "$type": "dimension", "$value": "{radius.component.sm}" },
+      "font-family": { "$type": "fontFamily", "$value": "{font.body.family}" },
+      "font-weight": { "$type": "fontWeight", "$value": "{font.weight.medium}" },
+      "line-height": { "$type": "number", "$value": "{font.leading.snug}" },
+      "letter-spacing": { "$type": "dimension", "$value": "{font.tracking.tight}" },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{space.component.xs}",
+        "$description": "Gap between label and trailing slot content."
+      },
+      "offset": {
+        "$type": "dimension",
+        "$value": { "value": 0.5, "unit": "rem" },
+        "$description": "Distance between the trigger and the tooltip."
+      },
+      "arrow-size": {
+        "$type": "dimension",
+        "$value": { "value": 6, "unit": "px" },
+        "$description": "Half-length of the tooltip arrow."
+      },
+      "max-width": {
+        "$type": "dimension",
+        "$value": { "value": 16, "unit": "rem" },
+        "$description": "Maximum width of the tooltip surface."
+      },
+      "shadow-offset-y": { "$type": "dimension", "$value": { "value": 4, "unit": "px" } },
+      "shadow-blur": { "$type": "dimension", "$value": { "value": 12, "unit": "px" } },
+      "shadow-spread": { "$type": "dimension", "$value": { "value": -2, "unit": "px" } },
+      "shadow-color": {
+        "$type": "color",
+        "$value": "#000000",
+        "$description": "Fallback color used inside rgba() for the tooltip shadow."
+      },
+      "shadow-opacity": { "$type": "number", "$value": 0.18 },
+      "transition-duration": { "$type": "duration", "$value": "{duration.fast}" },
+      "focus-ring-color": { "$type": "color", "$value": "{focus.ring-color}" },
+      "focus-ring-width": { "$type": "dimension", "$value": "{focus.ring-width}" },
+      "focus-ring-offset": { "$type": "dimension", "$value": "{focus.ring-offset}" },
+      "disabled-opacity": { "$type": "number", "$value": 0.5 },
+      "spinner-size": {
+        "$type": "dimension",
+        "$value": { "value": 0.75, "unit": "rem" },
+        "$description": "Width and height of the loading spinner."
+      },
+      "spinner-border-width": {
+        "$type": "dimension",
+        "$value": { "value": 2, "unit": "px" }
+      },
+      "z-index": {
+        "$type": "number",
+        "$value": 400,
+        "$description": "Stacking context for tooltips."
+      }
+    },
+    "inverse": {
+      "background": { "$type": "color", "$value": "{color.surface.overlay}" },
+      "text": { "$type": "color", "$value": "{color.text.primary}" },
+      "border": { "$type": "color", "$value": "{color.border.default}" }
+    },
+    "size": {
+      "sm": {
+        "padding-x": { "$type": "dimension", "$value": "{space.component.sm}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.xs}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.xs}" }
+      },
+      "md": {
+        "padding-x": { "$type": "dimension", "$value": "{space.component.md}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.sm}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.sm}" }
+      },
+      "lg": {
+        "padding-x": { "$type": "dimension", "$value": "{space.component.lg}" },
+        "padding-y": { "$type": "dimension", "$value": "{space.component.sm}" },
+        "font-size": { "$type": "dimension", "$value": "{font.size.md}" }
+      }
+    }
+  }
+}
