@@ -12,6 +12,7 @@
 ekko-button:not(:defined),
 ekko-input:not(:defined),
 ekko-checkbox:not(:defined),
+ekko-dialog:not(:defined),
 ekko-radio:not(:defined),
 ekko-switch:not(:defined),
 ekko-textarea:not(:defined) {
