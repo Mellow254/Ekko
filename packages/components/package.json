@@ -11,6 +11,10 @@
       "require": "./dist/ekko-ds.cjs.js"
     },
     "./fouce.css": "./src/styles/fouce.css",
+    "./switch": {
+      "types": "./dist/types/switch/index.d.ts",
+      "import": "./dist/switch/index.js"
+    },
     "./*": {
       "types": "./dist/types/*/index.d.ts",
       "import": "./dist/*/index.js"
