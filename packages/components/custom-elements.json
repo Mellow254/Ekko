@@ -4,103 +4,6 @@
   "modules": [
     {
       "kind": "javascript-module",
-      "path": "src/base/index.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "EkkoBase",
-          "members": [
-            {
-              "kind": "field",
-              "name": "shadow",
-              "type": {
-                "text": "ShadowRoot"
-              },
-              "privacy": "protected"
-            },
-            {
-              "kind": "method",
-              "name": "upgradeProperty",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "prop",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "forwardAriaLabel",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "Element"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "forwardAriaDescribedby",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "Element"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "adoptedStyleSheets",
-              "type": {
-                "text": "array"
-              },
-              "default": "[baseStyles, componentStyles]"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "EkkoBase",
-          "declaration": {
-            "name": "EkkoBase",
-            "module": "src/base/index.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/button/index.ts",
       "declarations": [
         {
@@ -364,6 +267,103 @@
           "declaration": {
             "name": "EkkoButton",
             "module": "src/button/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/base/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "EkkoBase",
+          "members": [
+            {
+              "kind": "field",
+              "name": "shadow",
+              "type": {
+                "text": "ShadowRoot"
+              },
+              "privacy": "protected"
+            },
+            {
+              "kind": "method",
+              "name": "upgradeProperty",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "prop",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaLabel",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaDescribedby",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "adoptedStyleSheets",
+              "type": {
+                "text": "array"
+              },
+              "default": "[baseStyles, componentStyles]"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EkkoBase",
+          "declaration": {
+            "name": "EkkoBase",
+            "module": "src/base/index.ts"
           }
         }
       ]
@@ -693,421 +693,6 @@
           "declaration": {
             "name": "EkkoCheckbox",
             "module": "src/checkbox/index.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/radio/index.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "EkkoRadio",
-          "members": [
-            {
-              "kind": "field",
-              "name": "formAssociated",
-              "type": {
-                "text": "boolean"
-              },
-              "static": true,
-              "default": "true"
-            },
-            {
-              "kind": "field",
-              "name": "#input",
-              "privacy": "private",
-              "type": {
-                "text": "HTMLInputElement"
-              },
-              "default": "this.shadow.querySelector('.input')"
-            },
-            {
-              "kind": "field",
-              "name": "#internals",
-              "privacy": "private",
-              "type": {
-                "text": "ElementInternals"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "#changeHandler",
-              "privacy": "private",
-              "type": {
-                "text": "(event: Event) => void"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "#keydownHandler",
-              "privacy": "private",
-              "type": {
-                "text": "(event: KeyboardEvent) => void"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "#defaultChecked",
-              "privacy": "private",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "checked",
-              "type": {
-                "text": "boolean"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "required",
-              "type": {
-                "text": "boolean"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "RadioSize"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "form",
-              "type": {
-                "text": "HTMLFormElement | null"
-              },
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "focus",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "options",
-                  "optional": true,
-                  "type": {
-                    "text": "FocusOptions"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "formResetCallback",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "formDisabledCallback",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "disabled",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "#template",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#syncAccessibility",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#syncFormValue",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#handleChange",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "Event"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "#handleKeyDown",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "KeyboardEvent"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "#uncheckSiblings",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "refreshTabindex",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#updateGroupTabindex",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#getGroupMembers",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "EkkoRadio[]"
-                }
-              }
-            },
-            {
-              "kind": "field",
-              "name": "innerHTML"
-            },
-            {
-              "kind": "field",
-              "name": "shadow",
-              "type": {
-                "text": "ShadowRoot"
-              },
-              "privacy": "protected",
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "upgradeProperty",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "prop",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "forwardAriaLabel",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "Element"
-                  }
-                }
-              ],
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "forwardAriaDescribedby",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "Element"
-                  }
-                }
-              ],
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "adoptedStyleSheets",
-              "type": {
-                "text": "array"
-              },
-              "default": "[baseStyles, componentStyles]",
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            }
-          ],
-          "events": [
-            {
-              "name": "ekko-change",
-              "type": {
-                "text": "CustomEvent"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "checked"
-            },
-            {
-              "name": "disabled"
-            },
-            {
-              "name": "required"
-            },
-            {
-              "name": "name"
-            },
-            {
-              "name": "value"
-            },
-            {
-              "name": "size"
-            },
-            {
-              "name": "aria-label"
-            },
-            {
-              "name": "aria-describedby"
-            }
-          ],
-          "superclass": {
-            "name": "EkkoBase",
-            "module": "/src/base"
-          },
-          "tagName": "ekko-radio",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "EkkoRadio",
-          "declaration": {
-            "name": "EkkoRadio",
-            "module": "src/radio/index.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "ekko-radio",
-          "declaration": {
-            "name": "EkkoRadio",
-            "module": "src/radio/index.ts"
           }
         }
       ]
@@ -1771,6 +1356,421 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/radio/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "EkkoRadio",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "#input",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLInputElement"
+              },
+              "default": "this.shadow.querySelector('.input')"
+            },
+            {
+              "kind": "field",
+              "name": "#internals",
+              "privacy": "private",
+              "type": {
+                "text": "ElementInternals"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#changeHandler",
+              "privacy": "private",
+              "type": {
+                "text": "(event: Event) => void"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#keydownHandler",
+              "privacy": "private",
+              "type": {
+                "text": "(event: KeyboardEvent) => void"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#defaultChecked",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "RadioSize"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#template",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncAccessibility",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncFormValue",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#handleChange",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#handleKeyDown",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "KeyboardEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#uncheckSiblings",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "refreshTabindex",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#updateGroupTabindex",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#getGroupMembers",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "EkkoRadio[]"
+                }
+              }
+            },
+            {
+              "kind": "field",
+              "name": "innerHTML"
+            },
+            {
+              "kind": "field",
+              "name": "shadow",
+              "type": {
+                "text": "ShadowRoot"
+              },
+              "privacy": "protected",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "upgradeProperty",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "prop",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaLabel",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaDescribedby",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "adoptedStyleSheets",
+              "type": {
+                "text": "array"
+              },
+              "default": "[baseStyles, componentStyles]",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ekko-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "checked"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "name"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "aria-label"
+            },
+            {
+              "name": "aria-describedby"
+            }
+          ],
+          "superclass": {
+            "name": "EkkoBase",
+            "module": "/src/base"
+          },
+          "tagName": "ekko-radio",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EkkoRadio",
+          "declaration": {
+            "name": "EkkoRadio",
+            "module": "src/radio/index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ekko-radio",
+          "declaration": {
+            "name": "EkkoRadio",
+            "module": "src/radio/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/dialog/index.ts",
       "declarations": [
         {
@@ -2314,6 +2314,1004 @@
           "declaration": {
             "name": "EkkoDialog",
             "module": "src/dialog/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/select/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "EkkoSelect",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "#select",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLSelectElement"
+              },
+              "default": "this.shadow.querySelector('.select')"
+            },
+            {
+              "kind": "field",
+              "name": "#labelEl",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLLabelElement"
+              },
+              "default": "this.shadow.querySelector('.label')"
+            },
+            {
+              "kind": "field",
+              "name": "#labelText",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLSpanElement"
+              },
+              "default": "this.shadow.querySelector('.label-text')"
+            },
+            {
+              "kind": "field",
+              "name": "#helpEl",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "default": "this.shadow.querySelector('.help')"
+            },
+            {
+              "kind": "field",
+              "name": "#errorEl",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLElement"
+              },
+              "default": "this.shadow.querySelector('.error')"
+            },
+            {
+              "kind": "field",
+              "name": "#trigger",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLButtonElement | null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "#internals",
+              "privacy": "private",
+              "type": {
+                "text": "ElementInternals"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#observer",
+              "privacy": "private",
+              "type": {
+                "text": "MutationObserver"
+              },
+              "default": "new MutationObserver(() => this.#syncOptions())"
+            },
+            {
+              "kind": "field",
+              "name": "#changeHandler",
+              "privacy": "private",
+              "type": {
+                "text": "(event: Event) => void"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#inputHandler",
+              "privacy": "private",
+              "type": {
+                "text": "(event: Event) => void"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#selectId",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "`ekko-select-${uid}`"
+            },
+            {
+              "kind": "field",
+              "name": "#helpId",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "`ekko-select-help-${uid}`"
+            },
+            {
+              "kind": "field",
+              "name": "#errorId",
+              "privacy": "private",
+              "type": {
+                "text": "string"
+              },
+              "default": "`ekko-select-error-${uid}`"
+            },
+            {
+              "kind": "field",
+              "name": "#syncing",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "#supportsBasePicker",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "SelectSize"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "visibleRows",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "multiple",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "invalid",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "type": {
+                "text": "HTMLOptionsCollection"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "selectedOptions",
+              "type": {
+                "text": "HTMLCollectionOf<HTMLOptionElement>"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "selectedIndex",
+              "type": {
+                "text": "number"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validity",
+              "type": {
+                "text": "ValidityState"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "validationMessage",
+              "type": {
+                "text": "string"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "checkValidity",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reportValidity",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setCustomValidity",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "message",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "focus",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "FocusOptions"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "blur",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#template",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncAll",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncTrigger",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncForwardedAttributes",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncVisibleRows",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncOptions",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncState",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncLabel",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncMessages",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncAccessibility",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#handleChange",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#handleInput",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "innerHTML"
+            },
+            {
+              "kind": "field",
+              "name": "shadow",
+              "type": {
+                "text": "ShadowRoot"
+              },
+              "privacy": "protected",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "upgradeProperty",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "prop",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaLabel",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaDescribedby",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "adoptedStyleSheets",
+              "type": {
+                "text": "array"
+              },
+              "default": "[baseStyles, componentStyles]",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ekko-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "ekko-input",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "name"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "autocomplete"
+            },
+            {
+              "name": "visible-rows"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "multiple"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "required"
+            },
+            {
+              "name": "invalid"
+            },
+            {
+              "name": "label"
+            },
+            {
+              "name": "placeholder"
+            },
+            {
+              "name": "help"
+            },
+            {
+              "name": "error"
+            },
+            {
+              "name": "full-width"
+            },
+            {
+              "name": "aria-label"
+            },
+            {
+              "name": "aria-describedby"
+            }
+          ],
+          "superclass": {
+            "name": "EkkoBase",
+            "module": "/src/base"
+          },
+          "tagName": "ekko-select",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EkkoSelect",
+          "declaration": {
+            "name": "EkkoSelect",
+            "module": "src/select/index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ekko-select",
+          "declaration": {
+            "name": "EkkoSelect",
+            "module": "src/select/index.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/switch/index.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "EkkoSwitch",
+          "members": [
+            {
+              "kind": "field",
+              "name": "formAssociated",
+              "type": {
+                "text": "boolean"
+              },
+              "static": true,
+              "default": "true"
+            },
+            {
+              "kind": "field",
+              "name": "#input",
+              "privacy": "private",
+              "type": {
+                "text": "HTMLInputElement"
+              },
+              "default": "this.shadow.querySelector('.input')"
+            },
+            {
+              "kind": "field",
+              "name": "#internals",
+              "privacy": "private",
+              "type": {
+                "text": "ElementInternals"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#changeHandler",
+              "privacy": "private",
+              "type": {
+                "text": "(event: Event) => void"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "#defaultChecked",
+              "privacy": "private",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "checked",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "SwitchSize"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "form",
+              "type": {
+                "text": "HTMLFormElement | null"
+              },
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "formResetCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "formDisabledCallback",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "disabled",
+                  "type": {
+                    "text": "boolean"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "#template",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncAccessibility",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#syncFormValue",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "#handleChange",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "innerHTML"
+            },
+            {
+              "kind": "field",
+              "name": "shadow",
+              "type": {
+                "text": "ShadowRoot"
+              },
+              "privacy": "protected",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "upgradeProperty",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "prop",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaLabel",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "forwardAriaDescribedby",
+              "privacy": "protected",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "target",
+                  "type": {
+                    "text": "Element"
+                  }
+                }
+              ],
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "adoptedStyleSheets",
+              "type": {
+                "text": "array"
+              },
+              "default": "[baseStyles, componentStyles]",
+              "inheritedFrom": {
+                "name": "EkkoBase",
+                "module": "src/base/index.ts"
+              }
+            }
+          ],
+          "events": [
+            {
+              "name": "ekko-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "checked"
+            },
+            {
+              "name": "disabled"
+            },
+            {
+              "name": "name"
+            },
+            {
+              "name": "value"
+            },
+            {
+              "name": "size"
+            },
+            {
+              "name": "aria-label"
+            },
+            {
+              "name": "aria-describedby"
+            }
+          ],
+          "superclass": {
+            "name": "EkkoBase",
+            "module": "/src/base"
+          },
+          "tagName": "ekko-switch",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EkkoSwitch",
+          "declaration": {
+            "name": "EkkoSwitch",
+            "module": "src/switch/index.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "ekko-switch",
+          "declaration": {
+            "name": "EkkoSwitch",
+            "module": "src/switch/index.ts"
           }
         }
       ]
@@ -3019,328 +4017,6 @@
           "declaration": {
             "name": "EkkoTextarea",
             "module": "src/textarea/index.ts"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/switch/index.ts",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "EkkoSwitch",
-          "members": [
-            {
-              "kind": "field",
-              "name": "formAssociated",
-              "type": {
-                "text": "boolean"
-              },
-              "static": true,
-              "default": "true"
-            },
-            {
-              "kind": "field",
-              "name": "#input",
-              "privacy": "private",
-              "type": {
-                "text": "HTMLInputElement"
-              },
-              "default": "this.shadow.querySelector('.input')"
-            },
-            {
-              "kind": "field",
-              "name": "#internals",
-              "privacy": "private",
-              "type": {
-                "text": "ElementInternals"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "#changeHandler",
-              "privacy": "private",
-              "type": {
-                "text": "(event: Event) => void"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "#defaultChecked",
-              "privacy": "private",
-              "type": {
-                "text": "boolean"
-              },
-              "default": "false"
-            },
-            {
-              "kind": "field",
-              "name": "checked",
-              "type": {
-                "text": "boolean"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "disabled",
-              "type": {
-                "text": "boolean"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "value",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "size",
-              "type": {
-                "text": "SwitchSize"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "form",
-              "type": {
-                "text": "HTMLFormElement | null"
-              },
-              "readonly": true
-            },
-            {
-              "kind": "method",
-              "name": "formResetCallback",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "formDisabledCallback",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "disabled",
-                  "type": {
-                    "text": "boolean"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "#template",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "string"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#syncAccessibility",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#syncFormValue",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              }
-            },
-            {
-              "kind": "method",
-              "name": "#handleChange",
-              "privacy": "private",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "event",
-                  "type": {
-                    "text": "Event"
-                  }
-                }
-              ]
-            },
-            {
-              "kind": "field",
-              "name": "innerHTML"
-            },
-            {
-              "kind": "field",
-              "name": "shadow",
-              "type": {
-                "text": "ShadowRoot"
-              },
-              "privacy": "protected",
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "upgradeProperty",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "prop",
-                  "type": {
-                    "text": "string"
-                  }
-                }
-              ],
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "forwardAriaLabel",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "Element"
-                  }
-                }
-              ],
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "forwardAriaDescribedby",
-              "privacy": "protected",
-              "return": {
-                "type": {
-                  "text": "void"
-                }
-              },
-              "parameters": [
-                {
-                  "name": "target",
-                  "type": {
-                    "text": "Element"
-                  }
-                }
-              ],
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            },
-            {
-              "kind": "field",
-              "name": "adoptedStyleSheets",
-              "type": {
-                "text": "array"
-              },
-              "default": "[baseStyles, componentStyles]",
-              "inheritedFrom": {
-                "name": "EkkoBase",
-                "module": "src/base/index.ts"
-              }
-            }
-          ],
-          "events": [
-            {
-              "name": "ekko-change",
-              "type": {
-                "text": "CustomEvent"
-              }
-            }
-          ],
-          "attributes": [
-            {
-              "name": "checked"
-            },
-            {
-              "name": "disabled"
-            },
-            {
-              "name": "name"
-            },
-            {
-              "name": "value"
-            },
-            {
-              "name": "size"
-            },
-            {
-              "name": "aria-label"
-            },
-            {
-              "name": "aria-describedby"
-            }
-          ],
-          "superclass": {
-            "name": "EkkoBase",
-            "module": "/src/base"
-          },
-          "tagName": "ekko-switch",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "EkkoSwitch",
-          "declaration": {
-            "name": "EkkoSwitch",
-            "module": "src/switch/index.ts"
-          }
-        },
-        {
-          "kind": "custom-element-definition",
-          "name": "ekko-switch",
-          "declaration": {
-            "name": "EkkoSwitch",
-            "module": "src/switch/index.ts"
           }
         }
       ]

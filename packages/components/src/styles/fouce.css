@@ -14,6 +14,7 @@ ekko-input:not(:defined),
 ekko-checkbox:not(:defined),
 ekko-dialog:not(:defined),
 ekko-radio:not(:defined),
+ekko-select:not(:defined),
 ekko-switch:not(:defined),
 ekko-textarea:not(:defined) {
   opacity: 0;

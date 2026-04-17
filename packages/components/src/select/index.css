@@ -1,0 +1,396 @@
+:host {
+  font-family: var(--ekko-select-shared-font-family, system-ui, sans-serif);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ekko-select-shared-gap, 0.5rem);
+  width: 100%;
+}
+
+.label {
+  color: var(--ekko-select-shared-label-text, #171717);
+  font-weight: var(--ekko-select-shared-label-font-weight, 500);
+  font-size: var(--ekko-select-size-md-font-size, 0.875rem);
+  line-height: var(--ekko-select-shared-label-line-height, 1.25);
+}
+
+:host([size="sm"]) .label {
+  font-size: var(--ekko-select-size-sm-font-size, 0.75rem);
+}
+
+:host([size="lg"]) .label {
+  font-size: var(--ekko-select-size-lg-font-size, 1rem);
+}
+
+.required-indicator {
+  color: var(--ekko-select-shared-error-text, #dc2626);
+  margin-inline-start: var(--ekko-select-shared-required-indicator-gap, 0.125rem);
+}
+
+.control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: var(--ekko-select-shared-background, #ffffff);
+  border-style: var(--ekko-select-shared-border-style, solid);
+  border-width: var(--ekko-select-shared-border-width, 1px);
+  border-color: var(--ekko-select-shared-border, #d4d4d4);
+  border-radius: var(--ekko-select-shared-border-radius, 6px);
+  transition:
+    border-color var(--ekko-select-shared-transition-duration, 100ms) ease-out,
+    box-shadow var(--ekko-select-shared-transition-duration, 100ms) ease-out,
+    background-color var(--ekko-select-shared-transition-duration, 100ms) ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+:host(:not([disabled])) .control:hover {
+  border-color: var(--ekko-select-shared-border-hover, #a3a3a3);
+}
+
+.control:focus-within {
+  border-color: var(--ekko-select-shared-border-focus, #2563eb);
+  outline: var(--ekko-select-shared-focus-ring-width, 2px) solid
+    var(--ekko-select-shared-focus-ring-color, #2563eb);
+  outline-offset: var(--ekko-select-shared-focus-ring-offset, 2px);
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ekko-select-shared-text, #171717);
+  font: inherit;
+  font-size: var(--ekko-select-size-md-font-size, 0.875rem);
+  padding: var(--ekko-select-size-md-padding-y, 0.5rem)
+    var(--ekko-select-size-md-padding-x, 0.75rem);
+  padding-inline-end: calc(
+    var(--ekko-select-shared-chevron-size, 1rem) +
+    var(--ekko-select-size-md-padding-x, 0.75rem) +
+    var(--ekko-select-shared-chevron-gap, 0.5rem)
+  );
+  min-height: var(--ekko-select-size-md-height, 2.375rem);
+  cursor: pointer;
+}
+
+:host([size="sm"]) .select {
+  font-size: var(--ekko-select-size-sm-font-size, 0.75rem);
+  padding: var(--ekko-select-size-sm-padding-y, 0.25rem)
+    var(--ekko-select-size-sm-padding-x, 0.5rem);
+  padding-inline-end: calc(
+    var(--ekko-select-shared-chevron-size, 1rem) +
+    var(--ekko-select-size-sm-padding-x, 0.5rem) +
+    var(--ekko-select-shared-chevron-gap, 0.5rem)
+  );
+  min-height: var(--ekko-select-size-sm-height, 2rem);
+}
+
+:host([size="lg"]) .select {
+  font-size: var(--ekko-select-size-lg-font-size, 1rem);
+  padding: var(--ekko-select-size-lg-padding-y, 0.75rem) var(--ekko-select-size-lg-padding-x, 1rem);
+  padding-inline-end: calc(
+    var(--ekko-select-shared-chevron-size, 1rem) +
+    var(--ekko-select-size-lg-padding-x, 1rem) +
+    var(--ekko-select-shared-chevron-gap, 0.5rem)
+  );
+  min-height: var(--ekko-select-size-lg-height, 2.875rem);
+}
+
+.chevron {
+  position: absolute;
+  inset-inline-end: var(--ekko-select-size-md-padding-x, 0.75rem);
+  width: var(--ekko-select-shared-chevron-size, 1rem);
+  height: var(--ekko-select-shared-chevron-size, 1rem);
+  color: var(--ekko-select-shared-chevron-color, #525252);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+:host([size="sm"]) .chevron {
+  inset-inline-end: var(--ekko-select-size-sm-padding-x, 0.5rem);
+}
+
+:host([size="lg"]) .chevron {
+  inset-inline-end: var(--ekko-select-size-lg-padding-x, 1rem);
+}
+
+:host([multiple]) .select,
+:host([visible-rows]) .select {
+  padding-inline-end: var(--ekko-select-size-md-padding-x, 0.75rem);
+  cursor: default;
+  min-height: auto;
+}
+
+:host([multiple]) .chevron,
+:host([visible-rows]) .chevron {
+  display: none;
+}
+
+.select option {
+  background-color: var(--ekko-select-shared-background, #ffffff);
+  color: var(--ekko-select-shared-text, #171717);
+}
+
+.select option:checked {
+  background-color: var(--ekko-select-shared-option-background-checked, #2563eb);
+  color: var(--ekko-select-shared-option-text-checked, #ffffff);
+}
+
+.select option[disabled] {
+  color: var(--ekko-select-shared-text-disabled, #a3a3a3);
+}
+
+.select:has(option[value=""]:checked) {
+  color: var(--ekko-select-shared-placeholder, #525252);
+}
+
+:host([disabled]) .control {
+  cursor: not-allowed;
+  background-color: var(--ekko-select-shared-background-disabled, #f5f5f5);
+}
+
+:host([disabled]) .select {
+  cursor: not-allowed;
+  color: var(--ekko-select-shared-text-disabled, #a3a3a3);
+}
+
+:host([disabled]) .label {
+  color: var(--ekko-select-shared-text-disabled, #a3a3a3);
+}
+
+:host([disabled]) .chevron {
+  color: var(--ekko-select-shared-text-disabled, #a3a3a3);
+}
+
+:host([invalid]) .control {
+  border-color: var(--ekko-select-shared-border-error, #dc2626);
+}
+
+:host([invalid]) .control:focus-within {
+  outline-color: var(--ekko-select-shared-border-error, #dc2626);
+}
+
+.help,
+.error {
+  font-size: var(--ekko-select-size-sm-font-size, 0.75rem);
+  line-height: var(--ekko-select-shared-message-line-height, 1.375);
+}
+
+.help {
+  color: var(--ekko-select-shared-hint-text, #737373);
+}
+
+.error {
+  color: var(--ekko-select-shared-error-text, #dc2626);
+}
+
+:host(:not([invalid])) .error,
+:host([invalid]) .help {
+  display: none;
+}
+
+@supports (appearance: base-select) {
+  :host([data-base-picker]) .select,
+  :host([data-base-picker]) ::picker(select) {
+    appearance: base-select;
+  }
+
+  :host([data-base-picker]) .select {
+    display: flex;
+    align-items: center;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: var(--ekko-select-shared-text, #171717);
+    cursor: pointer;
+  }
+
+  :host([data-base-picker]) .trigger {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    padding: var(--ekko-select-size-md-padding-y, 0.5rem)
+      var(--ekko-select-size-md-padding-x, 0.75rem);
+    padding-inline-end: calc(
+      var(--ekko-select-shared-chevron-size, 1rem) +
+      var(--ekko-select-size-md-padding-x, 0.75rem) +
+      var(--ekko-select-shared-chevron-gap, 0.5rem)
+    );
+    min-height: var(--ekko-select-size-md-height, 2.375rem);
+    cursor: pointer;
+  }
+
+  :host([data-base-picker][size="sm"]) .trigger {
+    padding: var(--ekko-select-size-sm-padding-y, 0.25rem)
+      var(--ekko-select-size-sm-padding-x, 0.5rem);
+    padding-inline-end: calc(
+      var(--ekko-select-shared-chevron-size, 1rem) +
+      var(--ekko-select-size-sm-padding-x, 0.5rem) +
+      var(--ekko-select-shared-chevron-gap, 0.5rem)
+    );
+    min-height: var(--ekko-select-size-sm-height, 2rem);
+  }
+
+  :host([data-base-picker][size="lg"]) .trigger {
+    padding: var(--ekko-select-size-lg-padding-y, 0.75rem)
+      var(--ekko-select-size-lg-padding-x, 1rem);
+    padding-inline-end: calc(
+      var(--ekko-select-shared-chevron-size, 1rem) +
+      var(--ekko-select-size-lg-padding-x, 1rem) +
+      var(--ekko-select-shared-chevron-gap, 0.5rem)
+    );
+    min-height: var(--ekko-select-size-lg-height, 2.875rem);
+  }
+
+  :host([data-base-picker]) .trigger:focus {
+    outline: none;
+  }
+
+  :host([data-base-picker][disabled]) .trigger {
+    cursor: not-allowed;
+    color: var(--ekko-select-shared-text-disabled, #a3a3a3);
+  }
+
+  :host([data-base-picker]) .select::picker-icon {
+    display: none;
+  }
+
+  /* biome-ignore lint/correctness/noUnknownTypeSelector: <selectedcontent> is a built-in element from the customizable select spec */
+  :host([data-base-picker]) selectedcontent {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ekko-select-shared-option-gap, 0.5rem);
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* biome-ignore lint/correctness/noUnknownTypeSelector: <selectedcontent> is a built-in element from the customizable select spec */
+  :host([data-base-picker]) .select:has(option[value=""]:checked) selectedcontent {
+    color: var(--ekko-select-shared-placeholder, #525252);
+  }
+
+  :host([data-base-picker]) ::picker(select) {
+    box-sizing: border-box;
+    background-color: var(--ekko-select-shared-picker-background, #ffffff);
+    border-color: var(--ekko-select-shared-picker-border, #d4d4d4);
+    border-style: var(--ekko-select-shared-border-style, solid);
+    border-width: var(--ekko-select-shared-picker-border-width, 1px);
+    border-radius: var(--ekko-select-shared-picker-border-radius, 6px);
+    padding: var(--ekko-select-shared-picker-padding, 0.25rem);
+    margin-block-start: var(--ekko-select-shared-picker-gap, 4px);
+    max-height: var(--ekko-select-shared-picker-max-height, 18rem);
+    overflow-y: auto;
+    box-shadow: 0 var(--ekko-select-shared-picker-shadow-offset-y, 8px)
+      var(--ekko-select-shared-picker-shadow-blur, 24px)
+      var(--ekko-select-shared-picker-shadow-spread, -8px)
+      rgb(0 0 0 / var(--ekko-select-shared-picker-shadow-opacity, 0.18));
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity var(--ekko-select-shared-transition-duration, 100ms) ease-out,
+      transform var(--ekko-select-shared-transition-duration, 100ms) ease-out,
+      overlay var(--ekko-select-shared-transition-duration, 100ms) allow-discrete,
+      display var(--ekko-select-shared-transition-duration, 100ms) allow-discrete;
+  }
+
+  :host([data-base-picker]) .select:open::picker(select) {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @starting-style {
+    :host([data-base-picker]) .select:open::picker(select) {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :host([data-base-picker]) ::picker(select) {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  :host([data-base-picker]) ::picker(select) option {
+    display: flex;
+    align-items: center;
+    gap: var(--ekko-select-shared-option-gap, 0.5rem);
+    padding: var(--ekko-select-shared-option-padding-y, 0.5rem)
+      var(--ekko-select-shared-option-padding-x, 0.75rem);
+    border-radius: var(--ekko-select-shared-option-border-radius, 4px);
+    color: var(--ekko-select-shared-option-text, #171717);
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color var(--ekko-select-shared-transition-duration, 100ms) ease-out;
+  }
+
+  :host([data-base-picker]) ::picker(select) option:hover,
+  :host([data-base-picker]) ::picker(select) option:focus,
+  :host([data-base-picker]) ::picker(select) option:active {
+    background-color: var(--ekko-select-shared-option-background-hover, #f5f5f5);
+  }
+
+  :host([data-base-picker]) ::picker(select) option:checked {
+    background-color: var(--ekko-select-shared-option-background-checked, #2563eb);
+    color: var(--ekko-select-shared-option-text-checked, #ffffff);
+  }
+
+  :host([data-base-picker]) ::picker(select) option[disabled] {
+    color: var(--ekko-select-shared-option-text-disabled, #a3a3a3);
+    cursor: not-allowed;
+    background-color: transparent;
+  }
+
+  :host([data-base-picker]) ::picker(select) option::checkmark {
+    order: 1;
+    margin-inline-start: auto;
+    width: var(--ekko-select-shared-checkmark-size, 1rem);
+    height: var(--ekko-select-shared-checkmark-size, 1rem);
+    color: var(--ekko-select-shared-checkmark-color, #2563eb);
+    content: "";
+    background:
+      currentColor
+      url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="white" d="M6.4 11.2 3.2 8l1.13-1.13L6.4 8.94l5.27-5.27L12.8 4.8z"/></svg>')
+      center / contain no-repeat;
+    border-radius: 999px;
+  }
+
+  :host([data-base-picker]) ::picker(select) option:not(:checked)::checkmark {
+    visibility: hidden;
+  }
+
+  :host([data-base-picker]) ::picker(select) optgroup {
+    padding-block-start: var(--ekko-select-shared-optgroup-label-padding-y, 0.25rem);
+  }
+
+  :host([data-base-picker]) ::picker(select) optgroup::before {
+    content: attr(label);
+    display: block;
+    padding: var(--ekko-select-shared-optgroup-label-padding-y, 0.25rem)
+      var(--ekko-select-shared-option-padding-x, 0.75rem);
+    color: var(--ekko-select-shared-optgroup-label-text, #525252);
+    font-weight: var(--ekko-select-shared-optgroup-label-font-weight, 600);
+    font-size: var(--ekko-select-size-sm-font-size, 0.75rem);
+    text-transform: uppercase;
+  }
+}
