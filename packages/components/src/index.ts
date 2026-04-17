@@ -2,3 +2,4 @@ export { EkkoButton } from './button';
 export { EkkoCheckbox } from './checkbox';
 export { EkkoInput } from './input';
 export { EkkoRadio } from './radio';
+export { EkkoTextarea } from './textarea';

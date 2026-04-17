@@ -1,0 +1,194 @@
+:host {
+  font-family: var(--ekko-textarea-shared-font-family, system-ui, sans-serif);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ekko-textarea-shared-gap, 0.5rem);
+  width: 100%;
+}
+
+.label {
+  color: var(--ekko-textarea-shared-label-text, #171717);
+  font-weight: var(--ekko-textarea-shared-label-font-weight, 500);
+  font-size: var(--ekko-textarea-size-md-font-size, 0.875rem);
+  line-height: var(--ekko-textarea-shared-label-line-height, 1.25);
+}
+
+:host([size="sm"]) .label {
+  font-size: var(--ekko-textarea-size-sm-font-size, 0.75rem);
+}
+
+:host([size="lg"]) .label {
+  font-size: var(--ekko-textarea-size-lg-font-size, 1rem);
+}
+
+.required-indicator {
+  color: var(--ekko-textarea-shared-error-text, #dc2626);
+  margin-inline-start: var(--ekko-textarea-shared-required-indicator-gap, 0.125rem);
+}
+
+.control {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  background-color: var(--ekko-textarea-shared-background, #ffffff);
+  border-style: var(--ekko-textarea-shared-border-style, solid);
+  border-width: var(--ekko-textarea-shared-border-width, 1px);
+  border-color: var(--ekko-textarea-shared-border, #d4d4d4);
+  border-radius: var(--ekko-textarea-shared-border-radius, 6px);
+  transition:
+    border-color var(--ekko-textarea-shared-transition-duration, 100ms) ease-out,
+    box-shadow var(--ekko-textarea-shared-transition-duration, 100ms) ease-out,
+    background-color var(--ekko-textarea-shared-transition-duration, 100ms) ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+:host(:not([disabled]):not([readonly])) .control:hover {
+  border-color: var(--ekko-textarea-shared-border-hover, #a3a3a3);
+}
+
+.control:focus-within {
+  border-color: var(--ekko-textarea-shared-border-focus, #2563eb);
+  outline: var(--ekko-textarea-shared-focus-ring-width, 2px) solid
+    var(--ekko-textarea-shared-focus-ring-color, #2563eb);
+  outline-offset: var(--ekko-textarea-shared-focus-ring-offset, 2px);
+}
+
+.textarea {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ekko-textarea-shared-text, #171717);
+  font-family: inherit;
+  font-weight: var(--ekko-textarea-shared-font-weight, 400);
+  line-height: var(--ekko-textarea-shared-line-height, 1.5);
+  letter-spacing: var(--ekko-textarea-shared-letter-spacing, 0.01rem);
+  font-size: var(--ekko-textarea-size-md-font-size, 0.875rem);
+  padding: var(--ekko-textarea-size-md-padding-y, 0.5rem)
+    var(--ekko-textarea-size-md-padding-x, 0.75rem);
+  min-height: var(--ekko-textarea-size-md-min-height, 5rem);
+  resize: vertical;
+}
+
+:host([size="sm"]) .textarea {
+  font-size: var(--ekko-textarea-size-sm-font-size, 0.75rem);
+  padding: var(--ekko-textarea-size-sm-padding-y, 0.25rem)
+    var(--ekko-textarea-size-sm-padding-x, 0.5rem);
+  min-height: var(--ekko-textarea-size-sm-min-height, 4rem);
+}
+
+:host([size="lg"]) .textarea {
+  font-size: var(--ekko-textarea-size-lg-font-size, 1rem);
+  padding: var(--ekko-textarea-size-lg-padding-y, 0.75rem)
+    var(--ekko-textarea-size-lg-padding-x, 1rem);
+  min-height: var(--ekko-textarea-size-lg-min-height, 6rem);
+}
+
+.textarea::placeholder {
+  color: var(--ekko-textarea-shared-placeholder, #a3a3a3);
+  opacity: 1;
+}
+
+:host([resize="none"]) .textarea {
+  resize: none;
+}
+
+:host([resize="horizontal"]) .textarea {
+  resize: horizontal;
+}
+
+:host([resize="both"]) .textarea {
+  resize: both;
+}
+
+:host([disabled]) .control {
+  cursor: not-allowed;
+  background-color: var(--ekko-textarea-shared-background-disabled, #f5f5f5);
+  opacity: var(--ekko-textarea-shared-disabled-opacity, 0.5);
+}
+
+:host([disabled]) .textarea {
+  cursor: not-allowed;
+  color: var(--ekko-textarea-shared-text-disabled, #a3a3a3);
+  resize: none;
+}
+
+:host([disabled]) .label {
+  color: var(--ekko-textarea-shared-text-disabled, #a3a3a3);
+}
+
+:host([readonly]) .control {
+  background-color: var(--ekko-textarea-shared-background-readonly, #fafafa);
+}
+
+:host([invalid]) .control {
+  border-color: var(--ekko-textarea-shared-border-error, #dc2626);
+}
+
+:host([invalid]) .control:focus-within {
+  outline-color: var(--ekko-textarea-shared-border-error, #dc2626);
+}
+
+.help,
+.error {
+  font-size: var(--ekko-textarea-size-sm-font-size, 0.75rem);
+  line-height: var(--ekko-textarea-shared-message-line-height, 1.375);
+}
+
+.help {
+  color: var(--ekko-textarea-shared-hint-text, #737373);
+}
+
+.error {
+  color: var(--ekko-textarea-shared-error-text, #dc2626);
+}
+
+:host(:not([invalid])) .error,
+:host([invalid]) .help {
+  display: none;
+}
+
+:host([loading]) .control {
+  cursor: wait;
+}
+
+.spinner {
+  display: none;
+  position: absolute;
+  top: var(--ekko-textarea-size-md-padding-y, 0.5rem);
+  inset-inline-end: var(--ekko-textarea-size-md-padding-x, 0.75rem);
+  width: var(--ekko-textarea-shared-spinner-size, 1rem);
+  height: var(--ekko-textarea-shared-spinner-size, 1rem);
+  border: var(--ekko-textarea-shared-spinner-border-width, 2px) solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+  color: var(--ekko-textarea-shared-hint-text, #737373);
+  animation: ekko-textarea-spin 0.6s linear infinite;
+}
+
+:host([loading]) .spinner {
+  display: block;
+}
+
+@keyframes ekko-textarea-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    opacity: 0.5;
+  }
+}
