@@ -1,0 +1,237 @@
+:host {
+  position: relative;
+}
+
+.trigger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ekko-toggletip-size-md-trigger-size, 1.5rem);
+  height: var(--ekko-toggletip-size-md-trigger-size, 1.5rem);
+  padding: 0;
+  background-color: var(--ekko-toggletip-trigger-background, #ffffff);
+  color: var(--ekko-toggletip-trigger-text, #171717);
+  border-width: var(--ekko-toggletip-shared-border-width, 1px);
+  border-style: var(--ekko-toggletip-shared-border-style, solid);
+  border-color: var(--ekko-toggletip-trigger-border, #d4d4d4);
+  border-radius: var(--ekko-toggletip-trigger-border-radius, 9999px);
+  font-family: var(--ekko-toggletip-shared-font-family, system-ui, sans-serif);
+  font-size: var(--ekko-toggletip-size-md-font-size, 0.875rem);
+  font-weight: var(--ekko-toggletip-shared-font-weight, 400);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--ekko-toggletip-shared-transition-duration, 100ms) ease-out;
+}
+
+.trigger:hover {
+  background-color: var(--ekko-toggletip-trigger-background-hover, #f5f5f5);
+}
+
+.trigger:active {
+  background-color: var(--ekko-toggletip-trigger-background-active, #e5e5e5);
+}
+
+.trigger:focus-visible {
+  outline: var(--ekko-toggletip-shared-focus-ring-width, 2px) solid
+    var(--ekko-toggletip-shared-focus-ring-color, #2563eb);
+  outline-offset: var(--ekko-toggletip-shared-focus-ring-offset, 2px);
+}
+
+.popover {
+  box-sizing: border-box;
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ekko-toggletip-shared-gap, 0.5rem);
+  max-width: var(--ekko-toggletip-shared-max-width, 20rem);
+  min-width: var(--ekko-toggletip-shared-min-width, 12rem);
+  padding: var(--ekko-toggletip-size-md-padding-y, 0.5rem)
+    var(--ekko-toggletip-size-md-padding-x, 0.75rem);
+  background-color: var(--ekko-toggletip-shared-background, #ffffff);
+  color: var(--ekko-toggletip-shared-text, #171717);
+  border-width: var(--ekko-toggletip-shared-border-width, 1px);
+  border-style: var(--ekko-toggletip-shared-border-style, solid);
+  border-color: var(--ekko-toggletip-shared-border, #e5e5e5);
+  border-radius: var(--ekko-toggletip-shared-border-radius, 8px);
+  box-shadow: 0 var(--ekko-toggletip-shared-shadow-offset-y, 4px)
+    var(--ekko-toggletip-shared-shadow-blur, 12px) var(--ekko-toggletip-shared-shadow-spread, -2px)
+    rgba(0, 0, 0, var(--ekko-toggletip-shared-shadow-opacity, 0.18));
+  font-family: var(--ekko-toggletip-shared-font-family, system-ui, sans-serif);
+  font-size: var(--ekko-toggletip-size-md-font-size, 0.875rem);
+  font-weight: var(--ekko-toggletip-shared-font-weight, 400);
+  line-height: var(--ekko-toggletip-shared-line-height, 1.5);
+  letter-spacing: var(--ekko-toggletip-shared-letter-spacing, 0.01rem);
+  z-index: var(--ekko-toggletip-shared-z-index, 400);
+  width: max-content;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ekko-toggletip-shared-transition-duration, 100ms) ease-out,
+    visibility 0s linear var(--ekko-toggletip-shared-transition-duration, 100ms);
+}
+
+:host([open]:not([disabled])) .popover {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--ekko-toggletip-shared-transition-duration, 100ms) ease-out,
+    visibility 0s linear 0s;
+}
+
+.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-color: transparent;
+}
+
+:host([placement="top"]) .popover {
+  bottom: calc(100% + var(--ekko-toggletip-shared-offset, 0.5rem));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([placement="top"]) .arrow {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: var(--ekko-toggletip-shared-arrow-size, 6px)
+    var(--ekko-toggletip-shared-arrow-size, 6px) 0 var(--ekko-toggletip-shared-arrow-size, 6px);
+  border-top-color: var(--ekko-toggletip-shared-background, #ffffff);
+}
+
+:host([placement="bottom"]) .popover {
+  top: calc(100% + var(--ekko-toggletip-shared-offset, 0.5rem));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([placement="bottom"]) .arrow {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 var(--ekko-toggletip-shared-arrow-size, 6px)
+    var(--ekko-toggletip-shared-arrow-size, 6px) var(--ekko-toggletip-shared-arrow-size, 6px);
+  border-bottom-color: var(--ekko-toggletip-shared-background, #ffffff);
+}
+
+:host([placement="left"]) .popover {
+  right: calc(100% + var(--ekko-toggletip-shared-offset, 0.5rem));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([placement="left"]) .arrow {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: var(--ekko-toggletip-shared-arrow-size, 6px) 0
+    var(--ekko-toggletip-shared-arrow-size, 6px) var(--ekko-toggletip-shared-arrow-size, 6px);
+  border-left-color: var(--ekko-toggletip-shared-background, #ffffff);
+}
+
+:host([placement="right"]) .popover {
+  left: calc(100% + var(--ekko-toggletip-shared-offset, 0.5rem));
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([placement="right"]) .arrow {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: var(--ekko-toggletip-shared-arrow-size, 6px)
+    var(--ekko-toggletip-shared-arrow-size, 6px) var(--ekko-toggletip-shared-arrow-size, 6px) 0;
+  border-right-color: var(--ekko-toggletip-shared-background, #ffffff);
+}
+
+:host([size="sm"]) .trigger {
+  width: var(--ekko-toggletip-size-sm-trigger-size, 1.25rem);
+  height: var(--ekko-toggletip-size-sm-trigger-size, 1.25rem);
+  font-size: var(--ekko-toggletip-size-sm-font-size, 0.75rem);
+}
+
+:host([size="sm"]) .popover {
+  padding: var(--ekko-toggletip-size-sm-padding-y, 0.5rem)
+    var(--ekko-toggletip-size-sm-padding-x, 0.5rem);
+  font-size: var(--ekko-toggletip-size-sm-font-size, 0.75rem);
+}
+
+:host([size="lg"]) .trigger {
+  width: var(--ekko-toggletip-size-lg-trigger-size, 2rem);
+  height: var(--ekko-toggletip-size-lg-trigger-size, 2rem);
+  font-size: var(--ekko-toggletip-size-lg-font-size, 1rem);
+}
+
+:host([size="lg"]) .popover {
+  padding: var(--ekko-toggletip-size-lg-padding-y, 0.75rem)
+    var(--ekko-toggletip-size-lg-padding-x, 1rem);
+  font-size: var(--ekko-toggletip-size-lg-font-size, 1rem);
+}
+
+:host([variant="inverse"]) .popover {
+  background-color: var(--ekko-toggletip-inverse-background, #171717);
+  color: var(--ekko-toggletip-inverse-text, #ffffff);
+  border-color: var(--ekko-toggletip-inverse-border, #171717);
+}
+
+:host([variant="inverse"][placement="top"]) .arrow {
+  border-top-color: var(--ekko-toggletip-inverse-background, #171717);
+}
+
+:host([variant="inverse"][placement="bottom"]) .arrow {
+  border-bottom-color: var(--ekko-toggletip-inverse-background, #171717);
+}
+
+:host([variant="inverse"][placement="left"]) .arrow {
+  border-left-color: var(--ekko-toggletip-inverse-background, #171717);
+}
+
+:host([variant="inverse"][placement="right"]) .arrow {
+  border-right-color: var(--ekko-toggletip-inverse-background, #171717);
+}
+
+:host([disabled]) {
+  cursor: not-allowed;
+}
+
+:host([disabled]) .trigger {
+  opacity: var(--ekko-toggletip-shared-disabled-opacity, 0.5);
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: none;
+  width: var(--ekko-toggletip-shared-spinner-size, 0.75rem);
+  height: var(--ekko-toggletip-shared-spinner-size, 0.75rem);
+  border-width: var(--ekko-toggletip-shared-spinner-border-width, 2px);
+  border-style: solid;
+  border-color: currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: ekko-toggletip-spin 600ms linear infinite;
+}
+
+:host([loading]) .spinner {
+  display: block;
+}
+
+@keyframes ekko-toggletip-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trigger,
+  .popover {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}
