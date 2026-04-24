@@ -13,6 +13,8 @@ export interface EkkoClickEventDetail {
 }
 
 export class EkkoButton extends EkkoBase {
+  static formAssociated = true;
+
   static get observedAttributes(): string[] {
     return [
       'variant',
@@ -23,6 +25,8 @@ export class EkkoButton extends EkkoBase {
       'type',
       'full-width',
       'icon-only',
+      'name',
+      'value',
       'aria-label',
       'aria-describedby',
     ];
@@ -30,6 +34,8 @@ export class EkkoButton extends EkkoBase {
 
   #btn: HTMLButtonElement;
   #clickHandler: (event: Event) => void;
+  #internals: ElementInternals;
+  #formDisabled = false;
 
   constructor() {
     super(styles);
@@ -37,6 +43,7 @@ export class EkkoButton extends EkkoBase {
 
     this.#btn = this.shadow.querySelector('.btn') as HTMLButtonElement;
     this.#clickHandler = this.#handleClick.bind(this);
+    this.#internals = this.attachInternals();
   }
 
   connectedCallback(): void {
@@ -46,6 +53,8 @@ export class EkkoButton extends EkkoBase {
     this.upgradeProperty('loading');
     this.upgradeProperty('type');
     this.upgradeProperty('pressed');
+    this.upgradeProperty('name');
+    this.upgradeProperty('value');
 
     if (!this.hasAttribute('variant')) {
       this.variant = 'primary';
@@ -57,16 +66,21 @@ export class EkkoButton extends EkkoBase {
       this.type = 'button';
     }
 
-    this.#btn.addEventListener('click', this.#clickHandler);
+    this.addEventListener('click', this.#clickHandler);
     this.#syncAccessibility();
   }
 
   disconnectedCallback(): void {
-    this.#btn.removeEventListener('click', this.#clickHandler);
+    this.removeEventListener('click', this.#clickHandler);
   }
 
   attributeChangedCallback(_name: string, oldValue: string | null, newValue: string | null): void {
     if (oldValue === newValue) return;
+    this.#syncAccessibility();
+  }
+
+  formDisabledCallback(disabled: boolean): void {
+    this.#formDisabled = disabled;
     this.#syncAccessibility();
   }
 
@@ -116,6 +130,24 @@ export class EkkoButton extends EkkoBase {
     }
   }
 
+  get name(): string {
+    return this.getAttribute('name') ?? '';
+  }
+  set name(value: string) {
+    this.setAttribute('name', value);
+  }
+
+  get value(): string {
+    return this.getAttribute('value') ?? '';
+  }
+  set value(value: string) {
+    this.setAttribute('value', value);
+  }
+
+  get form(): HTMLFormElement | null {
+    return this.#internals.form;
+  }
+
   #template(): string {
     return `
       <button part="base" class="btn" type="button">
@@ -136,7 +168,8 @@ export class EkkoButton extends EkkoBase {
 
     this.#btn.setAttribute('type', this.type);
 
-    if (this.disabled || this.loading) {
+    const inert = this.disabled || this.loading || this.#formDisabled;
+    if (inert) {
       this.#btn.setAttribute('aria-disabled', 'true'); // focus is retained for screen reader
       this.#btn.disabled = true; // For the form submission
     } else {
@@ -163,7 +196,7 @@ export class EkkoButton extends EkkoBase {
 
   #handleClick(event: Event): void {
     // Suppress clicks when disabled or loading
-    if (this.disabled || this.loading) {
+    if (this.disabled || this.loading || this.#formDisabled) {
       event.preventDefault();
       event.stopImmediatePropagation();
       return;
@@ -175,30 +208,30 @@ export class EkkoButton extends EkkoBase {
       this.setAttribute('pressed', next);
     }
 
-    // Handle form submission — the inner button is type="submit" but is inside
-    // Shadow DOM, so it won't natively submit the outer form. We handle it here.
+    // Form-associated submit: use ElementInternals to reach the owning form.
+    // requestSubmit() runs constraint validation and fires the submit event,
+    // which form.submit() would skip. setFormValue() is set transiently so
+    // name/value are present in FormData during this submission only —
+    // matching native button submitter semantics where a button only
+    // contributes its value when it is the active submitter.
     if (this.type === 'submit') {
-      const formId = this.getAttribute('form');
-      const form = formId ? document.getElementById(formId) : this.closest('form');
-
-      if (form instanceof HTMLFormElement) {
-        // Trigger native form submission
-        const submitter = document.createElement('button');
-        submitter.type = 'submit';
-        submitter.name = this.getAttribute('name') ?? '';
-        submitter.value = this.getAttribute('value') ?? '';
-        submitter.style.display = 'none';
-        form.appendChild(submitter);
-        submitter.click();
-        form.removeChild(submitter);
+      const form = this.#internals.form;
+      if (form) {
+        const hasEntry = Boolean(this.name);
+        if (hasEntry) {
+          this.#internals.setFormValue(this.value);
+        }
+        form.requestSubmit();
+        if (hasEntry) {
+          this.#internals.setFormValue(null);
+        }
         return;
       }
     }
 
     if (this.type === 'reset') {
-      const formId = this.getAttribute('form');
-      const form = formId ? document.getElementById(formId) : this.closest('form');
-      if (form instanceof HTMLFormElement) {
+      const form = this.#internals.form;
+      if (form) {
         form.reset();
         return;
       }

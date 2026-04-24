@@ -323,6 +323,72 @@ export const BrandOverride: Story = {
   `,
 };
 
+export const FormExample: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: `
+The button is a **Form-Associated Custom Element (FACE)**. When \`type="submit"\`
+it participates in native form submission through \`ElementInternals\`:
+
+- **Click** calls \`internals.form.requestSubmit()\` — constraint validation
+  runs and the \`submit\` event fires (unlike \`form.submit()\`, which skips both).
+- **Enter** pressed inside any form field triggers implicit submission. The
+  browser recognises the button as the default submitter and dispatches a
+  synthesised click on the host, which reaches our handler.
+- **\`name\` and \`value\`** are contributed to the \`FormData\` via
+  \`setFormValue()\` only for the submission the button actually triggered —
+  matching native submitter semantics.
+- **Ancestor \`<fieldset disabled>\`** disables the button automatically via
+  \`formDisabledCallback\`.
+
+Try typing in the input and pressing Enter — the form submits without a
+mouse click reaching the button.
+        `,
+      },
+    },
+  },
+  render: () => html`
+    <form
+      @submit=${(event: Event) => {
+        event.preventDefault();
+        const form = event.currentTarget as HTMLFormElement;
+        const data = new FormData(form);
+        const output = form.querySelector('[data-form-output]') as HTMLElement | null;
+        if (output) {
+          const entries = Object.fromEntries(data.entries());
+          output.textContent = JSON.stringify(entries, null, 2);
+        }
+      }}
+      @reset=${(event: Event) => {
+        const form = event.currentTarget as HTMLFormElement;
+        const output = form.querySelector('[data-form-output]') as HTMLElement | null;
+        if (output) output.textContent = '';
+      }}
+      style="display: flex; flex-direction: column; gap: 12px; max-width: 420px;"
+    >
+      <label style="display: flex; flex-direction: column; gap: 4px;">
+        <span style="font-size: 14px;">Search</span>
+        <input
+          name="query"
+          value="ekko"
+          placeholder="Press Enter to submit"
+          style="padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 4px; font: inherit;"
+        />
+      </label>
+      <div style="display: flex; gap: 8px;">
+        <ekko-button type="submit" name="action" value="search">Search</ekko-button>
+        <ekko-button type="reset" variant="secondary">Reset</ekko-button>
+      </div>
+      <pre
+        data-form-output
+        aria-live="polite"
+        style="margin: 0; padding: 12px; min-height: 44px; background: #f3f4f6; border-radius: 4px; font-size: 12px; white-space: pre-wrap;"
+      ></pre>
+    </form>
+  `,
+};
+
 export const AccessibilityShowcase: Story = {
   name: 'Accessibility',
   parameters: {

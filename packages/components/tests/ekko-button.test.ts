@@ -330,3 +330,154 @@ describe('ekko-button — form participation', () => {
     assert.equal(input.value, 'ada');
   });
 });
+
+// Form-Associated Custom Element (FACE) contract
+
+describe('ekko-button — form-associated custom element', () => {
+  afterEach(cleanup);
+
+  it('declares itself as form-associated', () => {
+    // Exposed by the spec for upgrades; cast through unknown to read the static
+    // formAssociated flag without relying on a global declaration.
+    const ctor = customElements.get('ekko-button') as unknown as {
+      formAssociated?: boolean;
+    };
+    assert.isTrue(ctor.formAssociated);
+  });
+
+  it('exposes the owning form via the .form getter', () => {
+    document.body.innerHTML = `
+      <form id="face-form">
+        <ekko-button type="submit">Submit</ekko-button>
+      </form>
+    `;
+    const form = document.getElementById('face-form') as HTMLFormElement;
+    const btn = form.querySelector('ekko-button') as EkkoButton;
+    assert.strictEqual(btn.form, form);
+  });
+
+  it('resolves the form via the "form" attribute when not nested', () => {
+    document.body.innerHTML = `
+      <form id="remote-form"></form>
+      <ekko-button type="submit" form="remote-form">Submit</ekko-button>
+    `;
+    const form = document.getElementById('remote-form') as HTMLFormElement;
+    const btn = document.querySelector('ekko-button') as EkkoButton;
+    assert.strictEqual(btn.form, form);
+  });
+
+  it('contributes name/value to FormData when used as submitter', () => {
+    document.body.innerHTML = `
+      <form id="face-form">
+        <input name="q" value="hello">
+        <ekko-button type="submit" name="action" value="save">Save</ekko-button>
+      </form>
+    `;
+    const form = document.getElementById('face-form') as HTMLFormElement;
+    const btn = form.querySelector('ekko-button') as EkkoButton;
+
+    let data: FormData | null = null;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      data = new FormData(form);
+    });
+
+    innerBtn(btn).click();
+
+    assert.isNotNull(data);
+    const formData = data as unknown as FormData;
+    assert.equal(formData.get('q'), 'hello');
+    assert.equal(formData.get('action'), 'save');
+  });
+
+  it('omits its value from FormData on a subsequent unrelated submission', () => {
+    // Verifies setFormValue is cleared after submit so the button does not
+    // leak its value into later submissions it did not trigger.
+    document.body.innerHTML = `
+      <form id="face-form">
+        <input name="q" value="hello">
+        <ekko-button type="submit" name="action" value="save">Save</ekko-button>
+      </form>
+    `;
+    const form = document.getElementById('face-form') as HTMLFormElement;
+    const btn = form.querySelector('ekko-button') as EkkoButton;
+
+    let data: FormData | null = null;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      data = new FormData(form);
+    });
+
+    // First submission via our button — value is present.
+    innerBtn(btn).click();
+    assert.equal((data as unknown as FormData).get('action'), 'save');
+
+    // Second submission without the button as trigger — value is absent.
+    data = null;
+    form.requestSubmit();
+    assert.isNotNull(data);
+    assert.isNull((data as unknown as FormData).get('action'));
+  });
+
+  it('submits the form implicitly when Enter is pressed in a sibling input', async () => {
+    document.body.innerHTML = `
+      <form id="face-form">
+        <input id="q-input" name="q" value="hi">
+        <ekko-button type="submit">Search</ekko-button>
+      </form>
+    `;
+    const form = document.getElementById('face-form') as HTMLFormElement;
+    const input = document.getElementById('q-input') as HTMLInputElement;
+
+    let submitted = false;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitted = true;
+    });
+
+    input.focus();
+    await sendKeys({ press: 'Enter' });
+    assert.isTrue(submitted);
+  });
+
+  it('disables the inner button when an ancestor fieldset is disabled', () => {
+    document.body.innerHTML = `
+      <form>
+        <fieldset id="fs">
+          <ekko-button type="submit">Submit</ekko-button>
+        </fieldset>
+      </form>
+    `;
+    const fs = document.getElementById('fs') as HTMLFieldSetElement;
+    const btn = fs.querySelector('ekko-button') as EkkoButton;
+
+    fs.disabled = true;
+    assert.equal(innerBtn(btn).getAttribute('aria-disabled'), 'true');
+    assert.isTrue(innerBtn(btn).disabled);
+
+    fs.disabled = false;
+    assert.isNull(innerBtn(btn).getAttribute('aria-disabled'));
+    assert.isFalse(innerBtn(btn).disabled);
+  });
+
+  it('does not submit when disabled via fieldset', () => {
+    document.body.innerHTML = `
+      <form id="face-form">
+        <fieldset id="fs" disabled>
+          <ekko-button type="submit">Submit</ekko-button>
+        </fieldset>
+      </form>
+    `;
+    const form = document.getElementById('face-form') as HTMLFormElement;
+    const btn = form.querySelector('ekko-button') as EkkoButton;
+
+    let submitted = false;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      submitted = true;
+    });
+
+    innerBtn(btn).click();
+    assert.isFalse(submitted);
+  });
+});
