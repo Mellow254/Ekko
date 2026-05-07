@@ -1,0 +1,161 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Versioning" />
+
+# Versioning & Releases
+
+Ekko follows [Semantic Versioning](https://semver.org/) with a strict definition of
+"breaking change" that is more conservative than most JavaScript libraries. Read this
+page once so you know what to expect from every release.
+
+---
+
+## What's versioned together
+
+`@ekko-ds/components` and `@ekko-ds/tokens` are **linked** — they always release with
+the same version number. Always upgrade them as a pair:
+
+```bash
+pnpm add @ekko-ds/components@latest @ekko-ds/tokens@latest
+```
+
+A mismatch can cause CSS custom property names to drift out of sync between what the
+component reads and what the token file provides — leading to silent fallback values
+without an error.
+
+`@ekko-ds/docs` (this site) is private and unversioned.
+
+---
+
+## What counts as breaking
+
+A breaking change in Ekko is **any of the following**, even if it looks small:
+
+- Removing or renaming an attribute, property, slot, CSS part, custom event, or
+  CSS custom property
+- Changing the default value of an attribute or token in a way that changes the
+  rendered output
+- Changing the DOM **contract**: a slot's accepted content, a custom event's `detail`
+  shape, an event's `bubbles` / `composed` flags
+- Changing the CSS custom property naming pattern or the token tier hierarchy
+
+**Not breaking** — even if visible:
+
+- Internal class names changing (`.btn` → `.button`). These are private.
+- Internal markup restructuring within Shadow DOM, as long as slots/parts are preserved
+- Adding new attributes, events, slots, parts, or custom properties
+- Tightening accessibility (e.g. starting to forward an additional ARIA attribute)
+- Changing fallback values that the token CSS overrides anyway
+
+If you're depending on something that turns out to be private, the right move is to
+[file an issue](https://github.com/your-org/ekko-ds/issues) asking for a public API.
+
+---
+
+## Changesets
+
+Versioning is driven by [Changesets](https://github.com/changesets/changesets). Every
+PR that ships user-facing change adds a markdown file in `.changeset/` describing the
+change and its severity:
+
+```bash
+pnpm changeset
+```
+
+Walk through the prompts:
+
+1. Select the packages affected (usually both `@ekko-ds/components` and `@ekko-ds/tokens`).
+2. Pick `patch` for fixes, `minor` for new features, `major` for breaking changes.
+3. Write a one-line summary aimed at the consumer reading the changelog.
+
+Commit the generated `.changeset/*.md` file alongside your code change.
+
+When PRs land on `main`, the `changesets/action` GitHub Action opens or updates a
+"Version Packages" PR. Merging that PR triggers an npm publish for the affected
+packages.
+
+---
+
+## Branching model
+
+```
+main           ← stable, always releasable
+ │
+ └─ dev        ← integration branch (optional, used for batched changes)
+      │
+      ├─ feat/component-name
+      ├─ fix/issue-id
+      ├─ tokens/update-name
+      └─ docs/...
+```
+
+- `main` is the source of truth for releases.
+- Feature branches PR into `dev` (or `main` directly for small changes).
+- The release flow runs only on `main`.
+
+---
+
+## Commit conventions
+
+Conventional Commits style, scoped to the area touched:
+
+```
+feat(button):    add loading state with aria-busy
+fix(dialog):     restore focus to trigger on close
+a11y(select):    fix roving tabindex in listbox
+tokens(color):   add neutral-950 to primitive scale
+docs(tooltip):   add screen reader expectation notes
+chore:           bump dependencies
+refactor(input): extract syncAccessibility helper
+```
+
+The Changeset entry is what ends up in the changelog; the commit message is for the
+git history. They can differ.
+
+---
+
+## Migrating between versions
+
+When a major bump lands, the changelog includes a **migration note** for each breaking
+change with the new spelling and a deprecation timeline. We don't make breaking changes
+casually — every major bump explains its rationale.
+
+Where renames are involved, Ekko will (when feasible) keep the old name alongside the
+new one for one major cycle with a console warning, before removing it in the next
+major.
+
+---
+
+## Pre-release channels
+
+We don't currently ship `next` or `beta` tags. All releases go to the `latest` channel
+on npm. If you need to test a change that hasn't shipped, install from a git ref:
+
+```bash
+pnpm add github:your-org/ekko-ds#main
+```
+
+Or pin to a specific PR via npm's `pkg.pr.new` if it's been set up for the repo.
+
+---
+
+## Reading the changelog
+
+Each package has a `CHANGELOG.md` at its root. Entries are auto-generated from
+changesets and grouped by version. Format:
+
+```markdown
+## 1.4.0
+
+### Minor Changes
+- 3a4b1c5: feat(button): add `aria-pressed` toggle support
+
+### Patch Changes
+- 8d2e9f1: fix(dialog): focus return on Escape key
+```
+
+The hash links to the merged PR. Click through for the full discussion and rationale.
+
+---
+
+Next: [Contributing](/?path=/docs/foundations-contributing--docs).

@@ -1,0 +1,320 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Getting Started" />
+
+# Getting Started
+
+Ekko ships two npm packages that work together — `@ekko-ds/tokens` and `@ekko-ds/components`.
+They version in lockstep, so install and upgrade them as a pair.
+
+```bash
+pnpm add @ekko-ds/tokens @ekko-ds/components
+# or: npm install @ekko-ds/tokens @ekko-ds/components
+# or: yarn add @ekko-ds/tokens @ekko-ds/components
+```
+
+The components package declares `react` as an **optional** peer dependency. You only need
+React installed if you import the React wrappers from `@ekko-ds/components/react`.
+
+---
+
+## Three things you always do
+
+Every consumer — regardless of framework — does these three things in this order:
+
+1. **Load the tokens.** A single CSS file that defines every `--ekko-*` custom property
+   with light- and dark-mode values.
+2. **Import the components.** Either the whole bundle, or only the components you use.
+3. **Use the elements.** They're real HTML elements with no compile step.
+
+The rest of this page shows the exact syntax for each major framework.
+
+---
+
+## Vanilla HTML / static sites
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- 1. Tokens — always before components -->
+    <link rel="stylesheet" href="https://unpkg.com/@ekko-ds/tokens/css">
+
+    <!-- 2. Components, as a single ES module -->
+    <script type="module" src="https://unpkg.com/@ekko-ds/components"></script>
+  </head>
+  <body>
+    <!-- 3. Use the elements directly -->
+    <ekko-button variant="primary">Save changes</ekko-button>
+  </body>
+</html>
+```
+
+For local installs, swap the unpkg URLs:
+
+```html
+<link rel="stylesheet" href="/node_modules/@ekko-ds/tokens/dist/css/tokens.all.css">
+<script type="module" src="/node_modules/@ekko-ds/components/dist/ekko-ds.esm.js"></script>
+```
+
+### Importing only the components you use
+
+Each component publishes a subpath export. Importing only what you use avoids loading every
+component definition.
+
+```js
+import '@ekko-ds/tokens/css';
+import '@ekko-ds/components/button';
+import '@ekko-ds/components/input';
+import '@ekko-ds/components/dialog';
+```
+
+This works in any bundler — Vite, esbuild, webpack, Rollup, Parcel, Bun.
+
+---
+
+## React (and Next.js)
+
+Ekko ships dedicated React wrappers via `@ekko-ds/components/react`. They give you typed
+props, typed events, and ref forwarding — none of which the bare custom elements provide.
+
+```bash
+pnpm add @ekko-ds/tokens @ekko-ds/components react react-dom
+```
+
+Load tokens once at the application root:
+
+```tsx
+// app/layout.tsx (Next.js App Router)
+import '@ekko-ds/tokens/css';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+Then use the wrappers anywhere:
+
+```tsx
+'use client';
+import { EkkoButton, EkkoInput } from '@ekko-ds/components/react';
+
+export function SignUpForm() {
+  return (
+    <form>
+      <EkkoInput name="email" type="email" label="Email" required />
+      <EkkoButton type="submit" variant="primary">
+        Sign up
+      </EkkoButton>
+    </form>
+  );
+}
+```
+
+Note the `'use client'` directive — Web Components need a browser to upgrade, so any
+component using them must be a Client Component in Next.js App Router.
+
+See [React Wrappers](/?path=/docs/foundations-react-wrappers--docs) for the full export
+list, event handler signatures, and SSR caveats.
+
+### Plain custom elements in React (without wrappers)
+
+You can skip the wrappers and use the bare elements. React 19+ supports custom elements
+natively; React 18 has [known caveats](https://react.dev/reference/react-dom/components#custom-html-elements)
+around boolean attributes and custom events.
+
+```tsx
+import '@ekko-ds/components/button';
+
+// React 19 — works directly
+<ekko-button variant="primary" onClick={handleClick}>Save</ekko-button>
+
+// React 18 — listen via ref
+const ref = useRef<HTMLElement>(null);
+useEffect(() => {
+  ref.current?.addEventListener('ekko-click', handler);
+  return () => ref.current?.removeEventListener('ekko-click', handler);
+}, []);
+```
+
+The wrappers exist precisely to avoid this churn — recommended for most React projects.
+
+---
+
+## Vue
+
+Vue handles custom elements natively. Tell its compiler which tags are custom so it does
+not warn about unknown elements:
+
+```js
+// vite.config.ts
+import vue from '@vitejs/plugin-vue';
+
+export default {
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag) => tag.startsWith('ekko-'),
+        },
+      },
+    }),
+  ],
+};
+```
+
+Then import once and use anywhere:
+
+```js
+// main.ts
+import '@ekko-ds/tokens/css';
+import '@ekko-ds/components';
+```
+
+```vue
+<template>
+  <ekko-button variant="primary" @ekko-click="handleSave">
+    Save changes
+  </ekko-button>
+  <ekko-input v-model="email" type="email" label="Email" />
+</template>
+```
+
+Vue's `v-model` works on `ekko-input` because it dispatches a standard `input` event.
+
+---
+
+## Angular
+
+Tell Angular's compiler about custom elements with `CUSTOM_ELEMENTS_SCHEMA`:
+
+```ts
+// app.module.ts
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import '@ekko-ds/tokens/css';
+import '@ekko-ds/components';
+
+@NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+})
+export class AppModule {}
+```
+
+For standalone components (Angular 14+), put `CUSTOM_ELEMENTS_SCHEMA` on the component
+itself:
+
+```ts
+@Component({
+  standalone: true,
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  template: `
+    <ekko-button variant="primary" (ekko-click)="onSave($event)">
+      Save
+    </ekko-button>
+  `,
+})
+export class AppComponent {}
+```
+
+---
+
+## Svelte
+
+Svelte supports custom elements without configuration:
+
+```js
+// main.ts
+import '@ekko-ds/tokens/css';
+import '@ekko-ds/components';
+```
+
+```svelte
+<script>
+  function handleClick(event) {
+    console.log(event.detail);
+  }
+</script>
+
+<ekko-button variant="primary" on:ekko-click={handleClick}>
+  Save changes
+</ekko-button>
+```
+
+---
+
+## Solid
+
+Solid recognizes custom elements automatically. Add to global types if you want IntelliSense:
+
+```ts
+// solid.d.ts
+import type { JSX } from 'solid-js';
+
+declare module 'solid-js' {
+  namespace JSX {
+    interface IntrinsicElements {
+      'ekko-button': JSX.HTMLAttributes<HTMLElement> & {
+        variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'link';
+        size?: 'sm' | 'md' | 'lg';
+      };
+    }
+  }
+}
+```
+
+```jsx
+import '@ekko-ds/tokens/css';
+import '@ekko-ds/components';
+
+export default function App() {
+  return <ekko-button variant="primary">Save</ekko-button>;
+}
+```
+
+---
+
+## Preventing flash of unstyled content (FOUCE)
+
+Custom elements render as inline by default until they upgrade. If your bundler defers
+component definition (lazy chunks, dynamic imports), you may briefly see unstyled output
+before the upgrade completes.
+
+Ekko ships a tiny CSS file that hides every Ekko element until it has been registered:
+
+```html
+<link rel="stylesheet" href="@ekko-ds/components/fouce.css">
+```
+
+Or in JS:
+
+```js
+import '@ekko-ds/components/fouce.css';
+```
+
+The file uses [`:not(:defined)`](https://developer.mozilla.org/en-US/docs/Web/CSS/:defined)
+to hide the host until `customElements.define()` runs for that tag. Once each component is
+defined, it becomes visible. Add this to your shell HTML if you do code-splitting.
+
+---
+
+## Verifying the install
+
+A two-line sanity check:
+
+```html
+<ekko-button variant="primary">Hello, Ekko</ekko-button>
+```
+
+If you see a styled blue button, you're good. If it renders as plain text, one of:
+
+1. The token CSS did not load — check your `<link rel="stylesheet">` URL
+2. The components script did not load — check the `<script type="module">` URL
+3. A console error blocked module loading — check browser DevTools
+
+---
+
+Next: [Architecture](/?path=/docs/foundations-architecture--docs) — how the pieces fit together.

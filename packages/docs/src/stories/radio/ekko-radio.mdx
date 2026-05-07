@@ -1,0 +1,296 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as RadioStories from './ekko-radio.stories';
+
+<Meta of={RadioStories} />
+
+<Title />
+<Subtitle>A radio lets a user pick exactly one option from a set of two or more mutually-exclusive choices.</Subtitle>
+
+`ekko-radio` is a [Form-Associated Custom Element](/?path=/docs/foundations-forms-face--docs)
+that wraps a visually-hidden native `<input type="radio">`. Radios sharing the same `name`
+form a group, and the component implements the [WAI-ARIA roving-tabindex pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/)
+across siblings — only the focused or checked radio is in the tab order, and Arrow keys
+move selection between them.
+
+---
+
+## When to use
+
+- Single-select from N≥2 mutually-exclusive options (e.g. subscription plan, payment method)
+- Surveys and forms where the choices are visible up front and worth showing all at once
+
+For a multi-select scenario where each option is independent, use
+[`ekko-checkbox`](/?path=/docs/components-checkbox--docs) instead. For a binary on/off
+setting that takes effect immediately, use [`ekko-switch`](/?path=/docs/components-switch--docs).
+If you have many options (more than 5–7) consider a select/listbox instead — radio groups
+get hard to scan beyond that.
+
+---
+
+## Anatomy
+
+```
+<ekko-radio>
+  ┌─────────────────────────────────────────────┐
+  │  Shadow DOM                                 │
+  │  <label>                                    │
+  │    <input part="base" type="radio" />       │  ← visually hidden, focusable
+  │    <span class="circle" />                  │  ← visible circle + ::after dot
+  │    <span class="label-text">                │
+  │      <slot />                               │  ← your label text
+  │    </span>                                  │
+  │  </label>                                   │
+  └─────────────────────────────────────────────┘
+</ekko-radio>
+```
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `checked` | `checked` | `boolean` | `false` | Selection state. Setting it `true` automatically unchecks every sibling sharing the same `name`. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Sets `aria-disabled="true"` and removes the radio from arrow-key navigation. |
+| `required` | `required` | `boolean` | `false` | Marks the radio as required. Setting `required` on any radio in the group makes the whole group required (native behaviour). |
+| `name` | `name` | `string` | `''` | Group name. Radios with the same `name` and root form a single mutually-exclusive group. |
+| `value` | `value` | `string` | `'on'` | Submitted value when this radio is the checked one in its group. Matches native default. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale. Affects the circle, dot, and label font size. |
+| `aria-label` | — | `string` | — | Accessible name when no slotted label is provided. Forwarded to the inner input. |
+| `aria-describedby` | — | `string` | — | Describing element id(s). Forwarded to the inner input. |
+
+The `form` getter returns the host form (`HTMLFormElement | null`).
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `click()` | `void` | Inherited from `HTMLElement`. Programmatic click — checks the radio and fires `change`. |
+| `focus(options?)` | `void` | Moves keyboard focus to the inner input. |
+| `blur()` | `void` | Inherited from `HTMLElement`. Removes focus. |
+| `refreshTabindex()` | `void` | Recomputes which radio in the group is tabbable. Public so you can call it manually after dynamically adding or removing siblings — the component otherwise refreshes tabindex automatically on connect, attribute change, and user interaction. |
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-change` | `{ checked: boolean, value: string, originalEvent: Event }` | When the radio becomes checked via click, `Space`, or arrow-key navigation. Arrow-key navigation in a group dispatches `ekko-change` on the **newly-checked sibling**, not on the originating radio. |
+| `change` | native `Event` | Standard DOM change. Bubbles out of Shadow DOM — listen here if you don't need the typed detail. |
+
+Both events `bubble` and `compose` (cross the Shadow boundary).
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | text or inline elements | The visible label. Click target spans both the circle and the label. |
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<input>` | Rare. The input is visually hidden — most styling targets the `circle` via custom properties. |
+
+---
+
+## CSS Custom Properties
+
+### Shared
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-radio-shared-background` | `#ffffff` | Circle background when unchecked. |
+| `--ekko-radio-shared-background-hover` | `#f5f5f5` | Circle background on hover (unchecked). |
+| `--ekko-radio-shared-background-checked` | `#2563eb` | Circle background when checked. |
+| `--ekko-radio-shared-background-checked-hover` | `#1d4ed8` | Circle background on hover when checked. Also drives the checked-hover border color. |
+| `--ekko-radio-shared-border` | `#d4d4d4` | Border color, unchecked. |
+| `--ekko-radio-shared-border-hover` | `#a3a3a3` | Border color on hover, unchecked. |
+| `--ekko-radio-shared-border-checked` | `#2563eb` | Border color when checked. |
+| `--ekko-radio-shared-border-width` | `1px` | Border width. |
+| `--ekko-radio-shared-border-style` | `solid` | Border style. |
+| `--ekko-radio-shared-border-radius` | `9999px` | Corner radius. Defaults to a full circle — also applied to the inner dot. |
+| `--ekko-radio-shared-dot-color` | `#ffffff` | Inner dot color when checked. |
+| `--ekko-radio-shared-label-text` | `#171717` | Label text color. |
+| `--ekko-radio-shared-label-text-disabled` | `#a3a3a3` | Label text color when disabled. |
+| `--ekko-radio-shared-disabled-opacity` | `0.5` | Opacity for the disabled state. |
+| `--ekko-radio-shared-font-family` | `system-ui, sans-serif` | Label font. |
+| `--ekko-radio-shared-font-weight` | `400` | Label weight. |
+| `--ekko-radio-shared-line-height` | `1.25` | Label line-height. |
+| `--ekko-radio-shared-letter-spacing` | `0.01rem` | Label tracking. |
+| `--ekko-radio-shared-gap` | `0.5rem` | Gap between circle and label. |
+| `--ekko-radio-shared-transition-duration` | `100ms` | Transition speed for state changes. |
+| `--ekko-radio-shared-focus-ring-color` | `#2563eb` | Focus ring color. |
+| `--ekko-radio-shared-focus-ring-width` | `2px` | Focus ring width. |
+| `--ekko-radio-shared-focus-ring-offset` | `2px` | Focus ring offset. |
+
+### Per size (sm, md, lg)
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-radio-size-{size}-circle-size` | `0.875rem / 1rem / 1.25rem` | Width and height of the visible circle. |
+| `--ekko-radio-size-{size}-dot-size` | `0.375rem / 0.5rem / 0.625rem` | Width and height of the inner dot when checked. |
+| `--ekko-radio-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Label font size. |
+
+---
+
+## Accessibility
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus into or out of the group. Only the focused or checked radio is tabbable — siblings have `tabindex="-1"` (roving tabindex). |
+| `Arrow Down` / `Arrow Right` | Move to the next radio in the group, check it, and focus it. Wraps from the last to the first. |
+| `Arrow Up` / `Arrow Left` | Move to the previous radio in the group, check it, and focus it. Wraps from the first to the last. |
+| `Space` | Check the focused radio (native `<input type="radio">` behaviour). |
+
+Disabled radios are skipped during arrow-key navigation. If no radio in the group is
+checked, `Tab` lands on the first enabled radio.
+
+### Group discovery
+
+Radios with the same `name` form a group. The component finds siblings by querying its
+[root node](https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode) for
+`ekko-radio[name="X"]` — or, if the radio is inside a `<form>`, the form is used as the
+scope. This means a group can span across nested DOM as long as every member shares the
+same `name` and the same root (form, document, or shadow root).
+
+### Screen reader announcements
+
+| State | Announcement |
+| --- | --- |
+| Checked | "&#123;label&#125;, radio button, selected, X of N" |
+| Unchecked | "&#123;label&#125;, radio button, not selected, X of N" |
+| Disabled | "&#123;label&#125;, radio button, dimmed" (varies by reader) |
+
+The "X of N" position is computed by the AT from the native input's group membership.
+Wrap a radio group in a `<fieldset>` with a `<legend>` to give it a programmatic group
+name for screen readers.
+
+### Focus
+
+The native `<input>` inside the shadow tree is the focus target. The visible circle
+renders the focus ring via `:focus-visible ~ .circle` (sibling combinator). The hidden
+input is positioned absolutely with a 1×1 clip — it stays in the tab order without
+affecting layout.
+
+### Labelling
+
+Slotted text is the visible label. If you don't slot a label, set `aria-label` on the
+host so the inner input has an accessible name.
+
+```html
+<!-- preferred — visible label -->
+<ekko-radio name="plan" value="pro">Pro</ekko-radio>
+
+<!-- visually hidden — use aria-label -->
+<ekko-radio name="plan" value="pro" aria-label="Pro plan"></ekko-radio>
+```
+
+---
+
+## Form integration
+
+```html
+<form>
+  <fieldset>
+    <legend>Subscription plan</legend>
+    <ekko-radio name="plan" value="free" checked>Free</ekko-radio>
+    <ekko-radio name="plan" value="pro">Pro</ekko-radio>
+    <ekko-radio name="plan" value="team">Team</ekko-radio>
+  </fieldset>
+  <ekko-button type="submit">Continue</ekko-button>
+</form>
+```
+
+Only the **checked** radio in a group contributes its `name=value` pair to `FormData`.
+Unchecked radios are omitted entirely (matching native `<input type="radio">` behaviour).
+
+`<fieldset disabled>` propagates automatically through `formDisabledCallback` — every
+radio in the fieldset becomes disabled, drops out of the tab order, and stops contributing
+to `FormData`.
+
+`form.reset()` restores each radio to the state of its `checked` HTML attribute as
+declared in markup. Programmatic property changes do not survive a reset.
+
+Setting `required` on **any** radio in the group makes the group required — the form
+will not submit unless one of the radios is checked. This is native behaviour; you don't
+need to set `required` on every radio.
+
+See [Forms (FACE)](/?path=/docs/foundations-forms-face--docs) for the full form
+integration story.
+
+---
+
+## Things to know
+
+### `value` defaults to `'on'`
+
+This matches native HTML. Always set `value` to a meaningful domain value (e.g.
+`value="pro"`, `value="email"`) so the form submission carries something useful — `'on'`
+is rarely what you want.
+
+### No separate radio-group element
+
+Wrapping each radio in its own component keeps state per-radio. You do **not** need a
+separate `<ekko-radio-group>` — just give each radio in the group the same `name` and
+the component handles grouping, mutual exclusion, roving tabindex, and arrow-key
+navigation automatically. Wrap them in a `<fieldset>` + `<legend>` if you want a
+programmatic group label for screen readers.
+
+### Programmatic `checked = true` unchecks siblings
+
+Setting the `checked` property (or attribute) on one radio runs `#uncheckSiblings`
+internally — every other radio in the group is set to `checked = false`. This keeps the
+group consistent without a wrapper component.
+
+### Programmatic `checked = true` does not fire `ekko-change`
+
+Only user interaction fires the event — same as native. If you need to react to
+programmatic changes, listen for attribute mutations or wire it up explicitly.
+
+### Groups can span nested DOM
+
+As long as members share the same `name` and the same root (form, document, or shadow
+root), they're part of the same group — even if they live inside different containers,
+columns, or sub-trees. The component uses `getRootNode()` (or the host form, when
+present) as the query scope.
+
+### The hidden input is the focus target
+
+If you grab the host's focused state via `:focus-within`, it works. If you read
+`document.activeElement`, you'll see the host element (focus retargets at the Shadow
+boundary). Use `event.composedPath()` if you need the inner input.
+
+### `refreshTabindex()` for dynamic groups
+
+If you add or remove radios from a group at runtime (e.g. rendering options from an
+async response), call `refreshTabindex()` on any radio in the group afterwards to
+recompute which one is in the tab order. The component otherwise refreshes tabindex
+automatically on connect, attribute change, and user interaction.
+
+---
+
+## Source
+
+- [`packages/components/src/radio/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/radio/index.ts)
+- [`packages/components/src/radio/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/radio/index.css)
+- [`packages/tokens/tokens/component/radio.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/radio.json)

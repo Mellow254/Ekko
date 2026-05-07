@@ -1,0 +1,302 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Forms (FACE)" />
+
+# Forms
+
+Ekko's form components are **Form-Associated Custom Elements** (FACE). They participate
+in native HTML forms exactly like the built-in `<input>`, `<select>`, and `<button>` —
+no glue code, no controlled-input plumbing, no library-specific form layer.
+
+This page describes how that works, what you can rely on, and what to know.
+
+---
+
+## Which components are form-associated
+
+Every component that contributes a value or participates in submission:
+
+| Component | Submits a value | Submitter | Disabled by `<fieldset disabled>` |
+| --- | --- | --- | --- |
+| `ekko-button` | only when `name` is set and it triggers submit | yes (`type="submit"`) | yes |
+| `ekko-checkbox` | yes | — | yes |
+| `ekko-input` | yes | — | yes |
+| `ekko-radio` | yes (one per `name`) | — | yes |
+| `ekko-select` | yes | — | yes |
+| `ekko-switch` | yes | — | yes |
+| `ekko-textarea` | yes | — | yes |
+
+Internally, each declares `static formAssociated = true` and uses
+[`ElementInternals`](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals)
+to plug into the host `<form>`.
+
+---
+
+## Native form behaviour you get for free
+
+### `FormData` participation
+
+```html
+<form id="signup">
+  <ekko-input name="email" type="email" required />
+  <ekko-input name="password" type="password" required />
+  <ekko-checkbox name="newsletter">Subscribe to updates</ekko-checkbox>
+  <ekko-button type="submit">Sign up</ekko-button>
+</form>
+
+<script>
+  document.getElementById('signup').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    fetch('/api/signup', { method: 'POST', body: data });
+  });
+</script>
+```
+
+`FormData` reads each component's contributed value via `setFormValue()`. Nothing in
+the form-handling code knows or cares that the controls are custom elements.
+
+### `form.reset()`
+
+Calling `form.reset()` invokes `formResetCallback()` on each form-associated component,
+which restores its initial value (the `value` attribute as authored in HTML).
+
+```js
+document.querySelector('form').reset();
+// ekko-input value reverts to its `value` attribute
+// ekko-checkbox checked reverts to its `checked` attribute
+// etc.
+```
+
+### `<fieldset disabled>` propagation
+
+Wrapping a section in a disabled fieldset disables every form control inside —
+including Ekko components.
+
+```html
+<fieldset disabled>
+  <ekko-input label="Locked while saving" />
+  <ekko-button>Submit</ekko-button>
+</fieldset>
+```
+
+This goes through `formDisabledCallback(disabled: boolean)` on each component. The
+component reads the flag, syncs `aria-disabled="true"` on its inner element, and
+suppresses click handlers — without touching its own `disabled` attribute (so when the
+fieldset re-enables, the original state restores).
+
+### Implicit submit (Enter inside the form)
+
+Pressing Enter inside any form field triggers implicit submission. The browser locates
+the default submit button — the first `type="submit"` it finds — and dispatches a
+synthetic click on it.
+
+`ekko-button` is recognised as that submit button when `type="submit"`. So this works:
+
+```html
+<form>
+  <ekko-input name="query" />  <!-- Press Enter here -->
+  <ekko-button type="submit">Search</ekko-button>  <!-- This activates -->
+</form>
+```
+
+---
+
+## How submission works under the hood
+
+When you click an `ekko-button` with `type="submit"`:
+
+```ts
+// Inside ekko-button #handleClick
+if (this.type === 'submit') {
+  const form = this.#internals.form;
+  if (form) {
+    if (this.name) {
+      this.#internals.setFormValue(this.value);  // contribute name=value
+    }
+    form.requestSubmit();                         // run validation + fire submit event
+    if (this.name) {
+      this.#internals.setFormValue(null);         // clear after submission
+    }
+  }
+}
+```
+
+Three details worth understanding:
+
+1. **`form.requestSubmit()` not `form.submit()`.** `requestSubmit()` runs constraint
+   validation and fires the `submit` event. `submit()` skips both — useful in narrow
+   cases but wrong for ordinary user-driven submission.
+2. **`setFormValue` is set transiently.** A button's `name=value` only appears in
+   `FormData` when the button is the **active submitter**, matching native behaviour.
+   We set the value, request submit, then immediately clear it.
+3. **Disabled / loading buttons don't submit.** The click handler short-circuits if
+   `disabled`, `loading`, or the form-disabled flag is set.
+
+---
+
+## Validation
+
+Every input-style component exposes the standard HTML validation API:
+
+```js
+const input = document.querySelector('ekko-input');
+
+input.checkValidity();        // boolean — does it pass all constraints?
+input.reportValidity();       // shows the native validation popup if invalid
+input.validity;               // ValidityState — { valueMissing, typeMismatch, ... }
+input.validationMessage;      // current localized message
+input.setCustomValidity('Must be your work email'); // mark invalid with custom message
+```
+
+These map directly to the underlying native input. Constraint validation
+attributes — `required`, `pattern`, `min`, `max`, `minlength`, `maxlength` — work
+exactly as they do on native `<input>`.
+
+### Showing your own error messages
+
+Pair `invalid` and `error` attributes:
+
+```html
+<ekko-input
+  label="Password"
+  type="password"
+  invalid
+  error="Must be at least 8 characters"
+/>
+```
+
+When `invalid` is set, the error text replaces the help text in the screen reader's
+`aria-describedby` chain and gets `role="alert"` so it's announced.
+
+### Cross-field validation
+
+Some validations need state from another field — e.g. password confirmation. Use
+`setCustomValidity()` on input/change events:
+
+```js
+const password = document.querySelector('[name=password]');
+const confirm = document.querySelector('[name=confirm]');
+
+confirm.addEventListener('ekko-input', () => {
+  if (password.value !== confirm.value) {
+    confirm.setCustomValidity('Passwords do not match');
+    confirm.invalid = true;
+    confirm.error = 'Passwords do not match';
+  } else {
+    confirm.setCustomValidity('');
+    confirm.invalid = false;
+    confirm.error = '';
+  }
+});
+```
+
+---
+
+## Submitting without validation
+
+Buttons accept the standard `formnovalidate` attribute. Use it for "save draft" or
+"cancel" actions that should bypass required-field constraints:
+
+```html
+<form>
+  <ekko-input name="title" required />
+  <ekko-button type="submit">Publish</ekko-button>
+  <ekko-button type="submit" formnovalidate name="action" value="draft">
+    Save draft
+  </ekko-button>
+</form>
+```
+
+---
+
+## Reset
+
+`type="reset"` on `ekko-button` calls the form's `reset()`:
+
+```html
+<form>
+  <ekko-input name="email" value="initial@example.com" />
+  <ekko-button type="reset" variant="secondary">Reset</ekko-button>
+</form>
+```
+
+After reset, every form-associated descendant returns to its initial value. Custom
+validity is cleared. The `reset` event fires on the form before any callback runs.
+
+---
+
+## Server-side rendering
+
+Custom elements can be rendered as plain HTML by the server. The host element shows up
+in the markup; client-side hydration upgrades them to the real components when the JS
+runs.
+
+For Next.js, Remix, SvelteKit, Astro: render the elements normally. They appear as
+unstyled until upgrade — pair with `@ekko-ds/components/fouce.css` to hide them until
+defined. See [Getting Started](/?path=/docs/foundations-getting-started--docs#preventing-flash-of-unstyled-content-fouce).
+
+For form **values** to persist through SSR → hydration:
+
+```html
+<!-- Initial value is in the attribute -->
+<ekko-input name="email" value="initial@example.com" />
+```
+
+The `value` attribute is the initial-value contract. It survives SSR and is used by
+`formResetCallback`. The `value` **property** on the live element is the current value.
+Don't conflate them.
+
+---
+
+## Things to know
+
+### Submitting from JavaScript
+
+`form.requestSubmit()` from your code triggers the same path as a button click — runs
+validation and fires `submit`. Use this instead of `form.submit()` whenever the
+submission is a user action.
+
+### Multiple submit buttons
+
+Native forms support multiple `type="submit"` buttons. Each contributes its `name=value`
+only when it's the one that triggered the submission. `ekko-button` honors this — only
+the clicked button's pair appears in `FormData`.
+
+```html
+<form>
+  <ekko-input name="comment" />
+  <ekko-button type="submit" name="action" value="post">Post</ekko-button>
+  <ekko-button type="submit" name="action" value="preview">Preview</ekko-button>
+</form>
+<!-- FormData includes action=post OR action=preview, never both -->
+```
+
+### Programmatic disabling and forms
+
+Setting `disabled` on the host element affects `aria-disabled` and click handling. To
+also remove the field from `FormData`, do not set a `name` (un-named fields don't
+submit), or set the value to an empty string before submission.
+
+### File inputs
+
+`ekko-input type="file"` works — but `FormData` only includes the file when the form is
+submitted with `multipart/form-data` encoding:
+
+```html
+<form enctype="multipart/form-data" action="/upload" method="POST">
+  <ekko-input name="avatar" type="file" accept="image/*" />
+  <ekko-button type="submit">Upload</ekko-button>
+</form>
+```
+
+### Why not use the native `disabled` attribute on inputs?
+
+Setting `disabled` on the host removes the inner control from the tab order and from
+`FormData` (matching native behaviour). The inner element also gets `aria-disabled="true"`
+so screen readers announce the disabled state. This is intentional and matches the WCAG
+recommendation for disabled controls.
+
+---
+
+Next: [Events](/?path=/docs/foundations-events--docs).

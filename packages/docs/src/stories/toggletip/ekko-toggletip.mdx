@@ -1,0 +1,357 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as ToggletipStories from './ekko-toggletip.stories';
+
+<Meta of={ToggletipStories} />
+
+<Title />
+<Subtitle>An on-demand disclosure that reveals supplementary information when the user opts in.</Subtitle>
+
+`ekko-toggletip` pairs a small button trigger with a popover that the user *clicks* to
+open. Unlike a tooltip — which appears on hover/focus, vanishes when the user looks away,
+and uses `aria-describedby` to *describe* its anchor — a toggletip is a real disclosure:
+it persists until dismissed and announces its content via a live region. Reach for it
+when you have help text, a definition, or "what's this?" content that the user should
+opt into reading.
+
+The pattern follows [Heydon Pickering's toggletip recipe](https://inclusive-components.design/tooltips-toggletips/):
+a button with `aria-haspopup` and `aria-expanded` toggles a popover whose content lives
+inside `role="status"` + `aria-live="polite"`, so screen readers announce the revealed
+text the moment it appears.
+
+---
+
+## When to use
+
+Use `ekko-toggletip` for:
+
+- Optional explanatory content for a form field — password rules, formatting hints, examples
+- Definitions for jargon or abbreviations next to inline labels
+- Keyboard shortcut references and "what does this setting do?" disclosures
+- Low-priority help that would clutter the layout if shown inline
+
+**Do not use** `ekko-toggletip` for:
+
+- Critical content the user must read — put that in the page itself
+- Ultra-short hover hints — use a tooltip pattern with `aria-describedby` instead
+- Actions, forms, navigation, or persistent UI — those belong in a popover, menu, or dialog
+- Error messages — wire those to the field via `aria-describedby` and an `aria-live` region
+
+The toggletip's content is supplementary by contract: the page must still make sense if
+the user never opens it.
+
+---
+
+## Anatomy
+
+```
+<ekko-toggletip>
+  ┌──────────────────────────────────────────────────────────┐
+  │  Shadow DOM                                              │
+  │  ┌────────────────────────────────────────────────────┐  │
+  │  │  <button part="base" class="trigger"               │  │
+  │  │          aria-haspopup="true"                      │  │
+  │  │          aria-expanded="…"                         │  │
+  │  │          aria-controls="ekko-toggletip-{uid}">     │  │
+  │  │    <slot name="trigger">i</slot>   ← icon or "i"   │  │
+  │  │  </button>                                         │  │
+  │  │  <span part="popover" class="popover"              │  │
+  │  │        role="status" aria-live="polite"            │  │
+  │  │        id="ekko-toggletip-{uid}">                  │  │
+  │  │    <span part="content">                           │  │
+  │  │      <slot />                  ← popover content   │  │
+  │  │    </span>                                         │  │
+  │  │    <span part="spinner" />     ← when loading      │  │
+  │  │    <span part="arrow" />       ← directional tip   │  │
+  │  │  </span>                                           │  │
+  │  └────────────────────────────────────────────────────┘  │
+  └──────────────────────────────────────────────────────────┘
+</ekko-toggletip>
+```
+
+The trigger is a real native `<button>` with the disclosure ARIA contract wired up. The
+popover is a sibling element positioned absolutely off the host; its visibility is
+toggled by the `[open]` attribute. The popover is announced because it lives inside an
+`aria-live` region — not because the trigger describes it.
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+All attributes reflect to JavaScript properties.
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `label` | `label` | `string` | `''` | Plain-text content rendered inside the popover. Ignored when the default slot has content. |
+| `placement` | `placement` | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` | Side of the trigger the popover anchors to. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale for the trigger and popover padding/typography. |
+| `variant` | `variant` | `'default' \| 'inverse'` | `'default'` | Visual treatment. `inverse` renders a dark popover surface — useful on light UIs. |
+| `disabled` | `disabled` | `boolean` | `false` | Prevents the popover from opening and disables the trigger. Setting `disabled` while `open` removes `open` automatically. |
+| `loading` | `loading` | `boolean` | `false` | Sets `aria-busy="true"` on the popover and renders a spinner inside it. |
+| `open` | `open` | `boolean` | `false` | Controls popover visibility. Toggle it directly or use `show()` / `hide()` / `toggle()`. |
+| `aria-label` | — | `string` | — | Accessible name forwarded to the inner trigger button. Required when the trigger is icon-only. |
+| `aria-describedby` | — | `string` | — | Describing element id(s) forwarded to the inner trigger button. |
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `show()` | `void` | Opens the popover and fires `ekko-show`. No-op when `disabled` or already `open`. |
+| `hide()` | `void` | Closes the popover and fires `ekko-hide`. No-op when already closed. |
+| `toggle()` | `void` | Calls `show()` if closed, `hide()` if open. Honours the `disabled` guard via `show()`. |
+| `focus(options?)` | `void` | Inherited from `HTMLElement`. The trigger button is the de-facto focus target. |
+| `blur()` | `void` | Inherited from `HTMLElement`. Removes focus. |
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-show` | `{ placement: 'top' \| 'right' \| 'bottom' \| 'left' }` | After the popover opens — via the trigger, the `open` attribute, or `show()`/`toggle()`. |
+| `ekko-hide` | `{ placement: 'top' \| 'right' \| 'bottom' \| 'left' }` | After the popover closes — via the trigger, Escape, outside click, or `hide()`/`toggle()`. |
+| `click` | native `MouseEvent` | Standard DOM click on the host. The trigger's click is intercepted to drive `toggle()`; outside clicks fall through to the document handler that dismisses the popover. |
+
+Both custom events `bubble` and `compose` (cross the Shadow boundary).
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | text or inline elements | Popover content. When present, takes precedence over the `label` attribute. Use this for rich content — multiple lines, inline code, links, keyboard hints. |
+| `trigger` | icon (svg, img, or any element) | Replaces the default `i` glyph in the trigger button. Pair with `aria-label` on the host so the trigger has an accessible name. |
+
+```html
+<ekko-toggletip aria-label="Password requirements" placement="right">
+  <svg slot="trigger" aria-hidden="true" viewBox="0 0 24 24">…</svg>
+  <span>Must be at least 12 characters and include one symbol.</span>
+</ekko-toggletip>
+```
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner `<button>` (trigger) | Custom focus/hover effects, filters, or layout tweaks the token system doesn't expose. |
+| `popover` | The popover container | Custom shadows, borders, max-width overrides on a per-instance basis. |
+| `content` | The `<span>` wrapping the default slot | Targeting the content wrapper specifically (e.g., for typography overrides). |
+| `spinner` | The loading spinner | Restyling the spinner ring. |
+| `arrow` | The directional arrow | Recoloring or reshaping the arrow tip. |
+
+```css
+ekko-toggletip::part(popover) {
+  max-width: 24rem;
+}
+ekko-toggletip::part(base):hover {
+  filter: brightness(1.05);
+}
+```
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a fallback. Override at any scope —
+`:root`, a section, or per-instance. See [Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-toggletip-shared-background` | `#ffffff` | Popover surface color. |
+| `--ekko-toggletip-shared-text` | `#171717` | Popover text color. |
+| `--ekko-toggletip-shared-border` | `#e5e5e5` | Popover border color. |
+| `--ekko-toggletip-shared-border-width` | `1px` | Border width on both trigger and popover. |
+| `--ekko-toggletip-shared-border-style` | `solid` | Border style on both trigger and popover. |
+| `--ekko-toggletip-shared-border-radius` | `8px` | Popover corner radius. |
+| `--ekko-toggletip-shared-font-family` | `system-ui, sans-serif` | Trigger and popover font. |
+| `--ekko-toggletip-shared-font-weight` | `400` | Trigger and popover weight. |
+| `--ekko-toggletip-shared-line-height` | `1.5` | Popover line-height. |
+| `--ekko-toggletip-shared-letter-spacing` | `0.01rem` | Popover tracking. |
+| `--ekko-toggletip-shared-gap` | `0.5rem` | Gap between content and spinner inside the popover. |
+| `--ekko-toggletip-shared-offset` | `0.5rem` | Distance between the trigger and the popover. |
+| `--ekko-toggletip-shared-arrow-size` | `6px` | Half-length of the arrow tip. |
+| `--ekko-toggletip-shared-max-width` | `20rem` | Maximum popover width. |
+| `--ekko-toggletip-shared-min-width` | `12rem` | Minimum popover width. |
+| `--ekko-toggletip-shared-shadow-offset-y` | `4px` | Vertical offset of the popover drop shadow. |
+| `--ekko-toggletip-shared-shadow-blur` | `12px` | Drop shadow blur radius. |
+| `--ekko-toggletip-shared-shadow-spread` | `-2px` | Drop shadow spread. |
+| `--ekko-toggletip-shared-shadow-opacity` | `0.18` | Alpha for the (black) shadow color. |
+| `--ekko-toggletip-shared-transition-duration` | `100ms` | Fade and hover transition speed. |
+| `--ekko-toggletip-shared-focus-ring-color` | `#2563eb` | Trigger focus ring color. |
+| `--ekko-toggletip-shared-focus-ring-width` | `2px` | Trigger focus ring width. |
+| `--ekko-toggletip-shared-focus-ring-offset` | `2px` | Trigger focus ring offset. |
+| `--ekko-toggletip-shared-disabled-opacity` | `0.5` | Opacity for the disabled trigger. |
+| `--ekko-toggletip-shared-spinner-size` | `0.75rem` | Loading spinner diameter. |
+| `--ekko-toggletip-shared-spinner-border-width` | `2px` | Spinner ring thickness. |
+| `--ekko-toggletip-shared-z-index` | `400` | Stacking context for the popover. |
+
+### Trigger
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-toggletip-trigger-background` | `#ffffff` | Resting trigger background. |
+| `--ekko-toggletip-trigger-background-hover` | `#f5f5f5` | Hover trigger background. |
+| `--ekko-toggletip-trigger-background-active` | `#e5e5e5` | Active (mouse-down) trigger background. |
+| `--ekko-toggletip-trigger-text` | `#171717` | Trigger glyph color. |
+| `--ekko-toggletip-trigger-border` | `#d4d4d4` | Trigger border color. |
+| `--ekko-toggletip-trigger-border-radius` | `9999px` | Trigger corner radius (pill by default). |
+
+### Variant: inverse
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-toggletip-inverse-background` | `#171717` | Popover surface and arrow color. |
+| `--ekko-toggletip-inverse-text` | `#ffffff` | Popover text color. |
+| `--ekko-toggletip-inverse-border` | `#171717` | Popover border color. |
+
+### Per size (sm, md, lg)
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-toggletip-size-{size}-trigger-size` | `1.25rem / 1.5rem / 2rem` | Trigger width and height. |
+| `--ekko-toggletip-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Trigger glyph and popover font size. |
+| `--ekko-toggletip-size-{size}-padding-x` | `0.5rem / 0.75rem / 1rem` | Popover horizontal padding. |
+| `--ekko-toggletip-size-{size}-padding-y` | `0.5rem / 0.5rem / 0.75rem` | Popover vertical padding. |
+
+---
+
+## Accessibility
+
+### Pattern
+
+The trigger is a real `<button>` with the full disclosure ARIA contract:
+
+- `aria-haspopup="true"` — signals the button reveals a popover
+- `aria-expanded="true|false"` — reflects the live `open` state
+- `aria-controls="ekko-toggletip-{uid}"` — points at the popover's auto-generated id
+
+The popover itself uses `role="status"` and `aria-live="polite"` so its content is
+announced when revealed. When `loading`, `aria-busy="true"` is set on the popover.
+
+Critically, the trigger is **not** wired with `aria-describedby` pointing at the popover —
+that would describe the trigger and is the *tooltip* pattern. Toggletips disclose;
+they do not describe.
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus to/from the trigger |
+| `Enter` | Toggle the popover (native `<button>` behaviour) |
+| `Space` | Toggle the popover (native `<button>` behaviour) |
+| `Escape` | Close the popover and return focus to the trigger |
+
+### Pointer
+
+Click the trigger to toggle. Click anywhere outside the host element to dismiss — the
+component listens on `document` and uses `event.composedPath()` to detect outside
+clicks across the Shadow boundary.
+
+### Screen reader announcements
+
+| State | Announcement |
+| --- | --- |
+| Trigger, closed | "&#123;aria-label or 'i'&#125;, button, collapsed" |
+| Trigger, open | "&#123;aria-label or 'i'&#125;, button, expanded" |
+| Trigger, disabled | "&#123;aria-label&#125;, dimmed, button" (varies by reader) |
+| Popover, opened | The popover's text is announced via the `aria-live="polite"` region |
+| Popover, loading | The reader hears "busy" until `loading` is cleared |
+
+### Focus
+
+A visible focus ring appears on the trigger via `:focus-visible` only — keyboard users
+see it, mouse-only clicks don't trigger it. The ring is driven by tokens
+(`--ekko-toggletip-shared-focus-ring-*`).
+
+### Labelling
+
+If you slot a custom icon into the `trigger` slot, set `aria-label` on the host so the
+trigger has an accessible name:
+
+```html
+<!-- preferred — explicit accessible name for an icon trigger -->
+<ekko-toggletip aria-label="More information" label="Help text">
+  <svg slot="trigger" aria-hidden="true">…</svg>
+</ekko-toggletip>
+
+<!-- default trigger renders a literal "i", which most readers announce as a letter -->
+<ekko-toggletip aria-label="Password help" label="Must be at least 12 characters."></ekko-toggletip>
+```
+
+### Reduced motion
+
+The popover fade and trigger hover transitions are disabled when the user has
+`prefers-reduced-motion: reduce` set.
+
+---
+
+## Things to know
+
+### Toggletip is not tooltip
+
+| | Tooltip | Toggletip |
+| --- | --- | --- |
+| Activation | hover / focus | click |
+| Lifetime | ephemeral — vanishes on blur/leave | persistent — closes on Escape, outside click, or re-click |
+| ARIA pattern | `aria-describedby` *describes* the anchor | `aria-haspopup` + `aria-expanded` *discloses* a region |
+| Content | ultra-short labels, no interactive bits | longer text, links, code, inline structure |
+| Critical info? | never — content is supplementary | never — content is supplementary |
+
+If the content is short enough to fit a tooltip and trivial enough that the user might
+never need to read it, use a tooltip. If the content is substantive — a multi-line
+explanation, formatting rules, a definition — use a toggletip.
+
+### Content must be optional
+
+The page should still make sense if the user never opens the toggletip. Don't put error
+messages, required-field rules, validation outcomes, or anything action-blocking inside.
+Surface those inline.
+
+### `label` vs. the default slot
+
+The `label` attribute is a plain-text shortcut for one-liners. The moment you slot any
+non-empty content into the default slot it takes precedence — set `label` *or* slot
+content, not both. The component reads the slot at connect time and on `label` changes,
+favouring slotted content if present.
+
+### Positioning fallback
+
+The component uses absolute positioning relative to the host (which is `position:
+relative`) — no anchor positioning API, no Popover API, no flipping. The popover stays
+on whichever side `placement` specifies; if it would clip the viewport, change
+`placement` or shrink `--ekko-toggletip-shared-max-width`.
+
+### `disabled` clears `open`
+
+Setting `disabled` while the popover is open removes the `open` attribute as part of
+`attributeChangedCallback`. The trigger then becomes inert (`aria-disabled="true"` plus
+the native `disabled` property on the inner button).
+
+### The default trigger glyph is "i"
+
+If you don't slot a `trigger`, the button shows a literal `i`. Most consumers will want
+to slot an info icon and provide an `aria-label`, since "i" announces as a letter.
+
+---
+
+## Source
+
+- [`packages/components/src/toggletip/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/toggletip/index.ts)
+- [`packages/components/src/toggletip/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/toggletip/index.css)
+- [`packages/tokens/tokens/component/toggletip.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/toggletip.json)

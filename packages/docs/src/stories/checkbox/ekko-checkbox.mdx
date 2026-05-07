@@ -1,0 +1,272 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as CheckboxStories from './ekko-checkbox.stories';
+
+<Meta of={CheckboxStories} />
+
+<Title />
+<Subtitle>A checkbox lets a user select zero, one, or multiple values from a set of options.</Subtitle>
+
+`ekko-checkbox` is a [Form-Associated Custom Element](/?path=/docs/foundations-forms-face--docs)
+that wraps a visually-hidden native `<input type="checkbox">`. The native input handles
+keyboard, focus, and `FormData` participation; a styled `<span>` next to it provides
+the visible box and the checkmark or indeterminate dash.
+
+---
+
+## When to use
+
+- Multi-select scenarios where each option is independent (e.g. notification preferences)
+- "I agree to the terms" — a single checkbox in a form
+- Indeterminate state for a parent that controls a group of children (the classic
+  "select all" pattern)
+
+For a binary on/off setting that takes effect immediately (toggle), use
+[`ekko-switch`](/?path=/docs/components-switch--docs) instead. Use
+[`ekko-radio`](/?path=/docs/components-radio--docs) when the user must pick exactly one
+of several mutually-exclusive options.
+
+---
+
+## Anatomy
+
+```
+<ekko-checkbox>
+  ┌─────────────────────────────────────────────┐
+  │  Shadow DOM                                 │
+  │  <label>                                    │
+  │    <input part="base" type="checkbox" />    │  ← visually hidden, focusable
+  │    <span class="box" />                     │  ← visible box + ::after checkmark
+  │    <span class="label-text">                │
+  │      <slot />                               │  ← your label text
+  │    </span>                                  │
+  │  </label>                                   │
+  └─────────────────────────────────────────────┘
+</ekko-checkbox>
+```
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `checked` | `checked` | `boolean` | `false` | Selection state. Reflects to/from the inner input. |
+| — | `indeterminate` | `boolean` | `false` | Mixed-selection state. Property only — there is no HTML attribute for indeterminate. Renders a horizontal dash instead of a checkmark. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Sets `aria-disabled="true"`. |
+| `name` | `name` | `string` | `''` | Form submission name. |
+| `value` | `value` | `string` | `'on'` | Form submission value when `checked`. Matches native checkbox default. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale. |
+| `aria-label` | — | `string` | — | Accessible name when no slotted label is provided. Forwarded to the inner input. |
+| `aria-describedby` | — | `string` | — | Describing element id(s). Forwarded to the inner input. |
+
+The `form` getter returns the host form (`HTMLFormElement | null`).
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `click()` | `void` | Programmatic click. Toggles the checked state and fires `change`. |
+| `focus(options?)` | `void` | Moves keyboard focus to the inner input. |
+| `blur()` | `void` | Removes focus. |
+
+There is no separate `toggle()` method — set the `checked` property directly.
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-change` | `{ checked: boolean, indeterminate: boolean, originalEvent: Event }` | When the user toggles the checkbox via click or keyboard. Not fired when `checked` is set programmatically. |
+| `change` | native `Event` | Standard DOM change. Bubbles out of Shadow DOM — listen here if you don't need the typed detail. |
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | text or inline elements | The visible label. Click target spans both the box and the label. |
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<input>` | Rare. The input is visually hidden — most styling targets the `box` via custom properties. |
+
+---
+
+## CSS Custom Properties
+
+### Shared
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-checkbox-shared-background` | `#ffffff` | Box background when unchecked. |
+| `--ekko-checkbox-shared-background-hover` | `#f5f5f5` | Box background on hover (unchecked). |
+| `--ekko-checkbox-shared-background-checked` | `#2563eb` | Box background when checked or indeterminate. |
+| `--ekko-checkbox-shared-background-checked-hover` | `#1d4ed8` | Box background on hover when checked or indeterminate. |
+| `--ekko-checkbox-shared-border` | `#d4d4d4` | Border color, unchecked. |
+| `--ekko-checkbox-shared-border-hover` | `#a3a3a3` | Border color on hover, unchecked. |
+| `--ekko-checkbox-shared-border-checked` | `#2563eb` | Border color when checked or indeterminate. |
+| `--ekko-checkbox-shared-border-width` | `1px` | Border width. |
+| `--ekko-checkbox-shared-border-style` | `solid` | Border style. |
+| `--ekko-checkbox-shared-border-radius` | `4px` | Box corner radius. |
+| `--ekko-checkbox-shared-checkmark-color` | `#ffffff` | Checkmark / dash color. |
+| `--ekko-checkbox-shared-label-text` | `#171717` | Label text color. |
+| `--ekko-checkbox-shared-label-text-disabled` | `#a3a3a3` | Label text color when disabled. |
+| `--ekko-checkbox-shared-disabled-opacity` | `0.5` | Opacity for the disabled state. |
+| `--ekko-checkbox-shared-font-family` | `system-ui, sans-serif` | Label font. |
+| `--ekko-checkbox-shared-font-weight` | `400` | Label weight. |
+| `--ekko-checkbox-shared-line-height` | `1.25` | Label line-height. |
+| `--ekko-checkbox-shared-letter-spacing` | `0.01rem` | Label tracking. |
+| `--ekko-checkbox-shared-gap` | `0.5rem` | Gap between box and label. |
+| `--ekko-checkbox-shared-transition-duration` | `100ms` | Transition speed for state changes. |
+| `--ekko-checkbox-shared-focus-ring-color` | `#2563eb` | Focus ring color. |
+| `--ekko-checkbox-shared-focus-ring-width` | `2px` | Focus ring width. |
+| `--ekko-checkbox-shared-focus-ring-offset` | `2px` | Focus ring offset. |
+
+### Per size (sm, md, lg)
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-checkbox-size-{size}-box-size` | `0.875rem / 1rem / 1.25rem` | Width and height of the visible box. |
+| `--ekko-checkbox-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Label font size. |
+| `--ekko-checkbox-size-{size}-checkmark-width` | `0.25rem / 0.3rem / 0.35rem` | Checkmark width (CSS-drawn tick). |
+| `--ekko-checkbox-size-{size}-checkmark-height` | `0.45rem / 0.55rem / 0.65rem` | Checkmark height. |
+| `--ekko-checkbox-size-{size}-dash-width` | `0.375rem / 0.5rem / 0.625rem` | Indeterminate dash width. |
+
+---
+
+## Accessibility
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus to/from the checkbox |
+| `Space` | Toggle checked state (native `<input type="checkbox">` behaviour) |
+
+### Screen reader announcements
+
+| State | Announcement |
+| --- | --- |
+| Checked | "&#123;label&#125;, checkbox, checked" |
+| Unchecked | "&#123;label&#125;, checkbox, not checked" |
+| Indeterminate | "&#123;label&#125;, checkbox, mixed" |
+| Disabled | "&#123;label&#125;, checkbox, dimmed" (varies by reader) |
+
+### Focus
+
+The native `<input>` inside the shadow tree is the focus target. The visible box renders
+the focus ring via `:focus-visible ~ .box` (sibling combinator). The hidden input is
+positioned absolutely with a 1×1 clip — it stays in the tab order without affecting
+layout.
+
+### Labelling
+
+Slotted text is the visible label. If you don't slot a label, set `aria-label` on the
+host so the inner input has an accessible name.
+
+```html
+<!-- preferred — visible label -->
+<ekko-checkbox name="agree">I agree to the terms</ekko-checkbox>
+
+<!-- icon-only or visually hidden — use aria-label -->
+<ekko-checkbox name="row-1" aria-label="Select row 1"></ekko-checkbox>
+```
+
+---
+
+## Form integration
+
+```html
+<form>
+  <ekko-checkbox name="newsletter">Subscribe to product updates</ekko-checkbox>
+  <ekko-checkbox name="terms" required>I agree to the terms</ekko-checkbox>
+  <ekko-button type="submit">Sign up</ekko-button>
+</form>
+```
+
+`FormData` includes `name=value` only when the checkbox is **checked**. When unchecked,
+the entry is omitted entirely (matching native `<input type="checkbox">` behaviour).
+
+The `value` attribute defaults to `'on'` to match native semantics. Set it explicitly
+when sending a meaningful value (e.g. `value="opt-in"`).
+
+`<fieldset disabled>` propagates automatically through `formDisabledCallback`. The
+checkbox does not contribute to `FormData` while disabled.
+
+---
+
+## Indeterminate state
+
+The "mixed" state is set programmatically. There's no HTML attribute for it — set the
+property:
+
+```js
+const parentCheckbox = document.querySelector('ekko-checkbox[data-parent]');
+parentCheckbox.indeterminate = true;
+```
+
+The classic "select all / deselect all" pattern:
+
+```js
+function syncParent() {
+  const all = childCheckboxes.every((c) => c.checked);
+  const some = childCheckboxes.some((c) => c.checked);
+  parent.checked = all;
+  parent.indeterminate = some && !all;
+}
+```
+
+The user toggling a checkbox in the indeterminate state clears `indeterminate` and
+sets `checked = true` (same as native).
+
+---
+
+## Things to know
+
+### `value` defaults to `'on'`
+
+This matches native HTML. Most projects prefer something explicit — set `value="..."`
+when the checkbox represents a domain value.
+
+### `checked` is reflected; `indeterminate` is not
+
+This is a deliberate match to the native input. `checked` is HTML state and survives
+serialization; `indeterminate` is runtime state and resets on form reset.
+
+### Programmatic `checked = true` does not fire `ekko-change`
+
+Only user interaction fires the event — same as native. If you need to react to
+programmatic changes, listen for attribute mutations or wire it up explicitly in your
+state-update code.
+
+### The hidden input is the focus target
+
+If you grab the host's focused state via `:focus-within`, it works. If you read
+`document.activeElement`, you'll see the host element (focus retargets at the Shadow
+boundary). Use `event.composedPath()` if you need the inner input.
+
+---
+
+## Source
+
+- [`packages/components/src/checkbox/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/checkbox/index.ts)
+- [`packages/components/src/checkbox/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/checkbox/index.css)
+- [`packages/tokens/tokens/component/checkbox.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/checkbox.json)

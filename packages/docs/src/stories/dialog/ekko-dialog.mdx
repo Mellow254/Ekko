@@ -1,0 +1,333 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as DialogStories from './ekko-dialog.stories';
+
+<Meta of={DialogStories} />
+
+<Title />
+<Subtitle>A modal surface for confirmations, sign-in flows, and brief detail views.</Subtitle>
+
+`ekko-dialog` wraps the native `<dialog>` element. It inherits all the platform behaviour —
+top-layer rendering, `::backdrop`, focus trap (when modal), `Escape` to close, return value
+support — and adds a styled close button, slot-based footer, header (heading + description),
+loading state, alert variant, and configurable backdrop click-to-close.
+
+---
+
+## When to use
+
+Use `ekko-dialog` for:
+
+- Confirmations — Delete, Discard changes, Sign out
+- Sign-in / authentication flows that interrupt the current task
+- Brief detail views that need user attention before they continue
+
+For non-blocking notifications — toasts, inline banners — use a toast/banner pattern (not in
+Ekko). For navigation overlays attached to a screen edge, consider a drawer (not in Ekko).
+
+---
+
+## Anatomy
+
+```
+<ekko-dialog>
+  ┌──────────────────────────────────────────────────────────┐
+  │  Shadow DOM                                              │
+  │  ┌────────────────────────────────────────────────────┐  │
+  │  │  <dialog part="base">                              │  │
+  │  │    <button part="close" />     ← close button      │  │
+  │  │    <div class="layout">                            │  │
+  │  │      <header part="header">                        │  │
+  │  │        <h2 part="title" />     ← heading           │  │
+  │  │        <p  part="description" /> ← description     │  │
+  │  │      </header>                                     │  │
+  │  │      <div part="body">                             │  │
+  │  │        <slot />                ← default content   │  │
+  │  │      </div>                                        │  │
+  │  │      <footer part="footer">                        │  │
+  │  │        <slot name="footer" />  ← action buttons    │  │
+  │  │      </footer>                                     │  │
+  │  │    </div>                                          │  │
+  │  │    <div part="spinner" />      ← when loading      │  │
+  │  │  </dialog>                                         │  │
+  │  └────────────────────────────────────────────────────┘  │
+  └──────────────────────────────────────────────────────────┘
+</ekko-dialog>
+```
+
+The host renders nothing visible (`display: contents`); the inner `<dialog>` does the layout
+and lives in the browser's top layer when modal.
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `open` | `open` | `boolean` | `false` | Open state. Reflects the inner dialog's open state — toggling the attribute opens/closes the dialog. |
+| `modal` | `modal` | `boolean` | `false` | Controls which native method is used. `showModal()` when set (top layer + backdrop + focus trap), `show()` when not. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Width preset. Padding and typography scale with the size. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Dims the dialog and blocks pointer events. |
+| `loading` | `loading` | `boolean` | `false` | Shows a centered spinner, dims body and footer, and sets `aria-busy="true"` on the inner dialog. |
+| `hide-close` | `hideClose` | `boolean` | `false` | Hides the built-in close button (and removes the right-padding it reserves on the header). |
+| `close-on-backdrop` | `closeOnBackdrop` | `boolean` | `false` | When set, clicking the backdrop closes a modal dialog. Off by default — most a11y guidance recommends explicit dismissal. |
+| `heading` | `heading` | `string` | `''` | Heading text. When set, the inner dialog gets `aria-labelledby` pointing at the heading. |
+| `description` | `description` | `string` | `''` | Supporting description rendered below the heading. Merged into `aria-describedby`. |
+| `close-label` | — | `string` | `'Close'` | Accessible name for the built-in close button. |
+| `alert` | — | `boolean` | `false` | Renders the inner dialog with `role="alertdialog"`. Use for destructive confirmations and error announcements. |
+| `aria-label` | — | `string` | — | Accessible name. Forwarded to the inner `<dialog>`. Takes precedence over `aria-labelledby` derived from `heading`. |
+| `aria-describedby` | — | `string` | — | Describing element id(s). Merged with the internal description id when `description` is set. |
+
+Plus the `returnValue` getter/setter — proxies the native dialog's `returnValue`. Read after
+close, write before close, or pass to `close(value)`.
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `show()` | `void` | Opens as a non-modal. Stays in document flow; no backdrop, no focus trap. Sets `modal = false`. |
+| `showModal()` | `void` | Opens as a modal. Renders in the top layer, paints the `::backdrop`, traps focus, and closes on `Escape`. Sets `modal = true`. |
+| `close(returnValue?)` | `void` | Closes the dialog and stores the optional `returnValue`. The value is readable on the host's `returnValue` property and on the `ekko-close` event detail. |
+
+Both `show()` and `showModal()` no-op when `disabled`. Calling `showModal()` on a dialog that
+is already open as a non-modal is a no-op — close it first.
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-open` | `{ modal: boolean }` | After the dialog opens via `show()` or `showModal()`. The `modal` flag tells you which method was used. |
+| `ekko-close` | `{ returnValue: string }` | After the dialog closes (close button, `close()`, form submit with `method="dialog"`, or the native `close` event). |
+| `ekko-cancel` | `{ originalEvent: Event }` | When the user presses `Escape` (modal only). **Cancelable** — calling `event.preventDefault()` keeps the dialog open. |
+| `close` | native `Event` | Native close event from the inner `<dialog>`. Bubbles out of Shadow DOM. |
+| `cancel` | native `Event` | Native cancel event from the inner `<dialog>`. Bubbles out of Shadow DOM. |
+
+All Ekko events `bubble` and `compose` (cross the Shadow boundary).
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | text, paragraphs, form fields, anything | The dialog body. |
+| `footer` | action buttons | Right-aligned by default (`justify-content: flex-end`). Wraps automatically on narrow widths. |
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<dialog>` | Custom backgrounds, borders, or animations beyond what tokens expose. |
+| `close` | The built-in close button | Custom hover, focus, or icon styling. |
+| `header` | The header wrapper | Spacing, alignment, or borders below the header. |
+| `title` | The `<h2>` heading | Typography overrides per page or section. |
+| `description` | The `<p>` description | Color, line-height, or spacing tweaks. |
+| `body` | The body container | Padding or scroll behaviour around slotted content. |
+| `footer` | The footer container | Different action layouts (e.g. `justify-content: space-between`). |
+| `spinner` | The loading spinner | Custom spinner size, color, or animation. |
+
+```css
+ekko-dialog::part(base) {
+  border: none;
+}
+ekko-dialog::part(footer) {
+  justify-content: space-between;
+}
+```
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a fallback. Override at any scope —
+`:root`, a section, or per-instance. See [Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared (all sizes)
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-dialog-shared-background` | `#ffffff` | Dialog background. |
+| `--ekko-dialog-shared-text` | `#171717` | Default text color inside the dialog. |
+| `--ekko-dialog-shared-border` | `#e5e5e5` | Border color. |
+| `--ekko-dialog-shared-border-width` | `1px` | Border width. |
+| `--ekko-dialog-shared-border-style` | `solid` | Border style. |
+| `--ekko-dialog-shared-border-radius` | `12px` | Corner radius. |
+| `--ekko-dialog-shared-shadow-offset-y` | `10px` | Drop shadow vertical offset. |
+| `--ekko-dialog-shared-shadow-blur` | `25px` | Drop shadow blur radius. |
+| `--ekko-dialog-shared-shadow-spread` | `-5px` | Drop shadow spread. |
+| `--ekko-dialog-shared-shadow-color` | `#000000` | Fallback color used inside `rgba()` for the drop shadow. |
+| `--ekko-dialog-shared-shadow-opacity` | `0.15` | Drop shadow opacity. |
+| `--ekko-dialog-shared-backdrop-color` | `#000000` | Fallback color used inside `rgba()` for the `::backdrop` overlay. |
+| `--ekko-dialog-shared-backdrop-opacity` | `0.5` | Opacity of the `::backdrop` overlay behind a modal dialog. |
+| `--ekko-dialog-shared-font-family` | `system-ui, sans-serif` | Body font. |
+| `--ekko-dialog-shared-font-weight` | `400` | Body weight. |
+| `--ekko-dialog-shared-line-height` | `1.5` | Body line-height. |
+| `--ekko-dialog-shared-letter-spacing` | `0.01rem` | Body tracking. |
+| `--ekko-dialog-shared-title-font-weight` | `600` | Heading weight. |
+| `--ekko-dialog-shared-title-line-height` | `1.25` | Heading line-height. |
+| `--ekko-dialog-shared-title-color` | `#171717` | Heading color. |
+| `--ekko-dialog-shared-description-color` | `#525252` | Description color. |
+| `--ekko-dialog-shared-description-line-height` | `1.375` | Description line-height. |
+| `--ekko-dialog-shared-gap` | `0.75rem` | Vertical gap between header, body, and footer (also used inside header and as footer item gap). |
+| `--ekko-dialog-shared-transition-duration` | `200ms` | Transition speed for backdrop and close button state changes. |
+| `--ekko-dialog-shared-focus-ring-color` | `#2563eb` | Focus ring color (dialog and close button). |
+| `--ekko-dialog-shared-focus-ring-width` | `2px` | Focus ring width. |
+| `--ekko-dialog-shared-focus-ring-offset` | `2px` | Focus ring offset. |
+| `--ekko-dialog-shared-close-size` | `1.75rem` | Width and height of the close button. |
+| `--ekko-dialog-shared-close-offset` | `0.5rem` | Distance from top/right edge to the close button. |
+| `--ekko-dialog-shared-close-border-radius` | `6px` | Close button corner radius. |
+| `--ekko-dialog-shared-close-color` | `#525252` | Close button icon color. |
+| `--ekko-dialog-shared-close-color-hover` | `#171717` | Close button icon color on hover. |
+| `--ekko-dialog-shared-close-background-hover` | `#f5f5f5` | Close button background on hover. |
+| `--ekko-dialog-shared-close-icon-size` | `1rem` | Width and height of the close icon. |
+| `--ekko-dialog-shared-disabled-opacity` | `0.5` | Opacity for the disabled state and for body/footer while loading. |
+| `--ekko-dialog-shared-spinner-size` | `1.5rem` | Loading spinner diameter. |
+| `--ekko-dialog-shared-spinner-border-width` | `2px` | Spinner ring thickness. |
+| `--ekko-dialog-shared-z-index` | `200` | Stacking context for modal dialogs. |
+
+### Per size (sm, md, lg)
+
+For each size — `sm`, `md`, `lg` — the same five properties exist:
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-dialog-size-{size}-width` | `20rem / 28rem / 36rem` | Dialog width. Capped at `100vw` minus padding. |
+| `--ekko-dialog-size-{size}-padding-x` | `1rem / 1.5rem / 1.5rem` | Horizontal padding. |
+| `--ekko-dialog-size-{size}-padding-y` | `1rem / 1.5rem / 1.5rem` | Vertical padding. |
+| `--ekko-dialog-size-{size}-font-size` | `0.875rem / 1rem / 1rem` | Body font size. |
+| `--ekko-dialog-size-{size}-title-font-size` | `1rem / 1.125rem / 1.25rem` | Heading font size. |
+
+---
+
+## Accessibility
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Cycles focus inside the dialog. The native focus trap kicks in for modal dialogs (top-layer behaviour). |
+| `Escape` | Fires `cancel` (and `ekko-cancel`) and closes a modal dialog. Call `event.preventDefault()` on `ekko-cancel` to keep it open. |
+| `Enter` | Submits a `<form method="dialog">` if one wraps the focused control — see [Form integration](#form-integration) below. |
+
+The close button is part of the natural tab order inside the dialog.
+
+### Screen reader announcements
+
+| State | Announcement |
+| --- | --- |
+| Default | "&#123;heading&#125;, dialog" (when `heading` is set) or "&#123;aria-label&#125;, dialog" |
+| Alert variant | "&#123;heading&#125;, alert dialog" — interrupts immediately and requires user action |
+| Loading | "&#123;heading&#125;, dialog, busy" |
+
+`aria-labelledby` points at the inner heading id when `heading` is set, otherwise the host's
+`aria-label` is forwarded to the inner dialog. `aria-describedby` is set to the description
+element's id and merged with any external `aria-describedby` on the host.
+
+### Focus management
+
+When opened as a modal, the browser moves focus to the dialog automatically (the first
+focusable child, or the dialog itself). On close, focus returns to the previously focused
+element — this is native `<dialog>` behaviour and works for both `show()` and `showModal()`.
+
+### `role="alertdialog"` implications
+
+Setting `alert` switches the inner role to `alertdialog`. Alert dialogs interrupt screen
+readers immediately and require user action — use sparingly for critical confirmations
+("Discard unsaved changes?", "Permanently delete this project?"), not for routine flows.
+
+---
+
+## Form integration
+
+Native `<dialog>` supports the `method="dialog"` form submission pattern: a form inside the
+dialog with `method="dialog"` closes the dialog when submitted, and the submitter button's
+`value` becomes the dialog's `returnValue`. No JavaScript required.
+
+```html
+<ekko-dialog id="confirm" heading="Discard changes?" description="You will lose unsaved edits.">
+  <form method="dialog">
+    <ekko-button slot="footer" type="submit" name="action" value="cancel" variant="ghost">
+      Cancel
+    </ekko-button>
+    <ekko-button slot="footer" type="submit" name="action" value="discard" variant="danger">
+      Discard
+    </ekko-button>
+  </form>
+</ekko-dialog>
+
+<script>
+  document.getElementById('confirm').addEventListener('ekko-close', (e) => {
+    console.log('User chose:', e.detail.returnValue); // "cancel" or "discard"
+  });
+</script>
+```
+
+You can also call `close(value)` directly from a click handler if you don't want a form
+wrapper — the result is the same.
+
+---
+
+## Things to know
+
+### `:host { display: contents }` — the host renders nothing
+
+The inner `<dialog>` does the layout. CSS that targets the host element (e.g. `width`,
+`margin`, `padding` on `ekko-dialog`) has no visible effect. Style via tokens or the
+`base` part instead.
+
+### The close button is always rendered
+
+Use `hide-close` to hide it (and remove the right-padding it reserves on the header). The
+button is in the tab order whenever it's visible, giving keyboard users a predictable exit.
+
+### `close-on-backdrop` is opt-in
+
+By default, clicking the dimmed backdrop does nothing — this matches the most common a11y
+best practice that modal dismissal should be intentional. Set `close-on-backdrop` only when
+the dialog represents a recoverable, low-stakes action.
+
+### Loading dims body and footer, not the close button
+
+Setting `loading` opacity-dims the body and footer, shows the centered spinner, and sets
+`aria-busy="true"` on the inner dialog. The close button stays interactive so users can
+escape if a long-running action stalls.
+
+### `ekko-cancel` is cancelable
+
+The native dialog's `cancel` event fires on `Escape`. Ekko wraps it in `ekko-cancel`
+(cancelable). Calling `event.preventDefault()` on either keeps the dialog open — useful for
+"are you sure?" confirmation patterns.
+
+### `returnValue` persists across show/hide cycles
+
+`returnValue` is exposed both as a property (read/write on the host) and via `close(value)`.
+It's preserved across show/hide cycles until you reset it manually — make sure to clear
+stale values before reopening if you want clean state.
+
+### `z-index` defaults to 200
+
+Far above typical UI layers but below toasts. Override
+`--ekko-dialog-shared-z-index` if you stack overlays differently in your app.
+
+---
+
+## Source
+
+- [`packages/components/src/dialog/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/dialog/index.ts)
+- [`packages/components/src/dialog/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/dialog/index.css)
+- [`packages/tokens/tokens/component/dialog.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/dialog.json)

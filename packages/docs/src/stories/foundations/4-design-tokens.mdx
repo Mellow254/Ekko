@@ -1,0 +1,229 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Design Tokens" />
+
+# Design Tokens
+
+Tokens are the single source of truth for every visual decision in the system. They are
+authored as JSON in W3C [DTCG](https://design-tokens.github.io/community-group/format/)
+format and compiled by [Style Dictionary v5](https://styledictionary.com/) into CSS
+custom properties, JavaScript constants, and flat JSON.
+
+This page is for two audiences:
+
+- **Consumers** who want to know which tokens exist and how to override them. Skim
+  the tier hierarchy, then jump to the [override examples](/?path=/docs/foundations-theming-styling--docs).
+- **Contributors** who want to add or rename a token. Read the whole page.
+
+---
+
+## Three tiers, never mixed
+
+```
+┌──────────────────────┐
+│  base/               │  raw values: hex colors, px sizes, font stacks
+│  ─────               │  NEVER references another token
+│  color.blue.500      │
+│  space.4             │
+│  font.size.md        │
+└──────────┬───────────┘
+           │ aliased by
+           ▼
+┌──────────────────────┐
+│  semantic/           │  meaning layer: aliases to base only
+│  ─────────           │  light + dark variants for colors
+│  color.action.primary│
+│  color.text.disabled │
+│  radius.component.md │
+└──────────┬───────────┘
+           │ aliased by
+           ▼
+┌──────────────────────┐
+│  component/          │  per-component layer: aliases to semantic only
+│  ──────────          │  one file per component
+│  button.primary.bg   │
+│  input.shared.border │
+└──────────────────────┘
+```
+
+The rules are absolute:
+
+- **Base** never references anything else. It holds raw values only.
+- **Semantic** references base only. It never holds raw values (except dark-mode
+  overrides, which use resolved hex values).
+- **Component** references semantic only. It never references base or other components.
+
+This separation is what makes the system multi-brand. A new brand changes a handful of
+**semantic** tokens; every component automatically updates because it points at the
+semantic layer, not at raw values.
+
+---
+
+## DTCG format
+
+Each token is an object with `$value`, `$type`, and an optional `$description`. References
+use curly-brace syntax:
+
+```json
+{
+  "color": {
+    "action": {
+      "primary": {
+        "$type": "color",
+        "$value": "{color.blue.500}"
+      }
+    }
+  }
+}
+```
+
+Group nesting becomes the dot path. The compiled CSS custom property is the path
+prefixed with `--ekko-`:
+
+```
+color.action.primary  →  --ekko-color-action-primary
+button.primary.background  →  --ekko-button-primary-background
+```
+
+---
+
+## Naming conventions
+
+| Component-tier pattern | Example |
+| --- | --- |
+| `--ekko-{component}-shared-{property}` | `--ekko-button-shared-border-radius` |
+| `--ekko-{component}-{variant}-{property}` | `--ekko-button-primary-background` |
+| `--ekko-{component}-size-{sm\|md\|lg}-{property}` | `--ekko-input-size-md-padding-y` |
+
+| Semantic-tier pattern | Example |
+| --- | --- |
+| `--ekko-color-{role}-{state}` | `--ekko-color-action-primary-hover` |
+| `--ekko-color-text-{role}` | `--ekko-color-text-disabled` |
+| `--ekko-color-surface-{level}` | `--ekko-color-surface-elevated` |
+| `--ekko-radius-{scale}` | `--ekko-radius-component-md` |
+| `--ekko-space-{scale}` | `--ekko-space-component-sm` |
+| `--ekko-font-{role}-{property}` | `--ekko-font-body-family` |
+
+---
+
+## Units
+
+Two units, one rule.
+
+- **`rem`** for anything that should scale with user zoom or root font-size: spacing,
+  layout sizing, typography. Default browser `1rem === 16px`.
+- **`px`** for pixel-precise values that must not scale: border widths, border-radius,
+  outline offsets, focus-ring widths, text-underline offsets, shadow blur radii.
+
+`em` is forbidden in token sources. Durations are in `ms`. If you're unsure whether a
+value should scale, default to `rem`.
+
+This rule applies to every dimension token across all three tiers. It also applies to
+the **fallback values** in component CSS — the value after the comma in
+`var(--ekko-foo, 0.5rem)`.
+
+---
+
+## Build pipeline
+
+Run from the repo root:
+
+```bash
+pnpm build:tokens
+```
+
+This runs `node packages/tokens/build.js`, which produces five outputs:
+
+| File | Purpose |
+| --- | --- |
+| `dist/css/tokens.css` | Light tokens only |
+| `dist/css/tokens.dark.css` | Dark overrides — wrapped in both `@media (prefers-color-scheme: dark)` and `[data-theme="dark"]` |
+| `dist/css/tokens.all.css` | Light + dark in one file. **Primary export** for most consumers. |
+| `dist/js/tokens.mjs` | ES module constants, e.g. `export const colorActionPrimary = '#2563eb'` |
+| `dist/json/tokens.flat.json` | Flat key-value pairs for tooling integration |
+
+The dark mode wrapper is the trick that makes both auto and manual switching work without
+duplicating the file:
+
+```css
+@media (prefers-color-scheme: dark) {
+  :root { --ekko-color-text-primary: #fafafa; }
+}
+[data-theme="dark"] {
+  --ekko-color-text-primary: #fafafa;
+}
+```
+
+---
+
+## Package exports
+
+The `@ekko-ds/tokens` package exposes:
+
+| Export | Resolves to | When to use |
+| --- | --- | --- |
+| `@ekko-ds/tokens/css` | `tokens.all.css` | Default — light + dark, both activation paths |
+| `@ekko-ds/tokens/css/base` | `tokens.css` | When you control dark mode yourself and want zero `@media` rules |
+| `@ekko-ds/tokens/css/dark` | `tokens.dark.css` | Pair with `/css/base` for explicit control |
+| `@ekko-ds/tokens/js` | `tokens.mjs` | Read token values from JavaScript |
+| `@ekko-ds/tokens/json` | `tokens.flat.json` | Feed into other tooling (Figma plugins, etc.) |
+
+---
+
+## Consuming token values from JavaScript
+
+Sometimes you need a token value at runtime — to colour a `<canvas>`, configure a charting
+library, render a brand-coloured SVG icon, etc.
+
+```js
+import * as tokens from '@ekko-ds/tokens/js';
+
+// Strongly typed in TypeScript
+canvas.fillStyle = tokens.colorActionPrimary;
+```
+
+Or read from CSS at runtime if you need the **resolved** value (after dark-mode and brand
+overrides have applied):
+
+```js
+const primary = getComputedStyle(document.documentElement)
+  .getPropertyValue('--ekko-color-action-primary')
+  .trim();
+```
+
+Use the second approach when you need the value to follow the user's theme switch.
+
+---
+
+## Adding a new token
+
+For contributors. The flow:
+
+1. Open `packages/tokens/tokens/{tier}/{file}.json`.
+2. Add the token in DTCG format.
+3. If it's component-tier, also reference it in the component's CSS via
+   `var(--ekko-{path}, fallback)` with a hardcoded fallback that matches the resolved
+   token value.
+4. Run `pnpm build:tokens` to regenerate the dist files.
+5. Run `pnpm build` to confirm the full pipeline still passes.
+6. Add a changeset describing the addition.
+
+The unit policy applies to your fallback value too. If the token resolves to `0.5rem`,
+the fallback is `0.5rem` — never `8px`.
+
+---
+
+## Token reference
+
+Rather than duplicating the full token list here (it would go stale), browse the source:
+
+- Base tokens — [`packages/tokens/tokens/base/`](https://github.com/your-org/ekko-ds/tree/main/packages/tokens/tokens/base)
+- Semantic tokens — [`packages/tokens/tokens/semantic/`](https://github.com/your-org/ekko-ds/tree/main/packages/tokens/tokens/semantic)
+- Component tokens — [`packages/tokens/tokens/component/`](https://github.com/your-org/ekko-ds/tree/main/packages/tokens/tokens/component)
+
+Per-component token tables are also documented on each component's docs page in the
+**CSS Custom Properties** section.
+
+---
+
+Next: [Accessibility](/?path=/docs/foundations-accessibility--docs).

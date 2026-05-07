@@ -1,0 +1,436 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as TextareaStories from './ekko-textarea.stories';
+
+<Meta of={TextareaStories} />
+
+<Title />
+<Subtitle>A multi-line text-entry control. The single field that handles every long-form text scenario, with the same label, help, error, and ARIA wiring as `ekko-input`.</Subtitle>
+
+`ekko-textarea` is a [Form-Associated Custom Element](/?path=/docs/foundations-forms-face--docs)
+that wraps a native `<textarea>` inside Shadow DOM. It carries the same label /
+help / error / ARIA contract as `ekko-input` — only the inner element changes
+from a single-line `<input>` to a multi-line `<textarea>` with a user-resizable
+handle. The component manages the visible label, help text, error text, required
+indicator, and the full `aria-describedby` / `aria-invalid` / `aria-required`
+wiring around it.
+
+---
+
+## When to use
+
+- Multi-line text entry — comments, descriptions, message bodies, bios, code
+  snippets, plain-text notes
+- Any free-form field where the user might press `Enter` to start a new line
+- Long-form input that benefits from a resize handle so the user can grow the
+  field as they type
+
+**Don't use** `ekko-textarea` for:
+
+- Single-line text — use [`ekko-input`](/?path=/docs/components-input--docs)
+- A list of mutually exclusive choices — use `ekko-select` (or radios)
+- Boolean settings — use `ekko-checkbox` or `ekko-switch`
+
+---
+
+## Anatomy
+
+```
+<ekko-textarea>
+  ┌───────────────────────────────────────────────────────────┐
+  │  Shadow DOM                                               │
+  │  <div class="field">                                      │
+  │    <label class="label" for="...">                        │
+  │      <span class="label-text">Label</span>                │
+  │      <span class="required-indicator">*</span>            │  ← when required
+  │    </label>                                               │
+  │    <div class="control" part="control">                   │
+  │      <textarea part="base" class="textarea" />            │
+  │      <div class="spinner" />     ← when loading           │
+  │    </div>                                                 │
+  │    <div class="help"  part="help"  />                     │
+  │    <div class="error" part="error" role="alert" />        │
+  │  </div>                                                   │
+  └───────────────────────────────────────────────────────────┘
+</ekko-textarea>
+```
+
+The default slot is unused — the visible label comes from the `label` attribute,
+not slotted content. Unlike `ekko-input`, the textarea does **not** have
+`start` / `end` adornment slots; long-form fields rarely need them and a resize
+handle complicates side-rendered icons.
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+The component splits its attributes into three groups:
+
+- **Reflected** — host attribute is the source of truth, with a typed property getter/setter.
+- **Forwarded** — verbatim copies from host to the inner `<textarea>` so the native element enforces semantics (`rows`, `cols`, `wrap`, `minlength`, `maxlength`, etc.).
+- **State** — booleans that toggle visual state and ARIA wiring.
+
+### Reflected
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale. Drives padding, font-size, and `min-height`. |
+| `resize` | `resize` | `'none' \| 'vertical' \| 'horizontal' \| 'both'` | `'vertical'` | User resize behaviour. Mirrors the CSS `resize` property on the inner textarea. |
+| `label` | `label` | `string` | `''` | Visible label text. Rendered above the control and associated via `for`/`id`. |
+| `help` | — | `string` | `''` | Help text rendered below the control. Wired into `aria-describedby`. |
+| `error` | — | `string` | `''` | Error message rendered below the control when `invalid` is set. Replaces help in `aria-describedby`. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Sets native `disabled` and `aria-disabled="true"`. |
+| `readonly` | `readOnly` | `boolean` | `false` | Read-only — value submits but the user can't edit. |
+| `required` | `required` | `boolean` | `false` | Marks the field as required. Sets `aria-required="true"` and shows an asterisk on the label. |
+| `invalid` | `invalid` | `boolean` | `false` | Visual error state. Sets `aria-invalid="true"` and swaps help for error. |
+| `loading` | `loading` | `boolean` | `false` | Shows a spinner. Sets `aria-busy="true"` and disables the inner textarea. |
+| `full-width` | — | `boolean` | `false` | Stretches the host to fill its container. |
+
+### Forwarded to the inner `<textarea>`
+
+These attributes pass straight through. They're set on the host and synced to the
+inner textarea on every attribute change.
+
+| Attribute | Property | Type | Default | Notes |
+| --- | --- | --- | --- | --- |
+| `name` | `name` | `string` | `''` | Form-submission name. |
+| `placeholder` | `placeholder` | `string` | `''` | Placeholder text shown when the value is empty. |
+| `value` | `value` | `string` | `''` | **Initial** value (used by `form.reset()`). The current value lives on the property — read `element.value` at submit time. |
+| `rows` | `rows` | `number` | `2` | Visible text rows. Drives the natural height when `min-height` doesn't kick in. |
+| `cols` | `cols` | `number` | `20` | Visible character columns. Only affects pixel width when the host has `width: auto` — usually irrelevant since the inner textarea is `width: 100%`. |
+| `wrap` | `wrap` | `'soft' \| 'hard' \| 'off'` | `'soft'` | Line-wrap behaviour. `hard` inserts CR-LF in the submitted value at wrap points (requires `cols`). |
+| `minlength` | — | `number` | — | Minimum character count for constraint validation. Counts UTF-16 code units. |
+| `maxlength` | — | `number` | — | Maximum character count for constraint validation. Counts UTF-16 code units. |
+| `autocomplete` | — | `string` | — | Browser autofill hint (e.g. `street-address`, `off`). |
+| `autocapitalize` | — | `string` | — | iOS/Android capitalisation hint (`sentences`, `words`, `none`, etc.). |
+| `spellcheck` | — | `string` | — | Spell-check hint (`true` / `false`). |
+| `dirname` | — | `string` | — | Submits the text direction alongside the value as `{dirname}=ltr` or `{dirname}=rtl`. |
+
+### ARIA on the host
+
+| Attribute | Behaviour |
+| --- | --- |
+| `aria-label` | Forwarded to the inner textarea. **Only takes effect when no visible `label` attribute is set** — a visible label always wins. |
+| `aria-describedby` | Merged with the auto-generated `help`/`error` ids and applied to the inner textarea. |
+
+The `form` getter returns the host form (`HTMLFormElement | null`).
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `focus(options?)` | `void` | Moves focus to the inner native `<textarea>`. |
+| `blur()` | `void` | Removes focus. |
+| `select()` | `void` | Selects the entire current value. |
+| `setSelectionRange(start, end, direction?)` | `void` | Selects a sub-range. `direction` is `'forward'`, `'backward'`, or `'none'`. |
+| `setRangeText(replacement, start?, end?, selectionMode?)` | `void` | Replaces text in the given range (or at the current selection if no range). Updates form state automatically. |
+| `checkValidity()` | `boolean` | Runs constraint validation. Returns `true` if valid. Does **not** show the browser bubble. |
+| `reportValidity()` | `boolean` | Runs constraint validation **and** shows the browser's validation bubble for the first invalid field. |
+| `setCustomValidity(message)` | `void` | Sets a custom validation message. Pass `''` to clear. Also propagates to `ElementInternals` so the form sees it. |
+
+### Read-only getters
+
+| Getter | Type | Description |
+| --- | --- | --- |
+| `value` | `string` | The current value (live from the inner textarea). Setter writes through and updates form state. |
+| `validity` | `ValidityState` | Native validity object from the inner textarea (`valueMissing`, `tooShort`, `tooLong`, etc.). |
+| `validationMessage` | `string` | Human-readable validation message (browser-provided or your custom string). |
+| `textLength` | `number` | Length of the current value in UTF-16 code units. Useful for live character counters. |
+| `form` | `HTMLFormElement \| null` | The associated form via `ElementInternals`. |
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-input` | `{ value: string, originalEvent: Event }` | On every keystroke / value change — same trigger as the native `input` event. |
+| `ekko-change` | `{ value: string, originalEvent: Event }` | When the user commits the value — typically on blur. Same trigger as the native `change` event. |
+| `input` | native `Event` | Standard DOM input event, bubbles out of Shadow DOM. |
+| `change` | native `Event` | Standard DOM change event, bubbles out of Shadow DOM. |
+
+Both custom events `bubble` and `compose` (cross the Shadow boundary). Listen for
+the typed `ekko-*` variants if you want a typed `detail`; otherwise the bare native
+events work.
+
+---
+
+## Slots
+
+The default slot is **not** used. The visible label comes from the `label`
+attribute. Unlike `ekko-input`, there are no `start` / `end` adornment slots —
+long-form text fields rarely call for them, and the resize handle competes with
+side-rendered content.
+
+If you need to compose adornments around the textarea (character counter, action
+buttons), wrap the component in your own layout container.
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<textarea>` | Custom selection colors, caret styling, scrollbar tweaks the token system doesn't expose. |
+| `control` | The wrapper around the textarea | Custom border treatments, container queries, layered shadows. |
+| `help` | The help-text element | Layout overrides for help. |
+| `error` | The error-text element (`role="alert"`) | Layout overrides or icons next to the error. |
+
+```css
+ekko-textarea::part(control) {
+  box-shadow: inset 0 1px 0 rgb(0 0 0 / 4%);
+}
+ekko-textarea::part(base)::selection {
+  background: var(--brand-selection);
+}
+```
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a fallback. Override at any
+scope — `:root`, a section, or per-instance. See
+[Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-textarea-shared-background` | `#ffffff` | Control background. |
+| `--ekko-textarea-shared-background-disabled` | `#f5f5f5` | Background when `disabled`. |
+| `--ekko-textarea-shared-background-readonly` | `#fafafa` | Background when `readonly`. |
+| `--ekko-textarea-shared-border` | `#d4d4d4` | Resting border color. |
+| `--ekko-textarea-shared-border-hover` | `#a3a3a3` | Hover border color (when not disabled or readonly). |
+| `--ekko-textarea-shared-border-focus` | `#2563eb` | Border color while focused. |
+| `--ekko-textarea-shared-border-error` | `#dc2626` | Border color when `invalid`. |
+| `--ekko-textarea-shared-border-width` | `1px` | Border width. |
+| `--ekko-textarea-shared-border-style` | `solid` | Border style. |
+| `--ekko-textarea-shared-border-radius` | `6px` | Corner radius. |
+| `--ekko-textarea-shared-text` | `#171717` | Value text color. |
+| `--ekko-textarea-shared-text-disabled` | `#a3a3a3` | Value and label color when disabled. |
+| `--ekko-textarea-shared-placeholder` | `#a3a3a3` | Placeholder color. |
+| `--ekko-textarea-shared-label-text` | `#171717` | Label text color. |
+| `--ekko-textarea-shared-label-font-weight` | `500` | Label font weight. |
+| `--ekko-textarea-shared-label-line-height` | `1.25` | Label line-height. |
+| `--ekko-textarea-shared-message-line-height` | `1.375` | Help / error line-height. |
+| `--ekko-textarea-shared-required-indicator-gap` | `0.125rem` | Gap between label text and the required asterisk. |
+| `--ekko-textarea-shared-hint-text` | `#737373` | Help-text color. Also drives the spinner color. |
+| `--ekko-textarea-shared-error-text` | `#dc2626` | Error-text and required-indicator color. |
+| `--ekko-textarea-shared-font-family` | `system-ui, sans-serif` | Font family for label, value, and messages. |
+| `--ekko-textarea-shared-font-weight` | `400` | Value font weight. |
+| `--ekko-textarea-shared-line-height` | `1.5` | Value line-height. |
+| `--ekko-textarea-shared-letter-spacing` | `0.01rem` | Value letter-spacing. |
+| `--ekko-textarea-shared-gap` | `0.5rem` | Vertical gap between label, control, and message. |
+| `--ekko-textarea-shared-disabled-opacity` | `0.5` | Opacity for the disabled state. |
+| `--ekko-textarea-shared-transition-duration` | `100ms` | Transition speed for border, background, and shadow changes. |
+| `--ekko-textarea-shared-focus-ring-color` | `#2563eb` | Focus ring color. |
+| `--ekko-textarea-shared-focus-ring-width` | `2px` | Focus ring outline width. |
+| `--ekko-textarea-shared-focus-ring-offset` | `2px` | Focus ring offset. |
+| `--ekko-textarea-shared-spinner-size` | `1rem` | Width and height of the loading spinner. |
+| `--ekko-textarea-shared-spinner-border-width` | `2px` | Border width of the loading spinner ring. |
+
+### Per size (sm, md, lg)
+
+For each size — `sm`, `md`, `lg` — the same four properties exist:
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-textarea-size-{size}-padding-x` | `0.5rem / 0.75rem / 1rem` | Horizontal padding of the inner textarea. |
+| `--ekko-textarea-size-{size}-padding-y` | `0.25rem / 0.5rem / 0.75rem` | Vertical padding of the inner textarea. |
+| `--ekko-textarea-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Font size for label and value. The `sm` font-size also drives the help/error text size at all sizes. |
+| `--ekko-textarea-size-{size}-min-height` | `4rem / 5rem / 6rem` | Minimum control height. The user can drag the resize handle taller, but never shorter than this. |
+
+The `md` padding values also drive the loading spinner's `top` / `inset-inline-end`
+position so it parks inside the textarea's padding box at every size.
+
+---
+
+## Accessibility
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus to/from the textarea |
+| `Enter` | Inserts a newline (unlike single-line inputs, which submit the form) |
+| Arrow keys | Move the caret within the value |
+| Native typing | Standard text-entry behaviour |
+
+All native keyboard behaviour is preserved — the host is a thin shell over a real
+`<textarea>`. Submitting a form with a textarea field requires a separate submit
+trigger (a button or `Ctrl`/`Cmd` + `Enter` if you wire it).
+
+### Label association
+
+Labels are associated via native `<label for>` pointing at the inner textarea's
+`id` (generated per instance). Clicking the label focuses the textarea.
+
+A required field renders an asterisk after the label text. The asterisk has
+`aria-hidden="true"` — required state is announced via `aria-required="true"` on
+the inner textarea, so screen reader users hear "required" instead of
+"asterisk".
+
+If you don't set `label`, set `aria-label` on the host — it forwards to the
+inner textarea as the accessible name. A visible `label` always wins;
+`aria-label` is only applied when there is no visible label.
+
+```html
+<!-- preferred — visible label -->
+<ekko-textarea label="Bio" name="bio" />
+
+<!-- visually hidden / no visible label -->
+<ekko-textarea aria-label="Notes" />
+```
+
+### Describedby wiring
+
+The component manages `aria-describedby` on the inner textarea automatically:
+
+- `help` text is wired via the auto-generated help id when not invalid
+- `error` text is wired via the auto-generated error id when `invalid` is set
+- An external `aria-describedby` on the host is preserved and **merged** with the
+  internal ids — your describing element is announced alongside the help or error
+- Help is replaced by error when the field becomes invalid (only one is announced)
+
+The error element renders with `role="alert"` so assistive tech announces it the
+moment it appears.
+
+### State signals
+
+| State | What the inner textarea gets |
+| --- | --- |
+| `disabled` | native `disabled` + `aria-disabled="true"` |
+| `readonly` | native `readonly` |
+| `required` | native `required` + `aria-required="true"` + visible asterisk |
+| `invalid` | `aria-invalid="true"` + red border + error message announced |
+| `loading` | native `disabled` + `aria-busy="true"` + visible spinner |
+
+### Focus
+
+The control wrapper paints the focus ring on `:focus-within` — the outline appears
+around the whole control, not just the inner textarea. The ring is driven by
+tokens (`--ekko-textarea-shared-focus-ring-*`) and adopts the error color when
+the field is `invalid`.
+
+---
+
+## Form integration
+
+`ekko-textarea` is form-associated, so it participates in:
+
+- **`FormData`** — the current `value` is included under `name` when the form
+  serialises. Newlines (`LF` / `CRLF`) are preserved verbatim.
+- **`form.reset()`** — `formResetCallback` restores the value from the `value`
+  **attribute** (the initial value)
+- **`<fieldset disabled>`** — `formDisabledCallback` propagates the disabled state
+  automatically
+- **Constraint validation** — `required`, `minlength`, `maxlength` are forwarded
+  to the inner textarea and enforced by the browser
+- **`checkValidity()` / `reportValidity()` / `setCustomValidity()`** — exposed on
+  the host and delegated to the inner textarea, with custom messages mirrored to
+  `ElementInternals`
+
+```html
+<form>
+  <ekko-textarea
+    name="bio"
+    label="Bio"
+    required
+    minlength="20"
+    maxlength="500"
+    help="Between 20 and 500 characters"
+  ></ekko-textarea>
+  <ekko-button type="submit">Save</ekko-button>
+</form>
+```
+
+The component is usable as either controlled or uncontrolled. For uncontrolled,
+let it manage its own value and read it on submit. For controlled, set
+`element.value = ...` and listen for `ekko-input` to update your state.
+
+See [Forms (FACE)](/?path=/docs/foundations-forms-face--docs) for the full form
+integration story.
+
+---
+
+## Things to know
+
+### `value` attribute vs `value` property
+
+The `value` attribute is the **initial** value used by `form.reset()`. The `value`
+property is the **current** live value. They diverge as soon as the user types.
+Note that — unlike `<input>` — the native `<textarea>` element has no `value`
+HTML attribute; the component handles it explicitly by writing to the inner
+textarea's `.value` property whenever the host attribute changes.
+
+### Resize handle
+
+By default the user can drag the bottom-right corner to resize the textarea
+vertically (`resize="vertical"`). The `resize` attribute mirrors the CSS
+`resize` property — set it to `none` to lock the size, `horizontal` to allow
+side-to-side resizing only, or `both` to allow either axis. Disabled textareas
+always lock to `resize: none` regardless of the attribute.
+
+### `cols` rarely matters in practice
+
+The `cols` attribute only affects the textarea's pixel width when the host has
+`width: auto`. Because the inner textarea is `width: 100%` inside the control,
+host width is what determines the visual width — set the host's width via CSS
+or the `full-width` attribute and ignore `cols` unless you actually need
+character-grid sizing.
+
+### `rows` sets the natural height, not the maximum
+
+`rows` controls the textarea's intrinsic height. The component also enforces a
+`min-height` per size token (`--ekko-textarea-size-{size}-min-height`) — the
+larger of the two wins. The user can always drag the resize handle taller, and
+content can grow past `rows` (the textarea scrolls).
+
+### `minlength` / `maxlength` count UTF-16 code units
+
+The browser counts UTF-16 code units, not Unicode codepoints, for length
+validation. Most emoji (and any character outside the Basic Multilingual Plane)
+are surrogate pairs and count as **two** units. If you display a "X / 280"
+counter using `textLength`, it will agree with what the browser enforces; if you
+count Unicode codepoints yourself, you may disagree.
+
+### `wrap="hard"` modifies the submitted value
+
+With `wrap="hard"` and a `cols` value set, the browser inserts `CRLF` line
+breaks at wrap points when the form serialises. The user's typed value remains
+unchanged in the DOM — only the submitted `FormData` is affected. Use `soft`
+(the default) when you want the visible value to match the submitted value
+exactly.
+
+### `dirname` submits the text direction
+
+Set `dirname="bio.dir"` (any name you choose) and the form will include an extra
+`bio.dir=ltr` or `bio.dir=rtl` entry in `FormData`, mirroring how the browser
+reports the directionality of the textarea's content. Useful for RTL/LTR-aware
+backends.
+
+### `aria-label` requires no visible label
+
+`aria-label` on the host is forwarded to the inner textarea only when there is
+no visible `label` attribute. If both are set, the visible label wins —
+`aria-label` is removed from the inner textarea to avoid double-announcement.
+
+---
+
+## Source
+
+- [`packages/components/src/textarea/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/textarea/index.ts)
+- [`packages/components/src/textarea/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/textarea/index.css)
+- [`packages/tokens/tokens/component/textarea.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/textarea.json)

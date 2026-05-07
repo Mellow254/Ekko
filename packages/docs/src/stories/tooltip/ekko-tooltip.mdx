@@ -1,0 +1,315 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as TooltipStories from './ekko-tooltip.stories';
+
+<Meta of={TooltipStories} />
+
+<Title />
+<Subtitle>A short, supplementary label that appears on hover or focus to clarify a control.</Subtitle>
+
+`ekko-tooltip` wraps a focusable or hoverable element and shows a small floating label when
+the user hovers it with a pointer or moves keyboard focus into it. It's intended for short
+hints — accessible names for icon-only buttons, terse explanations of an unfamiliar control,
+or a keyboard shortcut reminder. Tooltip content is supplementary; the action must remain
+fully usable without ever opening the tooltip. Implements the
+[W3C ARIA APG Tooltip pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/) — the
+trigger receives `aria-describedby` pointing at a `role="tooltip"` element inside Shadow DOM.
+
+---
+
+## When to use
+
+- Short hover/focus hints on a control: "Save", "Delete", "Bold"
+- Accessible names paired with `aria-label` for icon-only buttons
+- Terse explanations of an unfamiliar field or button
+- Keyboard shortcut reminders ("⌘ + S")
+
+**Do not use** `ekko-tooltip` for:
+
+- Anything the user must read in order to complete the action — tooltips are dismissed too easily and aren't reachable on touch
+- Interactive content (links, buttons, form fields) — touch users and screen reader users cannot reach inside a tooltip
+- Form inputs, validation messages, or required help text — use a visible description with `aria-describedby` instead
+- Long-form descriptions, multi-paragraph content, or anything with a "Learn more" affordance — use a toggletip (click-to-open, dismissible disclosure) so the user can move into the content
+
+If you need persistent or interactive floating content, reach for a toggletip or popover, not
+a tooltip.
+
+---
+
+## Anatomy
+
+```
+<ekko-tooltip>
+  ┌────────────────────────────────────────────────────────┐
+  │  Light DOM                                             │
+  │    <slot />                    ← trigger (your focusable)
+  │                                                        │
+  │  Shadow DOM                                            │
+  │  ┌──────────────────────────────────────────────────┐  │
+  │  │  <span part="base" class="tooltip"               │  │
+  │  │        role="tooltip" id="ekko-tooltip-{uid}">   │  │
+  │  │    <span part="label" class="label">             │  │
+  │  │      {label attribute text}                      │  │
+  │  │    </span>                                       │  │
+  │  │    <slot name="content" />  ← optional rich body │  │
+  │  │    <span part="spinner" class="spinner" />       │  │
+  │  │    <span part="arrow" class="arrow" />           │  │
+  │  │  </span>                                         │  │
+  │  └──────────────────────────────────────────────────┘  │
+  └────────────────────────────────────────────────────────┘
+</ekko-tooltip>
+```
+
+The first slotted element in the default slot is the trigger — the component reads it on
+`slotchange` and wires `aria-describedby` to point at the generated tooltip id. The tooltip
+surface itself lives in Shadow DOM with `pointer-events: none`, so the cursor can't enter it.
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `label` | `label` | `string` | `''` | Plain-text tooltip content. Use the `content` slot if you need rich HTML. |
+| `placement` | `placement` | `'top' \| 'right' \| 'bottom' \| 'left'` | `'top'` | Side of the trigger the tooltip appears on. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale (drives padding and font-size). |
+| `variant` | `variant` | `'default' \| 'inverse'` | `'default'` | Visual treatment. `default` is dark surface; `inverse` is a light surface with a border. |
+| `disabled` | `disabled` | `boolean` | `false` | Prevents the tooltip from opening on hover or focus. Removes `open` if it was set. |
+| `loading` | `loading` | `boolean` | `false` | Sets `aria-busy="true"` on the tooltip and shows a spinner. |
+| `open` | `open` | `boolean` | `false` | Visible state. Reflects to/from the `open` attribute. Toggled internally on hover/focus, but can also be controlled. |
+| `show-delay` | `showDelay` | `number` (ms) | `200` | Delay before the tooltip appears after pointer-enter or focus-in. Prevents flicker on mouse-pass-through. |
+| `hide-delay` | `hideDelay` | `number` (ms) | `0` | Delay before the tooltip hides after pointer-leave or focus-out. |
+| `aria-label` | — | `string` | — | Accessible name forwarded to the inner tooltip surface. |
+| `aria-describedby` | — | `string` | — | Additional describing-element id(s) forwarded to the inner tooltip surface. |
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `show()` | `void` | Opens the tooltip immediately and dispatches `ekko-show`. No-op if `disabled` or already open. Cancels any pending timers. |
+| `hide()` | `void` | Closes the tooltip immediately and dispatches `ekko-hide`. No-op if not open. Cancels any pending timers. |
+| `toggle()` | `void` | Calls `show()` if closed, `hide()` if open. |
+| `focus(options?)` | `void` | Inherited from `HTMLElement`. Moves focus to the host. The slotted trigger handles real focus inside. |
+| `blur()` | `void` | Inherited from `HTMLElement`. |
+
+`show()`/`hide()` bypass the `show-delay`/`hide-delay` timers — they're for programmatic
+control. Hover- and focus-driven opens still use the configured delays.
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-show` | `{ placement: 'top' \| 'right' \| 'bottom' \| 'left' }` | After the tooltip transitions to the open state. Fires once per open. |
+| `ekko-hide` | `{ placement: 'top' \| 'right' \| 'bottom' \| 'left' }` | After the tooltip transitions to the closed state. Fires once per close. |
+
+Both events `bubble` and `compose` (cross the Shadow boundary).
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | a single focusable element | The trigger. The first assigned element receives `aria-describedby` linking it to the tooltip. Use a `<button>`, `<a>`, an `<ekko-button>`, or any other focusable control. |
+| `content` | inline elements | Rich HTML content for the tooltip body. Rendered alongside the `label` text — supply `content` instead of `label` if you need multiple lines or icons. Keep the content non-interactive. |
+
+The default slot is where the trigger lives; the `content` slot is _inside_ the floating
+tooltip surface. Don't confuse the two.
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The tooltip surface (`<span class="tooltip">`) | Custom backdrop filters, transforms, or borders the token system doesn't expose. |
+| `label` | The `<span>` rendering the `label` attribute text | Per-instance typography tweaks. |
+| `arrow` | The arrow `<span>` | Hide the arrow (`display: none`) or recolor it for novel placements. |
+| `spinner` | The loading spinner | Restyle the spinner ring for the loading state. |
+
+```css
+ekko-tooltip::part(base) {
+  backdrop-filter: blur(8px);
+}
+ekko-tooltip::part(arrow) {
+  display: none;
+}
+```
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a fallback. Override at any scope —
+`:root`, a section, or per-instance. See [Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared (all variants)
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-tooltip-shared-background` | `#171717` | Surface background colour. Also drives the arrow colour. |
+| `--ekko-tooltip-shared-text` | `#ffffff` | Tooltip text colour. |
+| `--ekko-tooltip-shared-border` | `#171717` | Border colour. |
+| `--ekko-tooltip-shared-border-width` | `1px` | Border width. |
+| `--ekko-tooltip-shared-border-style` | `solid` | Border style. |
+| `--ekko-tooltip-shared-border-radius` | `4px` | Corner radius. |
+| `--ekko-tooltip-shared-font-family` | `system-ui, sans-serif` | Tooltip font. |
+| `--ekko-tooltip-shared-font-weight` | `500` | Tooltip text weight. |
+| `--ekko-tooltip-shared-line-height` | `1.375` | Tooltip line-height. |
+| `--ekko-tooltip-shared-letter-spacing` | `0.01rem` | Tooltip text tracking. |
+| `--ekko-tooltip-shared-gap` | `0.25rem` | Gap between the label and trailing slot content. |
+| `--ekko-tooltip-shared-offset` | `0.5rem` | Distance between the trigger and the tooltip surface. |
+| `--ekko-tooltip-shared-arrow-size` | `6px` | Half-length of the arrow triangle. |
+| `--ekko-tooltip-shared-max-width` | `16rem` | Maximum width before text wraps. |
+| `--ekko-tooltip-shared-shadow-offset-y` | `4px` | Tooltip shadow vertical offset. |
+| `--ekko-tooltip-shared-shadow-blur` | `12px` | Tooltip shadow blur radius. |
+| `--ekko-tooltip-shared-shadow-spread` | `-2px` | Tooltip shadow spread. |
+| `--ekko-tooltip-shared-shadow-opacity` | `0.18` | Tooltip shadow alpha (rgba alpha component). |
+| `--ekko-tooltip-shared-transition-duration` | `100ms` | Fade-in/out duration. |
+| `--ekko-tooltip-shared-focus-ring-color` | `#2563eb` | Focus ring colour (used if you make the surface focusable via styling). |
+| `--ekko-tooltip-shared-focus-ring-width` | `2px` | Focus ring outline width. |
+| `--ekko-tooltip-shared-focus-ring-offset` | `2px` | Focus ring offset. |
+| `--ekko-tooltip-shared-disabled-opacity` | `0.5` | Opacity of the surface when `disabled` or `loading`. |
+| `--ekko-tooltip-shared-spinner-size` | `0.75rem` | Width and height of the loading spinner. |
+| `--ekko-tooltip-shared-spinner-border-width` | `2px` | Spinner ring thickness. |
+| `--ekko-tooltip-shared-z-index` | `400` | Stacking context for the floating surface. |
+
+### Per size (sm, md, lg)
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-tooltip-size-{size}-padding-x` | (semantic spacing) `sm` / `md` / `lg` | Horizontal padding. |
+| `--ekko-tooltip-size-{size}-padding-y` | (semantic spacing) `xs` / `sm` / `sm` | Vertical padding. |
+| `--ekko-tooltip-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Tooltip font size. |
+
+### Variant: inverse
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-tooltip-inverse-background` | `#ffffff` | Surface background colour. Also drives the arrow colour for the inverse variant. |
+| `--ekko-tooltip-inverse-text` | `#171717` | Tooltip text colour. |
+| `--ekko-tooltip-inverse-border` | `#e5e5e5` | Border colour. |
+
+---
+
+## Accessibility
+
+### ARIA pattern
+
+This component implements the
+[W3C ARIA APG Tooltip pattern](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/):
+
+- The tooltip surface has `role="tooltip"` and a generated id (`ekko-tooltip-{uid}`).
+- The first slotted element receives `aria-describedby` pointing at that id. Any pre-existing
+  `aria-describedby` value on the trigger is preserved — the tooltip id is appended.
+- The tooltip describes the trigger; it does not name it. Keep `aria-label` on the trigger
+  for icon-only buttons rather than relying on the tooltip text alone.
+- The tooltip is **not focusable** — `pointer-events: none` on the surface means the cursor
+  can't even enter it. This is intentional for tooltip semantics. If you need users to
+  interact with the floating content, that's a toggletip, not a tooltip.
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` | Move focus to the trigger — opens the tooltip after `show-delay`. |
+| `Shift+Tab` | Move focus away from the trigger — closes the tooltip after `hide-delay`. |
+| `Escape` | Closes an open tooltip while leaving focus on the trigger. |
+
+The component listens for `Escape` on the host and calls `hide()` if `open` — and stops
+propagation so it doesn't also close an enclosing dialog.
+
+### Pointer
+
+- `pointerenter` on the host schedules `show()` after `show-delay` (default 200ms).
+- `pointerleave` schedules `hide()` after `hide-delay` (default 0ms).
+- A pending show is cancelled if the pointer leaves before the delay elapses. A pending hide
+  is cancelled if focus or pointer re-enters.
+
+### Disabled and loading
+
+- `disabled` prevents `show()` from running and removes `open` if it was set. The trigger
+  remains fully usable; only the tooltip is suppressed.
+- `loading` sets `aria-busy="true"` on the tooltip surface and renders a spinner. The label
+  fades to the disabled opacity. Use this while you're fetching the description text
+  asynchronously.
+
+### Reduced motion
+
+The fade transition is removed under `@media (prefers-reduced-motion: reduce)` and the
+spinner animation stops.
+
+---
+
+## Things to know
+
+### Tooltips don't work on touch
+
+There's no hover on touch devices. The trigger _must_ also be focusable so that the tooltip
+is reachable via Tab on a Bluetooth keyboard or a screen reader's swipe gesture — but most
+touch users will never see the tooltip. Anything load-bearing has to live in a visible label
+or a toggletip.
+
+### Tooltip content is plain
+
+Don't put links, buttons, or form fields inside the tooltip — the surface has
+`pointer-events: none` and screen readers don't expose interactive children of `role="tooltip"`
+nodes consistently. Use the `content` slot for icons and structured layout, but keep
+everything inside non-interactive.
+
+### Pair with a visible label on small viewports
+
+On phone-sized viewports, consider rendering tooltip-style guidance as visible inline text
+instead. A description that's only reachable via hover is invisible to the majority of mobile
+users.
+
+### Delay tuning
+
+- `show-delay` defaults to `200ms` — long enough to suppress flicker as the cursor passes
+  through a control on its way somewhere else, short enough that intentional hovers feel
+  responsive. The APG recommendation is somewhere in the 100–300ms range.
+- `hide-delay` defaults to `0ms` — instant close. Bump it to ~300ms if your trigger and
+  tooltip are tightly packed and users frequently mis-target on the way back to the trigger.
+  Note that you still can't put interactives in the tooltip even with a hide delay; the
+  surface remains `pointer-events: none`.
+
+### z-index
+
+Tooltips default to `z-index: 400`, which stacks above page chrome and most floating UI but
+below modals and toasts. If a tooltip ends up clipped by an ancestor with `overflow: hidden`,
+move the trigger up the tree or remove the clipping ancestor — the tooltip is positioned
+absolutely relative to the host, so it can't escape an `overflow: hidden` parent. (A future
+release may switch to the popover API for top-layer rendering.)
+
+### Tooltip vs. toggletip
+
+A tooltip is _passive_ — open on hover/focus, closed on leave/blur, `pointer-events: none`,
+`role="tooltip"`. A toggletip is _active_ — opened by a click on a help icon, persists until
+dismissed, content is reachable, uses a live region. If you find yourself wanting any of:
+
+- A close button inside the floating surface
+- Links the user can click
+- Content that has to stay open while the user reads it
+
+…then you want a toggletip, not a tooltip.
+
+---
+
+## Source
+
+- [`packages/components/src/tooltip/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/tooltip/index.ts)
+- [`packages/components/src/tooltip/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/tooltip/index.css)
+- [`packages/tokens/tokens/component/tooltip.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/tooltip.json)

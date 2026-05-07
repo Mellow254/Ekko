@@ -1,0 +1,114 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Introduction" />
+
+# Ekko Design System
+
+> Headless · Multi-brand · Native Web Components · WCAG 2.2 AA
+
+Ekko is a design system built entirely on native web platform features. Components are
+[Web Components](https://developer.mozilla.org/en-US/docs/Web/API/Web_components). Styling
+is driven by [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties).
+Design tokens follow the [W3C Design Token Community Group](https://design-tokens.github.io/community-group/format/) (DTCG) specification.
+Nothing requires a framework to consume.
+
+---
+
+## Why Ekko
+
+### Native web first
+
+If the browser can do it, we use the browser. No framework abstractions. No runtime overhead.
+No lock-in to a JavaScript ecosystem that may shift in three years. Components work the same
+in vanilla HTML, React, Vue, Angular, Svelte, Solid, and any framework that arrives next.
+
+### Headless by design
+
+Components own **behaviour and accessibility**. Tokens own **visual style**. The two never
+mix. You change a component's appearance by changing tokens — never by editing component
+source. This is what makes the system work for multiple brands without forking.
+
+### Multi-brand from the ground up
+
+A brand is a CSS file that overrides a handful of CSS custom properties. Every component in
+the system updates. Zero JavaScript, zero rebuilds, zero framework knowledge required from
+the people defining the brand.
+
+### Accessible by default
+
+Every component targets **WCAG 2.2 Level AA**. Keyboard navigation follows
+[WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) patterns. Focus is always
+visible. Screen reader semantics are correct. Reduced-motion preferences are honored. Each
+PR runs `axe-core` against every story.
+
+---
+
+## When to use Ekko
+
+Use Ekko when:
+
+- You ship a product that needs a consistent visual language across platforms or brands
+- Your team uses **more than one** front-end framework (or expects to)
+- You want to own your accessibility story rather than inheriting someone else's
+- You want a stable foundation that does not break with framework upgrades
+
+Don't use Ekko when:
+
+- You need pre-styled "batteries-included" components — Ekko is intentionally headless and
+  ships only the styling needed to make the system functional. You provide the brand.
+- You need data-fetching, state management, or layout primitives — Ekko is a component
+  library, not an application framework.
+
+---
+
+## Packages
+
+Ekko is published as three packages on npm:
+
+| Package | Purpose | Public |
+| --- | --- | --- |
+| `@ekko-ds/tokens` | DTCG design tokens compiled to CSS custom properties, JS constants, and flat JSON | yes |
+| `@ekko-ds/components` | Headless Web Components + optional React wrappers | yes |
+| `@ekko-ds/docs` | This Storybook documentation site | no (private) |
+
+`@ekko-ds/components` and `@ekko-ds/tokens` are versioned together via Changesets. Always
+upgrade them as a pair.
+
+---
+
+## What you'll find in these docs
+
+The sidebar is organized in two sections.
+
+**Foundations** covers the cross-cutting concepts — installation, theming, tokens,
+accessibility, forms, events, framework integration. Read these first. The
+[Theming & Styling](/?path=/docs/foundations-theming-styling--docs) page is the most
+important — it explains how custom property overrides work and how to apply your brand.
+
+**Components** has one entry per component. Each page documents every attribute, property,
+slot, CSS part, custom event, and CSS custom property the component exposes — with code
+examples for each.
+
+---
+
+## Conventions used in this documentation
+
+- **Code examples** use vanilla HTML unless explicitly tagged with a framework. For
+  framework-specific syntax, see [Getting Started](/?path=/docs/foundations-getting-started--docs).
+- **Tags shown as `attribute`** are HTML attributes set declaratively on the element.
+  **Tags shown as `property`** are JavaScript properties accessed via the DOM node.
+  Most are kept in sync — exceptions are flagged.
+- **Tokens** are written as `--ekko-{component}-{variant}-{property}` and always include a
+  hardcoded fallback in the component's CSS so components render correctly even if the
+  token CSS file fails to load.
+- **Things to know** sections call out non-obvious behaviour worth keeping in mind.
+
+---
+
+## Getting help
+
+- **Bug reports & feature requests** — [GitHub Issues](https://github.com/your-org/ekko-ds/issues)
+- **Source** — [GitHub repository](https://github.com/your-org/ekko-ds)
+- **Releases** — [npm](https://www.npmjs.com/package/@ekko-ds/components)
+
+Keep going: [Getting Started →](/?path=/docs/foundations-getting-started--docs)

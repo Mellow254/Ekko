@@ -1,0 +1,378 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as SelectStories from './ekko-select.stories';
+
+<Meta of={SelectStories} />
+
+<Title />
+<Subtitle>A dropdown for picking one (or more) values from a known list of options.</Subtitle>
+
+`ekko-select` wraps a native `<select>` inside Shadow DOM. Authors place `<option>` and
+`<optgroup>` elements as light-DOM children — the component clones them into the inner
+select via a `MutationObserver`, so updates to a child's `value`, `disabled`, or label
+propagate automatically. In browsers that support `appearance: base-select` (modern
+Chromium), the component opts in to the customizable-select picker so the open list
+renders with Ekko's tokens; everywhere else it falls back to the platform-native
+dropdown without losing functionality.
+
+---
+
+## When to use
+
+- Picking exactly one value from a known list of more than four options
+- Picking multiple values from a known list (with the `multiple` attribute)
+- Forms where the value space is fixed and finite (countries, plans, sizes, etc.)
+
+For free-text input with suggestions, use a combobox (not currently in Ekko). For two
+to four mutually exclusive options, prefer [`ekko-radio`](/?path=/docs/components-radio--docs)
+so all choices stay visible at once. For an open multi-select with chips and search,
+reach for a tag input rather than `multiple` on a select.
+
+---
+
+## Anatomy
+
+```
+<ekko-select>
+  ┌──────────────────────────────────────────────────────────┐
+  │  Shadow DOM                                              │
+  │  <div class="field">                                     │
+  │    <label class="label" for="…">…</label>                │
+  │    <div class="control" part="control">                  │
+  │      <select part="base" class="select">                 │
+  │        <button part="trigger">                           │  ← only when
+  │          <selectedcontent />                             │    base-select
+  │        </button>                                         │    is supported
+  │        ...cloned <option> / <optgroup> children          │
+  │      </select>                                           │
+  │      <svg part="chevron" />                              │
+  │    </div>                                                │
+  │    <div part="help">…</div>                              │
+  │    <div part="error" role="alert">…</div>                │
+  │  </div>                                                  │
+  └──────────────────────────────────────────────────────────┘
+
+  Light DOM:
+    <option> / <optgroup>   ← authored by you, mirrored into the shadow tree
+</ekko-select>
+```
+
+Light-DOM children are not rendered directly. A `MutationObserver` watches `childList`,
+`subtree`, and `attributes` on the host and re-clones every `<option>` / `<optgroup>`
+into the inner `<select>` whenever something changes.
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `name` | `name` | `string` | `''` | Form submission name. Forwarded to the inner `<select>`. |
+| `value` | `value` | `string` | `''` | Initial value as an attribute; current value as a property. Setting the property updates the inner select and the form value. |
+| `autocomplete` | — | `string` | — | Forwarded to the inner `<select>`. Use the standard tokens (`off`, `country`, etc.). |
+| `visible-rows` | `visibleRows` | `number` | `0` | When greater than `1`, becomes the `size` attribute on the inner select — switches it to listbox mode (an open scrolling list). |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Ekko sizing scale (height, padding, font-size). Independent of `visible-rows`. |
+| `multiple` | `multiple` | `boolean` | `false` | Allow multi-select. Forces listbox mode and removes the chevron / custom trigger. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Sets `aria-disabled="true"` on the inner select and excludes the field from `FormData`. |
+| `required` | `required` | `boolean` | `false` | Marks the field as required. Sets `aria-required="true"` and renders an asterisk next to the label. |
+| `invalid` | `invalid` | `boolean` | `false` | Visual error state. Sets `aria-invalid="true"` and reveals the `error` message when present. |
+| `label` | `label` | `string` | `''` | Visible label, associated to the inner select via `for`/`id`. |
+| `placeholder` | `placeholder` | `string` | `''` | When set on a single-select with no value, prepends a hidden disabled `<option>` selected by default. Ignored when `multiple`. |
+| `help` | — | `string` | — | Hint text rendered below the control and wired via `aria-describedby`. |
+| `error` | — | `string` | — | Error message rendered (with `role="alert"`) when `invalid` is set. Replaces help text. |
+| `full-width` | — | `boolean` | `false` | Stretches the host to fill its container. |
+| `aria-label` | — | `string` | — | Accessible name when no visible label is set. Forwarded to the inner `<select>`. |
+| `aria-describedby` | — | `string` | — | Describing element id(s). Merged with the internal help/error ids and forwarded to the inner `<select>`. |
+
+The component also exposes the inner select's collections and form metadata as
+read-only getters:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `options` | `HTMLOptionsCollection` | Live collection of all `<option>` elements inside the inner select. |
+| `selectedOptions` | `HTMLCollectionOf<HTMLOptionElement>` | Live collection of selected options. The right way to read selections in `multiple` mode. |
+| `selectedIndex` | `number` (read/write) | Index of the first selected option. Settable to change the selection programmatically. |
+| `form` | `HTMLFormElement \| null` | The host form, via `ElementInternals`. |
+| `validity` | `ValidityState` | Forwarded from the inner select. |
+| `validationMessage` | `string` | Forwarded from the inner select. |
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `focus(options?)` | `void` | Moves focus to the inner `<select>`. |
+| `blur()` | `void` | Removes focus from the inner `<select>`. |
+| `checkValidity()` | `boolean` | Forwarded to the inner select. Returns `true` if the field is valid. |
+| `reportValidity()` | `boolean` | Forwarded to the inner select. Triggers the native validity bubble. |
+| `setCustomValidity(message)` | `void` | Sets a custom validation message and updates `ElementInternals.setValidity`. Pass an empty string to clear. |
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-input` | `{ value: string, originalEvent: Event }` | The inner select dispatched `input` (the value changed during interaction). |
+| `ekko-change` | `{ value: string, originalEvent: Event }` | The inner select dispatched `change` (the user committed a selection). |
+| `input` | native `Event` | Standard DOM input. Bubbles out of Shadow DOM. |
+| `change` | native `Event` | Standard DOM change. Bubbles out of Shadow DOM. |
+
+Both `ekko-input` and `ekko-change` set `bubbles: true` and `composed: true`. In
+`multiple` mode, `detail.value` reports the value of the most recently changed option
+(matching native `<select>` behaviour) — read `selectedOptions` for the full set.
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | `<option>` and `<optgroup>` only | Other element types are ignored. Children are **cloned** into the shadow tree on every sync — attributes/listeners on the originals do not reach the clones, so set `value`, `disabled`, and labels declaratively. |
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<select>` | Custom typography or spacing on the control itself. |
+| `control` | The wrapper `<div>` around the select and chevron | Border, background, focus-within rules. |
+| `chevron` | The dropdown arrow `<svg>` | Replace or recolor the indicator. Hidden in `multiple` / listbox modes. |
+| `trigger` | The internal `<button>` that hosts `<selectedcontent>` | Only present when `appearance: base-select` is supported and the control is not in listbox mode. Style the closed-state trigger surface here. |
+| `help` | The hint text element | Custom hint typography or spacing. |
+| `error` | The error message element | Custom error typography. Has `role="alert"`. |
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a hardcoded fallback. Override at any
+scope — `:root`, a section, or per-instance. See [Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared — applies to closed trigger and listbox
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-select-shared-font-family` | `system-ui, sans-serif` | Host font family. |
+| `--ekko-select-shared-gap` | `0.5rem` | Gap between label, control, help, and error. |
+| `--ekko-select-shared-background` | `#ffffff` | Control background, resting. |
+| `--ekko-select-shared-background-disabled` | `#f5f5f5` | Control background when disabled. |
+| `--ekko-select-shared-border` | `#d4d4d4` | Border color, resting. |
+| `--ekko-select-shared-border-hover` | `#a3a3a3` | Border color on hover. |
+| `--ekko-select-shared-border-focus` | `#2563eb` | Border color when focused. |
+| `--ekko-select-shared-border-error` | `#dc2626` | Border color when `invalid`. |
+| `--ekko-select-shared-border-width` | `1px` | Control border width. |
+| `--ekko-select-shared-border-style` | `solid` | Control border style. |
+| `--ekko-select-shared-border-radius` | `6px` | Control corner radius. |
+| `--ekko-select-shared-text` | `#171717` | Selected-value text color. |
+| `--ekko-select-shared-text-disabled` | `#a3a3a3` | Text color when disabled. |
+| `--ekko-select-shared-placeholder` | `#525252` | Placeholder text color. |
+| `--ekko-select-shared-label-text` | `#171717` | Label color. |
+| `--ekko-select-shared-label-font-weight` | `500` | Label weight. |
+| `--ekko-select-shared-label-line-height` | `1.25` | Label line-height. |
+| `--ekko-select-shared-message-line-height` | `1.375` | Help/error line-height. |
+| `--ekko-select-shared-required-indicator-gap` | `0.125rem` | Space between label text and the required asterisk. |
+| `--ekko-select-shared-chevron-color` | `#525252` | Chevron arrow color. |
+| `--ekko-select-shared-chevron-size` | `1rem` | Chevron width and height. |
+| `--ekko-select-shared-chevron-gap` | `0.5rem` | Gap between the value and the chevron. |
+| `--ekko-select-shared-hint-text` | `#737373` | Help text color. |
+| `--ekko-select-shared-error-text` | `#dc2626` | Error text color and required-indicator color. |
+| `--ekko-select-shared-transition-duration` | `100ms` | Hover/focus transition speed. |
+| `--ekko-select-shared-focus-ring-color` | `#2563eb` | Focus ring color. |
+| `--ekko-select-shared-focus-ring-width` | `2px` | Focus ring width. |
+| `--ekko-select-shared-focus-ring-offset` | `2px` | Focus ring offset. |
+
+### Shared — applies to the open picker (base-select only)
+
+These tokens style the popup that appears when the user opens the picker. They have
+effect only in browsers that support `appearance: base-select`.
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-select-shared-picker-background` | `#ffffff` | Picker (popup) background. |
+| `--ekko-select-shared-picker-border` | `#d4d4d4` | Picker border color. |
+| `--ekko-select-shared-picker-border-width` | `1px` | Picker border width. |
+| `--ekko-select-shared-picker-border-radius` | `6px` | Picker corner radius. |
+| `--ekko-select-shared-picker-padding` | `0.25rem` | Picker inner padding. |
+| `--ekko-select-shared-picker-gap` | `4px` | Vertical gap between trigger and picker. |
+| `--ekko-select-shared-picker-max-height` | `18rem` | Maximum picker height before it scrolls. |
+| `--ekko-select-shared-picker-shadow-offset-y` | `8px` | Picker drop-shadow vertical offset. |
+| `--ekko-select-shared-picker-shadow-blur` | `24px` | Picker drop-shadow blur. |
+| `--ekko-select-shared-picker-shadow-spread` | `-8px` | Picker drop-shadow spread. |
+| `--ekko-select-shared-picker-shadow-opacity` | `0.18` | Picker drop-shadow opacity (alpha channel of the rgba shadow color). |
+| `--ekko-select-shared-option-padding-y` | `0.5rem` | Option vertical padding. |
+| `--ekko-select-shared-option-padding-x` | `0.75rem` | Option horizontal padding. |
+| `--ekko-select-shared-option-gap` | `0.5rem` | Gap between content within an option. |
+| `--ekko-select-shared-option-border-radius` | `4px` | Option corner radius. |
+| `--ekko-select-shared-option-text` | `#171717` | Option text, resting. |
+| `--ekko-select-shared-option-text-disabled` | `#a3a3a3` | Option text when disabled. |
+| `--ekko-select-shared-option-background-hover` | `#f5f5f5` | Option background on hover/focus/active. |
+| `--ekko-select-shared-option-background-checked` | `#2563eb` | Option background when selected. |
+| `--ekko-select-shared-option-text-checked` | `#ffffff` | Option text when selected. |
+| `--ekko-select-shared-checkmark-color` | `#2563eb` | Selected-option checkmark color. |
+| `--ekko-select-shared-checkmark-size` | `1rem` | Checkmark width and height. |
+| `--ekko-select-shared-optgroup-label-text` | `#525252` | Optgroup label color. |
+| `--ekko-select-shared-optgroup-label-font-weight` | `600` | Optgroup label weight. |
+| `--ekko-select-shared-optgroup-label-padding-y` | `0.25rem` | Vertical padding around the optgroup label. |
+
+The fallback `<select>` (in browsers without `appearance: base-select`) renders the
+open list with the platform's native styling — these picker tokens do not apply there.
+The closed control still uses the shared closed-state tokens above.
+
+### Per size (sm, md, lg)
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-select-size-{size}-padding-x` | `0.5rem / 0.75rem / 1rem` | Horizontal padding inside the control. |
+| `--ekko-select-size-{size}-padding-y` | `0.25rem / 0.5rem / 0.75rem` | Vertical padding inside the control. |
+| `--ekko-select-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Selected-value and label font size. |
+| `--ekko-select-size-{size}-height` | `2rem / 2.375rem / 2.875rem` | Minimum control height. |
+
+---
+
+## Accessibility
+
+### Keyboard (closed picker)
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus to/from the select |
+| `Space` / `Enter` / `Alt+Down` | Open the picker |
+| `Down` / `Up` | Move selection to the next / previous option (with picker closed in some platforms) |
+| `Home` / `End` | Jump to the first / last option |
+| Letter keys | Type-ahead — jumps to the next option whose label starts with the typed character |
+
+### Keyboard (open picker)
+
+| Key | Action |
+| --- | --- |
+| `Down` / `Up` | Move highlight |
+| `Home` / `End` | Highlight first / last option |
+| `Enter` | Commit the highlighted option and close |
+| `Esc` | Close without changing the value |
+
+### Multiple-select mode
+
+| Input | Action |
+| --- | --- |
+| `Click` on an option | Select only that option |
+| `Shift+Click` | Select the contiguous range from the last selection to the click |
+| `Ctrl+Click` (Windows/Linux) / `Cmd+Click` (macOS) | Toggle individual options without affecting others |
+| `Shift+Down` / `Shift+Up` | Extend the selection by one |
+
+### ARIA wiring
+
+`disabled`, `invalid`, and `required` map automatically:
+
+- `disabled` → native `disabled` + `aria-disabled="true"` on the inner select
+- `invalid` → `aria-invalid="true"` on the inner select
+- `required` → native `required` + `aria-required="true"` on the inner select, plus a
+  visible asterisk next to the label
+
+The internal `<label>` is associated to the inner `<select>` via `for`/`id`, so clicking
+the label focuses the control. `aria-describedby` is composed: any external value the
+author set on the host is preserved and merged with the internal help id (when help is
+present and the field is valid) or the internal error id (when `invalid` and `error`
+are present).
+
+When no `label` is provided, set `aria-label` on the host — it is forwarded to the inner
+select.
+
+---
+
+## Form integration
+
+```html
+<form>
+  <ekko-select name="size" label="Size" required placeholder="Pick one">
+    <option value="sm">Small</option>
+    <option value="md">Medium</option>
+    <option value="lg">Large</option>
+  </ekko-select>
+  <ekko-button type="submit">Continue</ekko-button>
+</form>
+```
+
+`FormData` includes `name=value` for the current selection. In `multiple` mode each
+selected option contributes its own entry — `formData.getAll('toppings')` returns the
+array.
+
+`form.reset()` restores the value to whatever the `value` attribute held at construction
+time, via `formResetCallback`. `<fieldset disabled>` propagates through
+`formDisabledCallback` and disables the select with no extra wiring.
+
+### Placeholder pattern
+
+When `placeholder` is set on a single-select and no `value` is selected, the component
+prepends a hidden, disabled `<option value="">` and selects it by default. This is the
+common UX pattern of "Choose one…" — the placeholder cannot be re-selected once the user
+moves to a real option, and it is excluded from the picker dropdown. The placeholder is
+ignored in `multiple` mode (where there is no concept of an unselected list).
+
+See [Forms (FACE)](/?path=/docs/foundations-forms-face--docs) for the full form integration story.
+
+---
+
+## Things to know
+
+### Options must be light-DOM children
+
+Place `<option>` and `<optgroup>` directly inside `<ekko-select>`. The component clones
+them into the shadow tree, so JavaScript event listeners or DOM-attached state on the
+**originals** does not reach the **clones**. Set `value`, `disabled`, and labels
+declaratively, and let the `MutationObserver` re-sync when an attribute changes.
+
+### `value` attribute vs. `value` property
+
+The `value` attribute is the **initial** selection. The `value` property is the
+**current** selection. Setting the property writes through to the inner select and
+updates the form value; setting the attribute also reseeds the value during the next
+sync pass and is what `form.reset()` restores.
+
+### `visible-rows > 1` switches to listbox mode
+
+When `visible-rows="2"` (or higher) is set, the inner select gets a `size` attribute,
+the chevron is hidden, and the custom `<button>` trigger is removed. The control renders
+as an open scrolling list of N rows. `multiple` always implies listbox mode regardless
+of `visible-rows`.
+
+### Browser support for `appearance: base-select`
+
+Modern Chromium browsers support [the customizable-select spec](https://developer.mozilla.org/en-US/docs/Web/CSS/appearance#values),
+which is what unlocks tokenized option styling, hover/checked states inside the picker,
+and rich `<option>` content via `<selectedcontent>`. The component detects support with
+`CSS.supports('appearance', 'base-select')` and only injects the trigger button +
+`data-base-picker` attribute when supported. In other browsers the component still works
+— the platform native dropdown is used and all the closed-state tokens still apply.
+
+### MutationObserver scope
+
+The observer watches `childList`, `subtree`, and `attributes`. Adding, removing, or
+attribute-mutating any descendant triggers a re-sync of the cloned options. There is a
+`#syncing` re-entry guard so the observer's own writes into the shadow tree do not
+trigger it recursively.
+
+### `selectedIndex` is read/write
+
+Use the property to programmatically move the selection without touching `value` —
+useful when option labels are duplicated. In `multiple` mode it returns the index of the
+first selected option; for the full set, use `selectedOptions`.
+
+---
+
+## Source
+
+- [`packages/components/src/select/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/select/index.ts)
+- [`packages/components/src/select/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/select/index.css)
+- [`packages/tokens/tokens/component/select.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/select.json)

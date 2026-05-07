@@ -1,0 +1,309 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Theming & Styling" />
+
+# Theming & Styling
+
+This is the most important page in the docs. Read it once and you'll know exactly how to
+change the way every Ekko component looks — without touching component source.
+
+---
+
+## The mental model
+
+Ekko separates two concerns and never lets them mix:
+
+| | What it controls | Who owns it |
+| --- | --- | --- |
+| **Component code** | Behaviour, accessibility, DOM structure, lifecycle | Ekko |
+| **Tokens (CSS custom properties)** | Every visual value: color, spacing, typography, radii, shadows, motion | You |
+
+A component's CSS never contains a hardcoded color or pixel value as the source of truth.
+Every styled property reads from a CSS custom property:
+
+```css
+/* Inside packages/components/src/button/index.css */
+.btn {
+  background-color: var(--ekko-button-primary-background, #2563eb);
+  border-radius: var(--ekko-button-shared-border-radius, 6px);
+  padding: var(--ekko-button-size-md-padding-y, 0.5rem)
+           var(--ekko-button-size-md-padding-x, 1rem);
+}
+```
+
+The hardcoded value after the comma is a **fallback** — it only applies if no token is
+provided. When you load `@ekko-ds/tokens/css`, every fallback is overridden by a real
+token value. When you override that token, every component using it updates.
+
+---
+
+## Why this works through Shadow DOM
+
+Shadow DOM blocks selectors at the boundary. You can't write `ekko-button { background: red }`
+on the host page and expect it to reach `.btn` inside the shadow tree. **But CSS custom
+properties are inherited values**, not selectors. They cross the Shadow boundary just like
+`color` and `font-family` do.
+
+That single fact is what makes the entire system work. Components are visually opaque
+black boxes that you can never style from outside — except via the small surface of
+custom properties they explicitly read from, which give you exactly the level of control
+the system was designed to expose.
+
+---
+
+## How to override a token
+
+There are four override scopes, from broadest to narrowest. Each is just CSS — no APIs,
+no JavaScript, no hooks.
+
+### 1. Application-wide (`:root`)
+
+Define overrides on `:root` to apply them to every Ekko component on the page.
+
+```css
+:root {
+  --ekko-button-primary-background: #7C3AED;
+  --ekko-button-primary-background-hover: #6D28D9;
+  --ekko-button-shared-border-radius: 2px;
+}
+```
+
+Use this for your **brand**. One file, every component updates.
+
+### 2. Section / page (any container)
+
+Custom properties cascade. Set them on a wrapping element to scope an override to a
+section.
+
+```html
+<section style="--ekko-button-primary-background: #DC2626;">
+  <ekko-button>This button is red</ekko-button>
+  <ekko-button>So is this one</ekko-button>
+</section>
+
+<ekko-button>This button uses the global token</ekko-button>
+```
+
+Useful for: a "danger zone" that re-tints actions, a marketing section that uses a
+different accent color, a settings panel that swaps to a denser size.
+
+### 3. Single instance (inline `style`)
+
+Set the property right on the element. Highest specificity — wins over the cascade.
+
+```html
+<ekko-button style="--ekko-button-primary-background: gold; --ekko-button-primary-text: black;">
+  Special button
+</ekko-button>
+```
+
+Reach for this rarely. Inline overrides are hard to refactor and tend to drift over time.
+
+### 4. Variant via attribute selector
+
+If you find yourself writing the same one-off override more than twice, promote it to a
+named variant in your own stylesheet.
+
+```css
+[data-variant="hero"] ekko-button[variant="primary"] {
+  --ekko-button-primary-background: var(--brand-hero-accent);
+  --ekko-button-shared-border-radius: 999px;
+}
+```
+
+This keeps the brand expression in one place rather than scattered across templates.
+
+---
+
+## Building a brand
+
+A brand is a single CSS file. Here's the full pattern:
+
+```css
+/* sauti-brand.css */
+:root {
+  /* Color action set */
+  --ekko-color-action-primary: #0D9488;
+  --ekko-color-action-primary-hover: #0F766E;
+  --ekko-color-action-primary-active: #134E4A;
+  --ekko-color-action-primary-text: #FFFFFF;
+
+  /* Typography */
+  --ekko-font-body-family: 'Poppins', system-ui, sans-serif;
+  --ekko-font-display-family: 'Fraunces', Georgia, serif;
+
+  /* Shape */
+  --ekko-radius-component-md: 4px;
+  --ekko-button-shared-border-radius: 4px;
+  --ekko-input-shared-border-radius: 4px;
+
+  /* Focus */
+  --ekko-focus-ring-color: #0D9488;
+}
+```
+
+Load it after the default tokens:
+
+```html
+<link rel="stylesheet" href="@ekko-ds/tokens/css">
+<link rel="stylesheet" href="./sauti-brand.css">
+```
+
+That's it — every component reflects the new brand. Override at the **semantic** layer
+(`--ekko-color-action-primary`) and component tokens that reference it
+(`--ekko-button-primary-background`) follow automatically. Override at the **component**
+layer to target only specific components without affecting others.
+
+See [Design Tokens](/?path=/docs/foundations-design-tokens--docs) for the full token tier
+explanation.
+
+---
+
+## Dark mode
+
+Ekko ships dark-mode tokens out of the box. The combined CSS file (`@ekko-ds/tokens/css`)
+includes both light and dark, with two activation paths:
+
+```css
+/* Auto: respects the user's system preference */
+@media (prefers-color-scheme: dark) { /* dark token values */ }
+
+/* Manual: opt in by setting an attribute on <html> */
+[data-theme="dark"] { /* same dark token values */ }
+```
+
+So either of these works:
+
+```html
+<!-- System preference -->
+<html lang="en">
+
+<!-- Forced dark -->
+<html lang="en" data-theme="dark">
+
+<!-- Forced light -->
+<html lang="en" data-theme="light">
+```
+
+To build your own theme switcher:
+
+```js
+function setTheme(theme /* 'light' | 'dark' | 'system' */) {
+  if (theme === 'system') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+}
+```
+
+Dark-mode tokens only override **semantic colors** (`--ekko-color-text-primary`,
+`--ekko-color-surface-elevated`, etc.) and the focus ring. Component-level tokens like
+`--ekko-button-primary-background` automatically follow because they reference the
+semantic layer.
+
+If you want light/dark behaviour for a custom property you've added, override it inside
+both selectors:
+
+```css
+:root {
+  --my-custom-token: #FFFFFF;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root { --my-custom-token: #0A0A0A; }
+}
+[data-theme="dark"] {
+  --my-custom-token: #0A0A0A;
+}
+```
+
+---
+
+## Splitting light and dark for SSR
+
+If you control the dark-mode toggle yourself and want to skip the `prefers-color-scheme`
+media query, use the granular exports:
+
+```js
+import '@ekko-ds/tokens/css/base';   // light only
+import '@ekko-ds/tokens/css/dark';   // dark overrides only (still scoped to [data-theme="dark"])
+```
+
+This avoids a flash of the wrong theme on first paint when the user's preference does not
+match your default.
+
+---
+
+## CSS Parts — escape hatch for tricky cases
+
+Custom properties cover 95% of styling needs. The other 5% — say, applying a CSS filter
+to a button's inner element specifically — uses [CSS Shadow Parts](https://developer.mozilla.org/en-US/docs/Web/CSS/::part).
+
+Every Ekko component exposes a `part="base"` on its primary inner element. Some expose
+additional parts (e.g. `ekko-input` exposes `control`, `help`, `error`). Target them with
+the `::part()` pseudo-element:
+
+```css
+ekko-button::part(base) {
+  /* Applies to the inner <button> element */
+  letter-spacing: 0.05em;
+}
+
+ekko-input::part(error) {
+  /* Style the error message specifically */
+  font-style: italic;
+}
+```
+
+Things to know:
+
+- `::part()` selects elements **across the Shadow boundary**, but you cannot use combinators
+  past it. `ekko-button::part(base) > svg` does **not** work — you can't reach inside the part.
+- States like `:hover` work on parts: `ekko-button::part(base):hover { ... }`.
+- Parts are a **public API**. Once a part name is documented for a component, it stays.
+  Internal class names (`.btn`, `.field`) are not — never select them.
+
+Each component's docs page lists every CSS Part it exposes.
+
+---
+
+## What you cannot style
+
+Some things are intentionally not stylable from outside:
+
+- **Internal class names** (`.btn`, `.input`, `.field`) — Shadow DOM hides them.
+- **Slot content positioning** — slots are placed by the component. You can style the
+  content you put into slots, but not the slot wrapper itself.
+- **Animation timing functions and keyframes** — `transition-duration` is a token, but
+  the easing curve and the keyframe sequence are baked in. We respect
+  `prefers-reduced-motion` automatically.
+- **DOM structure** — the inner markup is private. Don't depend on it.
+
+If you need styling that none of the above achieves, that's a signal we're missing a
+token. [Open an issue](https://github.com/your-org/ekko-ds/issues) and we'll add it.
+
+---
+
+## A note on `!important`
+
+If you ever feel the need to write `!important` to make an Ekko style stick, stop. The
+component is reading from a custom property — the right fix is to override the property,
+not the rule. If a rule does not respond to its custom property, that's a bug we want to
+hear about.
+
+---
+
+## Custom properties reference per component
+
+Every component documents the full set of custom properties it reads in its own page,
+under the **CSS Custom Properties** heading. Browse from the **Components** section in
+the sidebar.
+
+For semantic-tier overrides (`--ekko-color-*`, `--ekko-font-*`, `--ekko-radius-*`,
+`--ekko-focus-*`, etc.), see [Design Tokens](/?path=/docs/foundations-design-tokens--docs).
+
+---
+
+Next: [Design Tokens](/?path=/docs/foundations-design-tokens--docs) — token tiers, naming,
+and the build pipeline.
