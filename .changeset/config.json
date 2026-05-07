@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": ["@changesets/changelog-github", { "repo": "Mellow254/Ekko" }],
   "commit": false,
   "fixed": [],
   "linked": [["@ekko-ds/components", "@ekko-ds/tokens"]],
