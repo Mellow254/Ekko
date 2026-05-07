@@ -2,7 +2,7 @@
 
 > Headless · Multi-brand · Native Web Components · WCAG 2.2 AA
 
-**[Documentation →](https://your-org.github.io/ekko-ds/)**
+**[Documentation →](https://mellow254.github.io/Ekko/)**
 
 Ekko is a design system built entirely on native web platform features. Components are Web Components. Styling is driven by CSS custom properties. Design tokens follow the W3C DTCG specification. Nothing requires a framework to consume.
 
