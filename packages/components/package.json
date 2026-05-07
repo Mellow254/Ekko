@@ -10,6 +10,10 @@
       "import": "./dist/ekko-ds.esm.js",
       "require": "./dist/ekko-ds.cjs.js"
     },
+    "./react": {
+      "types": "./dist/types/wrappers/react/index.d.ts",
+      "import": "./dist/wrappers/react/index.js"
+    },
     "./fouce.css": "./src/styles/fouce.css",
     "./*": {
       "types": "./dist/types/*/index.d.ts",
@@ -30,7 +34,7 @@
     "**/*.css"
   ],
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly --outDir dist/types && cem analyze",
+    "build": "vite build && vite build -c vite.config.react.ts && tsc --emitDeclarationOnly --outDir dist/types && cem analyze",
     "cem": "cem analyze",
     "dev": "vite build --watch",
     "start": "vite",
@@ -41,19 +45,30 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ekko-ds/tokens": "workspace:*"
+    "@ekko-ds/tokens": "workspace:*",
+    "@lit/react": "^1.0.8"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
     "@custom-elements-manifest/analyzer": "^0.11.0",
     "@esm-bundle/chai": "^4.3.4-fix.0",
     "@types/mocha": "^10.0.10",
+    "@types/react": "^19.2.14",
     "@web/dev-server-esbuild": "^1.0.2",
     "@web/test-runner": "^0.20.2",
     "@web/test-runner-commands": "^0.9.0",
     "@web/test-runner-playwright": "^0.11.1",
     "axe-core": "^4.11.1",
     "playwright": "^1.59.0",
+    "react": "^19",
     "typescript": "^5.9.3",
     "vite": "^8.0.1"
   }
