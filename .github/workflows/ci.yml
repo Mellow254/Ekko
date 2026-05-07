@@ -178,8 +178,11 @@ jobs:
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install npm 11+ via pnpm (Trusted Publisher OIDC requires npm >= 11.5.1)
-        run: pnpm add -g npm@latest
+      - name: Upgrade npm to 11.5.1+ (required for OIDC trusted publishing)
+        run: |
+          npm install -g npm@latest
+          npm --version
+          which npm
 
       - run: pnpm install --frozen-lockfile
 
