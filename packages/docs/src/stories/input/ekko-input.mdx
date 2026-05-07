@@ -1,0 +1,420 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as InputStories from './ekko-input.stories';
+
+<Meta of={InputStories} />
+
+<Title />
+<Subtitle>A text-entry control. The single field that handles every native input type, label, help, error, and ARIA wiring.</Subtitle>
+
+`ekko-input` is a [Form-Associated Custom Element](/?path=/docs/foundations-forms-face--docs)
+that wraps a native `<input>` inside Shadow DOM. It forwards the `type` attribute to
+the inner input so every native UI and validation behaviour (date picker, color
+picker, number stepper, range slider, file dialog, browser autofill) comes for free.
+The component manages the visible label, help text, error text, required indicator,
+and the full `aria-describedby` / `aria-invalid` / `aria-required` wiring around it.
+
+---
+
+## When to use
+
+- Single-line text entry — name, email, password, URL, search, etc.
+- Numeric entry, dates, time, color, range, file upload — pick the right `type`
+- Any field that needs an associated label, help text, or validation error
+
+The supported types map 1:1 to the native HTML input types:
+
+`text`, `email`, `password`, `number`, `tel`, `url`, `search`, `date`,
+`datetime-local`, `month`, `week`, `time`, `color`, `file`, `range`.
+
+**Don't use** `ekko-input` for:
+
+- Multi-line text — use `ekko-textarea`
+- A list of mutually exclusive choices — use `ekko-select` (or radios)
+- Boolean settings — use `ekko-checkbox` or `ekko-switch`
+
+---
+
+## Anatomy
+
+```
+<ekko-input>
+  ┌───────────────────────────────────────────────────────────┐
+  │  Shadow DOM                                               │
+  │  <div class="field">                                      │
+  │    <label class="label" for="...">                        │
+  │      <span class="label-text">Label</span>                │
+  │      <span class="required-indicator">*</span>            │  ← when required
+  │    </label>                                               │
+  │    <div class="control" part="control">                   │
+  │      <slot name="start" />     ← icon / currency / unit   │
+  │      <input part="base" class="input" />                  │
+  │      <slot name="end" />       ← icon / action / unit     │
+  │    </div>                                                 │
+  │    <div class="help"  part="help"  />                     │
+  │    <div class="error" part="error" role="alert" />        │
+  │  </div>                                                   │
+  └───────────────────────────────────────────────────────────┘
+</ekko-input>
+```
+
+The default slot is unused — the visible label comes from the `label` attribute,
+not slotted content. Use the named `start` and `end` slots for adornments.
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+The component splits its attributes into three groups:
+
+- **Reflected** — host attribute is the source of truth, with a typed property getter/setter.
+- **Forwarded** — verbatim copies from host to the inner `<input>` so the native input enforces per-type semantics (e.g. `min`/`max` on `number`, `accept` on `file`).
+- **State** — booleans that toggle visual state and ARIA wiring.
+
+### Reflected
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `type` | `type` | `InputType` | `'text'` | Native input type. Drives UI and validation. See the supported list above. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale. |
+| `label` | `label` | `string` | `''` | Visible label text. Rendered above the control and associated via `for`/`id`. |
+| `help` | — | `string` | `''` | Help text rendered below the control. Wired into `aria-describedby`. |
+| `error` | — | `string` | `''` | Error message rendered below the control when `invalid` is set. Replaces help in `aria-describedby`. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Sets native `disabled` and `aria-disabled="true"`. |
+| `readonly` | `readOnly` | `boolean` | `false` | Read-only — value submits but the user can't edit. |
+| `required` | `required` | `boolean` | `false` | Marks the field as required. Sets `aria-required="true"` and shows an asterisk on the label. |
+| `invalid` | `invalid` | `boolean` | `false` | Visual error state. Sets `aria-invalid="true"` and swaps help for error. |
+| `full-width` | — | `boolean` | `false` | Stretches the host to fill its container. |
+
+### Forwarded to the inner `<input>`
+
+These attributes pass straight through. They're not reflected as typed properties on
+the host — set them as attributes and the inner input picks them up.
+
+| Attribute | Applies to | Notes |
+| --- | --- | --- |
+| `name` | all | Form-submission name. Also exposed as a property. |
+| `placeholder` | text-like | Placeholder text. Also exposed as a property. |
+| `value` | all | **Initial** value (used by `form.reset()`). The current value lives on the property. |
+| `min` | `number`, `range`, date/time types | Lower bound. |
+| `max` | `number`, `range`, date/time types | Upper bound. |
+| `step` | `number`, `range`, date/time types | Step increment. |
+| `minlength` | text-like | Minimum character count. |
+| `maxlength` | text-like | Maximum character count. |
+| `pattern` | text-like | Regex constraint. |
+| `autocomplete` | all | Browser autofill hint (`email`, `current-password`, `cc-number`, etc.). |
+| `autocapitalize` | text-like | iOS/Android capitalisation hint. |
+| `inputmode` | text-like | Mobile keyboard hint (`numeric`, `tel`, `email`, etc.). |
+| `list` | text-like | `id` of a `<datalist>` for suggestions. |
+| `multiple` | `email`, `file` | Allow multiple values. |
+| `accept` | `file` | MIME-type filter for the file picker. |
+| `spellcheck` | text-like | Spell-check hint. |
+
+### ARIA on the host
+
+| Attribute | Behaviour |
+| --- | --- |
+| `aria-label` | Forwarded to the inner input. **Only takes effect when no visible `label` attribute is set** — a visible label always wins. |
+| `aria-describedby` | Merged with the auto-generated `help`/`error` ids and applied to the inner input. |
+
+The `form` getter returns the host form (`HTMLFormElement | null`).
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `focus(options?)` | `void` | Moves focus to the inner native `<input>`. |
+| `blur()` | `void` | Removes focus. |
+| `select()` | `void` | Selects the entire current value (text-like types). |
+| `setSelectionRange(start, end, direction?)` | `void` | Selects a sub-range. `direction` is `'forward'`, `'backward'`, or `'none'`. |
+| `checkValidity()` | `boolean` | Runs constraint validation. Returns `true` if valid. Does **not** show the browser bubble. |
+| `reportValidity()` | `boolean` | Runs constraint validation **and** shows the browser's validation bubble for the first invalid field. |
+| `setCustomValidity(message)` | `void` | Sets a custom validation message. Pass `''` to clear. Also propagates to `ElementInternals` so the form sees it. |
+
+### Read-only getters
+
+| Getter | Type | Description |
+| --- | --- | --- |
+| `value` | `string` | The current value (live from the inner input). Setter writes through and updates form state. |
+| `validity` | `ValidityState` | Native validity object from the inner input (`valueMissing`, `typeMismatch`, `patternMismatch`, etc.). |
+| `validationMessage` | `string` | Human-readable validation message (browser-provided or your custom string). |
+| `form` | `HTMLFormElement \| null` | The associated form via `ElementInternals`. |
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-input` | `{ value: string, originalEvent: Event }` | On every keystroke / value change — same trigger as the native `input` event. |
+| `ekko-change` | `{ value: string, originalEvent: Event }` | When the user commits the value — typically on blur, or on Enter for some types. Same trigger as the native `change` event. |
+| `input` | native `Event` | Standard DOM input event, bubbles out of Shadow DOM. |
+| `change` | native `Event` | Standard DOM change event, bubbles out of Shadow DOM. |
+
+Both custom events `bubble` and `compose` (cross the Shadow boundary). Listen for
+the typed `ekko-*` variants if you want a typed `detail`; otherwise the bare native
+events work.
+
+---
+
+## Slots
+
+The default slot is **not** used. The visible label comes from the `label`
+attribute. The named slots are for adornments inside the control:
+
+| Slot | Accepts | Use case |
+| --- | --- | --- |
+| `start` | icon, currency symbol, unit, status dot | Rendered inside the control, before the input. |
+| `end` | icon, unit, action button (clear, show password) | Rendered inside the control, after the input. |
+
+The component listens for `slotchange` and toggles `.has-start` / `.has-end`
+classes on the inner `.control` wrapper so its padding collapses to a `gap`-driven
+layout when adornments are present. You don't need to do anything — slot content
+in and the spacing adjusts.
+
+```html
+<ekko-input label="Amount" type="number">
+  <span slot="start">$</span>
+  <span slot="end">USD</span>
+</ekko-input>
+```
+
+Decorative SVGs should carry `aria-hidden="true"` — the visible label provides the
+accessible name.
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<input>` | Custom selection colors, caret styling, disabled tweaks the token system doesn't expose. |
+| `control` | The wrapper around input + start/end slots | Custom border treatments, container queries, layered shadows. |
+| `help` | The help-text element | Layout overrides for help. |
+| `error` | The error-text element (`role="alert"`) | Layout overrides or icons next to the error. |
+
+```css
+ekko-input::part(control) {
+  box-shadow: inset 0 1px 0 rgb(0 0 0 / 4%);
+}
+ekko-input::part(base)::selection {
+  background: var(--brand-selection);
+}
+```
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a fallback. Override at any
+scope — `:root`, a section, or per-instance. See
+[Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-input-shared-background` | `#ffffff` | Control background. |
+| `--ekko-input-shared-background-disabled` | `#f5f5f5` | Background when `disabled`. |
+| `--ekko-input-shared-background-readonly` | `#fafafa` | Background when `readonly`. |
+| `--ekko-input-shared-border` | `#d4d4d4` | Resting border color. |
+| `--ekko-input-shared-border-hover` | `#a3a3a3` | Hover border color (when not disabled or readonly). |
+| `--ekko-input-shared-border-focus` | `#2563eb` | Border color while focused. |
+| `--ekko-input-shared-border-error` | `#dc2626` | Border color when `invalid`. |
+| `--ekko-input-shared-border-width` | `1px` | Border width. |
+| `--ekko-input-shared-border-style` | `solid` | Border style. |
+| `--ekko-input-shared-border-radius` | `6px` | Corner radius. Also used for the range-input focus-ring radius. |
+| `--ekko-input-shared-text` | `#171717` | Value text color. |
+| `--ekko-input-shared-text-disabled` | `#a3a3a3` | Value and label color when disabled. |
+| `--ekko-input-shared-placeholder` | `#a3a3a3` | Placeholder color. |
+| `--ekko-input-shared-label-text` | `#171717` | Label text color. |
+| `--ekko-input-shared-label-font-weight` | `500` | Label font weight. |
+| `--ekko-input-shared-label-line-height` | `1.25` | Label line-height. |
+| `--ekko-input-shared-message-line-height` | `1.375` | Help / error line-height. |
+| `--ekko-input-shared-required-indicator-gap` | `0.125rem` | Gap between label text and the required asterisk. |
+| `--ekko-input-shared-adornment-size` | `1rem` | Width and height of slotted `start`/`end` adornments. |
+| `--ekko-input-shared-adornment-text` | `#525252` | Color applied to slotted adornments. |
+| `--ekko-input-shared-color-picker-padding` | `0.25rem` | Padding for `type="color"`. |
+| `--ekko-input-shared-hint-text` | `#737373` | Help-text color. |
+| `--ekko-input-shared-error-text` | `#dc2626` | Error-text and required-indicator color. |
+| `--ekko-input-shared-font-family` | `system-ui, sans-serif` | Font family for label, value, and messages. |
+| `--ekko-input-shared-gap` | `0.5rem` | Vertical gap between label, control, and message. Also the inner gap when adornments collapse the control padding. |
+| `--ekko-input-shared-transition-duration` | `100ms` | Transition speed for border, background, and shadow changes. |
+| `--ekko-input-shared-focus-ring-color` | `#2563eb` | Focus ring color. |
+| `--ekko-input-shared-focus-ring-width` | `2px` | Focus ring outline width. |
+| `--ekko-input-shared-focus-ring-offset` | `2px` | Focus ring offset. |
+
+### Per size (sm, md, lg)
+
+For each size — `sm`, `md`, `lg` — the same four properties exist:
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-input-size-{size}-padding-x` | `0.5rem / 0.75rem / 1rem` | Horizontal padding of the inner input. |
+| `--ekko-input-size-{size}-padding-y` | `0.25rem / 0.5rem / 0.75rem` | Vertical padding of the inner input. |
+| `--ekko-input-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Font size for label, value, and help/error (sm font-size also drives the help/error text size at all input sizes). |
+| `--ekko-input-size-{size}-height` | `2rem / 2.375rem / 2.875rem` | Minimum control height. |
+
+---
+
+## Accessibility
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus to/from the input |
+| Native typing | Standard text-entry behaviour |
+| Arrow keys | Native step behaviour for `number`, `range`, `date`, `time`, etc. |
+| `Enter` | Submits the surrounding form (where the type allows) |
+
+All native keyboard behaviour is preserved — the host is a thin shell over a real
+`<input>`.
+
+### Label association
+
+Labels are associated via native `<label for>` pointing at the inner input's `id`
+(generated per instance). Clicking the label focuses the input.
+
+A required field renders an asterisk after the label text. The asterisk has
+`aria-hidden="true"` — required state is announced via `aria-required="true"` on
+the inner input, so screen reader users hear "required" instead of "asterisk".
+
+If you don't set `label`, set `aria-label` on the host — it forwards to the inner
+input as the accessible name. A visible `label` always wins; `aria-label` is only
+applied when there is no visible label.
+
+```html
+<!-- preferred — visible label -->
+<ekko-input label="Email" type="email" name="email" />
+
+<!-- icon-only or visually hidden -->
+<ekko-input aria-label="Search site" type="search" />
+```
+
+### Describedby wiring
+
+The component manages `aria-describedby` on the inner input automatically:
+
+- `help` text is wired via the auto-generated help id when not invalid
+- `error` text is wired via the auto-generated error id when `invalid` is set
+- An external `aria-describedby` on the host is preserved and **merged** with the
+  internal ids — your describing element is announced alongside the help or error
+- Help is replaced by error when the field becomes invalid (only one is announced)
+
+The error element renders with `role="alert"` so assistive tech announces it the
+moment it appears.
+
+### State signals
+
+| State | What the inner input gets |
+| --- | --- |
+| `disabled` | native `disabled` + `aria-disabled="true"` |
+| `readonly` | native `readonly` |
+| `required` | native `required` + `aria-required="true"` + visible asterisk |
+| `invalid` | `aria-invalid="true"` + red border + error message announced |
+
+### Focus
+
+The control wrapper paints the focus ring on `:focus-within` — the outline appears
+around the whole control, not just the inner input. This means adornments stay
+inside the ring.
+
+`type="range"` is the exception: the wrapper border and outline are removed and the
+focus ring lives directly on the inner input via `:focus-visible` (because the slider
+thumb is the focus target, not a text caret).
+
+---
+
+## Form integration
+
+`ekko-input` is form-associated, so it participates in:
+
+- **`FormData`** — the current `value` is included under `name` when the form
+  serialises
+- **`form.reset()`** — `formResetCallback` restores the value from the `value`
+  **attribute** (the initial value)
+- **`<fieldset disabled>`** — `formDisabledCallback` propagates the disabled state
+  automatically
+- **Constraint validation** — `required`, `min`/`max`, `step`, `minlength`/
+  `maxlength`, `pattern` are forwarded to the inner input and enforced by the
+  browser
+- **`checkValidity()` / `reportValidity()` / `setCustomValidity()`** — exposed on
+  the host and delegated to the inner input, with custom messages mirrored to
+  `ElementInternals`
+
+```html
+<form>
+  <ekko-input name="name" label="Name" required></ekko-input>
+  <ekko-input name="email" type="email" label="Email" required></ekko-input>
+  <ekko-input name="age" type="number" label="Age" min="0" max="150"></ekko-input>
+  <ekko-button type="submit">Sign up</ekko-button>
+</form>
+```
+
+The component is usable as either controlled or uncontrolled. For uncontrolled,
+let it manage its own value and read it on submit. For controlled, set
+`element.value = ...` and listen for `ekko-input` to update your state.
+
+See [Forms (FACE)](/?path=/docs/foundations-forms-face--docs) for the full form
+integration story.
+
+---
+
+## Things to know
+
+### Type-specific behaviour
+
+- **`type="color"`** uses a tighter padding token
+  (`--ekko-input-shared-color-picker-padding`) and shows a pointer cursor — the
+  native swatch fills the available space.
+- **`type="range"`** removes the border and outline on the wrapper. The focus ring
+  appears directly on the inner input via `:focus-visible` because the focus
+  target is the slider thumb, not a text caret.
+- **`type="file"`** shows the native file picker via the inner input. Pair with
+  the `accept` and `multiple` attributes — they're forwarded.
+
+### `value` attribute vs `value` property
+
+The `value` attribute is the **initial** value used by `form.reset()`. The `value`
+property is the **current** live value. They diverge as soon as the user types.
+Read the property at submit time; set the attribute if you want to change the
+"reset to" value.
+
+### The inner input fills the available width
+
+Only the `start` and `end` slots have intrinsic widths — the input is `flex: 1`
+inside the control wrapper. Setting `full-width` on the host stretches the whole
+component (label + control + messages) to fill its parent.
+
+### iOS Safari zoom on focus
+
+iOS Safari zooms the page when an input's font-size is **less than 16px**. The
+default `md` and `lg` sizes both meet this threshold; the `sm` size does not. If
+you customise the size tokens, keep `--ekko-input-size-*-font-size` at `1rem`
+(16px) or higher on mobile, or accept the zoom.
+
+### `aria-label` requires no visible label
+
+`aria-label` on the host is forwarded to the inner input only when there is no
+visible `label` attribute. If both are set, the visible label wins — `aria-label`
+is removed from the inner input to avoid double-announcement.
+
+---
+
+## Source
+
+- [`packages/components/src/input/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/input/index.ts)
+- [`packages/components/src/input/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/input/index.css)
+- [`packages/tokens/tokens/component/input.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/input.json)

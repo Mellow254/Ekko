@@ -1,0 +1,343 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories, Source } from '@storybook/addon-docs/blocks';
+import * as ButtonStories from './ekko-button.stories';
+
+<Meta of={ButtonStories} />
+
+<Title />
+<Subtitle>The foundational interactive control. Buttons trigger an action.</Subtitle>
+
+`ekko-button` is a [Form-Associated Custom Element](/?path=/docs/foundations-forms-face--docs)
+that renders an inner native `<button>` inside Shadow DOM. It supports the standard
+button behaviours (click, Enter/Space activation, form submit/reset, disabled), plus
+toggle button semantics via `aria-pressed`, a loading state, and slotted icons.
+
+---
+
+## When to use
+
+Use `ekko-button` for:
+
+- Primary actions — Save, Submit, Confirm, Continue
+- Secondary actions — Cancel, Back, Skip
+- Destructive actions — Delete, Remove (with the `danger` variant)
+- Toggle controls — Mute, Bold, Favourite (with `pressed`)
+- Icon-only actions in toolbars (with `icon-only` and `aria-label`)
+
+**Do not use** `ekko-button` for navigation between pages — use a regular anchor or
+the `link` variant if you need a button-styled link inline. The `link` variant is for
+visually link-like buttons, not for actual navigation; nest an `<a>` for that.
+
+---
+
+## Anatomy
+
+```
+<ekko-button>
+  ┌──────────────────────────────────────────────────────┐
+  │  Shadow DOM                                          │
+  │  ┌────────────────────────────────────────────────┐  │
+  │  │  <button part="base">                          │  │
+  │  │    <slot name="start" />     ← optional icon   │  │
+  │  │    <span class="btn-label">                    │  │
+  │  │      <slot />                ← default content │  │
+  │  │    </span>                                     │  │
+  │  │    <div class="spinner" />   ← when loading    │  │
+  │  │    <slot name="end" />       ← optional icon   │  │
+  │  │  </button>                                     │  │
+  │  └────────────────────────────────────────────────┘  │
+  └──────────────────────────────────────────────────────┘
+</ekko-button>
+```
+
+The component is a thin shell over a native `<button>`. Default slot becomes the
+label. Named `start` and `end` slots accept icons.
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+All attributes reflect to JavaScript properties (lowercase property names, except
+`readOnly` which uses camelCase to match the native input convention).
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `variant` | `variant` | `'primary' \| 'secondary' \| 'ghost' \| 'danger' \| 'link'` | `'primary'` | Visual style. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale. |
+| `type` | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | Standard HTML button type. `submit` triggers form submission via `form.requestSubmit()`. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Sets `aria-disabled="true"` and prevents click. |
+| `loading` | `loading` | `boolean` | `false` | Shows a spinner. Sets `aria-busy="true"` and prevents click. |
+| `pressed` | `pressed` | `'true' \| 'false' \| null` | `null` | Toggle button state. When set, `aria-pressed` is applied to the inner button and click toggles between `'true'` and `'false'`. |
+| `full-width` | — | `boolean` | `false` | Stretches the button to fill its container. |
+| `icon-only` | — | `boolean` | `false` | Square padding and 1:1 aspect ratio. Always pair with `aria-label`. |
+| `name` | `name` | `string` | `''` | Form submitter name. Only contributes to `FormData` when the button is the active submitter. |
+| `value` | `value` | `string` | `''` | Form submitter value. |
+| `aria-label` | — | `string` | — | Accessible name. Required for `icon-only` buttons. Forwarded to the inner `<button>`. |
+| `aria-describedby` | — | `string` | — | Describing element id(s). Forwarded to the inner `<button>`. |
+
+The `form` getter returns the host form (`HTMLFormElement | null`).
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `click()` | `void` | Inherited from `HTMLElement`. Programmatically activates the button — runs the same handler as a real click. |
+| `focus(options?)` | `void` | Inherited from `HTMLElement`. Moves focus to the host element. |
+| `blur()` | `void` | Inherited from `HTMLElement`. Removes focus. |
+
+The button does not expose `checkValidity` / `reportValidity` — those belong on the
+form-control inputs.
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-click` | `{ originalEvent: Event }` | After click, *only if* the button was not disabled, not loading, and not in a disabled fieldset. Toggle state updates fire this event with the new state already applied. |
+| `click` | native `MouseEvent` | Standard DOM click. Fires for every click reaching the host, including disabled/loading clicks (which are then suppressed via `stopImmediatePropagation`). Listen for `ekko-click` if you want post-guard activations only. |
+
+Both events `bubble` and `compose` (cross the Shadow boundary).
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | text or inline elements | The button label. |
+| `start` | icon (svg, img, or any element) | Rendered before the label. Icon size is set automatically based on the `size` attribute via `--ekko-button-size-{sm\|md\|lg}-icon-size`. |
+| `end` | icon (svg, img, or any element) | Rendered after the label. Same automatic sizing as `start`. |
+
+Slot content with `aria-hidden="true"` is the right pattern for decorative icons —
+the button's text label provides the accessible name.
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<button>` | Custom hover effects, letter-spacing, filters that the token system doesn't expose. |
+
+```css
+ekko-button::part(base) {
+  letter-spacing: 0.05em;
+}
+ekko-button::part(base):hover {
+  filter: brightness(1.1);
+}
+```
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a fallback. Override at any scope —
+`:root`, a section, or per-instance. See [Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared (all variants)
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-button-shared-border-radius` | `6px` | Corner radius for all variants. |
+| `--ekko-button-shared-border-width` | `1px` | Border width. |
+| `--ekko-button-shared-border-style` | `solid` | Border style. |
+| `--ekko-button-shared-font-family` | `system-ui, sans-serif` | Label font. |
+| `--ekko-button-shared-font-weight` | `500` | Label weight. |
+| `--ekko-button-shared-line-height` | `1` | Label line-height. |
+| `--ekko-button-shared-letter-spacing` | `0.01rem` | Label tracking. |
+| `--ekko-button-shared-gap` | `0.5rem` | Gap between label and `start`/`end` slot content. |
+| `--ekko-button-shared-spinner-size` | `1rem` | Loading spinner diameter. |
+| `--ekko-button-shared-spinner-border-width` | `2px` | Spinner ring thickness. |
+| `--ekko-button-shared-transition-duration` | `100ms` | Transition speed for hover/active state changes. |
+| `--ekko-button-shared-focus-ring-color` | `#2563eb` | Focus ring color. |
+| `--ekko-button-shared-focus-ring-width` | `2px` | Focus ring outline width. |
+| `--ekko-button-shared-focus-ring-offset` | `2px` | Focus ring offset from the border. |
+
+### Sizes (sm, md, lg)
+
+For each size — `sm`, `md`, `lg` — the same five properties exist:
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-button-size-{size}-padding-x` | `0.5rem / 1rem / 1.5rem` | Horizontal padding. |
+| `--ekko-button-size-{size}-padding-y` | `0.25rem / 0.5rem / 0.75rem` | Vertical padding. |
+| `--ekko-button-size-{size}-font-size` | `0.875rem / 0.875rem / 1rem` | Label font size. |
+| `--ekko-button-size-{size}-height` | `2rem / 2.375rem / 2.875rem` | Minimum height. |
+| `--ekko-button-size-{size}-icon-size` | `0.875rem / 1rem / 1.125rem` | Width and height of slotted icons. |
+
+### Variant: primary
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-button-primary-background` | `#2563eb` | Resting background. |
+| `--ekko-button-primary-background-hover` | `#1d4ed8` | Hover background. |
+| `--ekko-button-primary-background-active` | `#1e40af` | Active (mouse-down) background. |
+| `--ekko-button-primary-background-disabled` | (semantic disabled) | Disabled background (also borders). |
+| `--ekko-button-primary-border` | `#2563eb` | Border color. |
+| `--ekko-button-primary-border-disabled` | (semantic disabled) | Disabled border. |
+| `--ekko-button-primary-text` | `#ffffff` | Label color. |
+| `--ekko-button-primary-text-disabled` | (semantic disabled text) | Disabled label color. |
+
+### Variant: secondary
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-button-secondary-background` | `#ffffff` | Resting background. |
+| `--ekko-button-secondary-background-hover` | `#fafafa` | Hover background. |
+| `--ekko-button-secondary-background-active` | `#f5f5f5` | Active background. |
+| `--ekko-button-secondary-border` | `#d4d4d4` | Border color. |
+| `--ekko-button-secondary-text` | `#171717` | Label color. |
+
+### Variant: ghost
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-button-ghost-background-hover` | `#f5f5f5` | Hover background (resting is transparent). |
+| `--ekko-button-ghost-background-active` | `#e5e5e5` | Active background. |
+| `--ekko-button-ghost-text` | `#404040` | Label color. |
+
+### Variant: danger
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-button-danger-background` | `#dc2626` | Resting background. |
+| `--ekko-button-danger-background-hover` | `#b91c1c` | Hover background. |
+| `--ekko-button-danger-background-active` | `#991b1b` | Active background. |
+| `--ekko-button-danger-border` | `#dc2626` | Border color. |
+| `--ekko-button-danger-text` | `#ffffff` | Label color. |
+
+### Variant: link
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-button-link-text-underline-offset` | `2px` | Underline offset for the link variant. |
+
+The link variant inherits its text color from the semantic `--ekko-color-text-link` and
+`--ekko-color-text-link-hover` — override those for system-wide link color changes.
+
+### State
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-button-pressed-filter` | `brightness(0.9)` | Filter applied when `pressed="true"`. |
+| `--ekko-button-loading-label-opacity` | `0.5` | Label opacity during the loading state. |
+
+---
+
+## Accessibility
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus to/from the button |
+| `Enter` | Activate (native `<button>` behaviour) |
+| `Space` | Activate (native `<button>` behaviour) |
+
+The button is part of the natural tab order. Disabled buttons remain in the tab order
+with `aria-disabled="true"` so screen reader users know they exist — this matches
+the [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/button/)
+recommendation.
+
+### Screen reader announcements
+
+| State | Announcement |
+| --- | --- |
+| Default | "&#123;label&#125;, button" |
+| Disabled | "&#123;label&#125;, dimmed, button" (varies by reader) |
+| Loading | "&#123;label&#125;, busy, button" |
+| Pressed (toggle) | "&#123;label&#125;, toggle button, pressed/not pressed" |
+| Icon-only | The `aria-label` text + "button" |
+
+### Focus
+
+A visible focus ring appears on `:focus-visible` only — keyboard users see it,
+mouse-only clicks don't trigger it. The ring is driven by tokens
+(`--ekko-button-shared-focus-ring-*`) and cannot be hidden via the standard `outline: none`
+escape because it's an `outline` rule scoped to `:focus-visible`.
+
+### Icon-only buttons
+
+`icon-only` buttons must have an `aria-label`. The component does not enforce this — it
+trusts you — but the `axe-core` scan in CI flags missing names.
+
+```html
+<ekko-button icon-only aria-label="Delete item" variant="ghost">
+  <svg slot="start" aria-hidden="true">...</svg>
+</ekko-button>
+```
+
+---
+
+## Form integration
+
+When `type="submit"`, the button submits its containing form via `form.requestSubmit()` —
+which runs constraint validation and fires the `submit` event (unlike `form.submit()`,
+which skips both).
+
+When the button has a `name`, its `name=value` pair is included in the resulting
+`FormData` only for the submission it triggered. This matches native `<button>`
+submitter semantics.
+
+```html
+<form>
+  <ekko-input name="comment" required />
+  <ekko-button type="submit" name="action" value="post">Post</ekko-button>
+  <ekko-button type="submit" name="action" value="preview">Preview</ekko-button>
+</form>
+<!-- FormData includes either action=post or action=preview, never both -->
+```
+
+When wrapped in `<fieldset disabled>`, the button's click handler short-circuits
+automatically via `formDisabledCallback`. No code change needed.
+
+See [Forms (FACE)](/?path=/docs/foundations-forms-face--docs) for the full form integration story.
+
+---
+
+## Things to know
+
+### `disabled` keeps the button focusable
+
+Setting `disabled` does not remove the button from the tab order — it stays focusable
+and announces as "dimmed". This is the WAI-ARIA recommendation: a disabled button users
+can't find isn't accessible. If you really want it unfocusable, use `style="display:none"`.
+
+### Toggle vs. switch
+
+For binary settings that take effect immediately (Bold, Mute, Favourite), use a toggle
+button (`pressed` attribute). For binary form settings (Wi-Fi on/off, notifications),
+use [`ekko-switch`](/?path=/docs/components-switch--docs).
+
+### `link` variant ≠ link
+
+The `link` variant is a *button styled like a link*. It still does button things —
+fires click events, submits forms, etc. For real navigation, use an `<a>` element
+(or wrap one with `ekko-button` only if you have a strong reason).
+
+### Icon sizing
+
+Slotted icons get their `width` and `height` from `--ekko-button-size-{size}-icon-size`
+via `::slotted()`. Don't set explicit pixel sizes on your `<svg>` — let the token drive
+it so brands and sizes can scale icons consistently.
+
+---
+
+## Source
+
+- [`packages/components/src/button/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/button/index.ts)
+- [`packages/components/src/button/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/button/index.css)
+- [`packages/tokens/tokens/component/button.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/button.json)

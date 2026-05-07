@@ -1,0 +1,269 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Events" />
+
+# Events
+
+Components dispatch two kinds of events:
+
+1. **Native DOM events** that bubble out of Shadow DOM as you'd expect — `click`,
+   `focus`, `blur`, `submit`. Listen for these the way you always have.
+2. **Ekko custom events** prefixed with `ekko-*`, dispatched for component-specific
+   semantics like `ekko-open`, `ekko-change`, `ekko-cancel`.
+
+This page documents the convention, the framework integration patterns, and the
+guarantees you can rely on.
+
+---
+
+## The convention
+
+Every Ekko custom event follows the same shape:
+
+```ts
+new CustomEvent<DetailType>('ekko-{action}', {
+  bubbles: true,         // always
+  composed: true,        // always — crosses Shadow DOM boundary
+  detail: {
+    /* component-specific payload */
+    originalEvent?: Event,  // when triggered by a native event
+    value?: string,         // when reporting a value change
+  },
+});
+```
+
+| Property | Always | Why |
+| --- | --- | --- |
+| `bubbles: true` | yes | so listeners on ancestors fire |
+| `composed: true` | yes | so listeners outside the Shadow tree fire |
+| `cancelable: true` | only on cancel-able events (e.g. `ekko-cancel`) | matches native semantics |
+| `detail.originalEvent` | when wrapping a native event | gives access to the underlying click/input |
+
+`composed: true` is the detail that trips most people up. Without it, an event
+dispatched inside a Shadow root cannot escape — your `addEventListener` on `window`
+or any ancestor of the host would never fire. Ekko events always set it.
+
+---
+
+## Event reference (overview)
+
+Each component documents its own events on its docs page. The full set across the
+library:
+
+| Component | Event | When fired |
+| --- | --- | --- |
+| `ekko-button` | `ekko-click` | on click, after disabled/loading guard, after toggle handling |
+| `ekko-checkbox` | `ekko-change` | when `checked` toggles |
+| `ekko-dialog` | `ekko-open` | after open animation starts |
+| `ekko-dialog` | `ekko-close` | after close, with the close `reason` |
+| `ekko-dialog` | `ekko-cancel` | on Escape key (cancelable) |
+| `ekko-input` | `ekko-input` | on every keystroke / value change |
+| `ekko-input` | `ekko-change` | on commit (blur, Enter for some types) |
+| `ekko-radio` | `ekko-change` | when selection changes |
+| `ekko-select` | `ekko-input` / `ekko-change` | as user navigates / commits |
+| `ekko-switch` | `ekko-change` | when `checked` toggles |
+| `ekko-textarea` | `ekko-input` / `ekko-change` | as input/textarea |
+| `ekko-toggletip` | `ekko-show` / `ekko-hide` | when popover opens/closes |
+| `ekko-tooltip` | `ekko-show` / `ekko-hide` | when tooltip appears/disappears |
+
+---
+
+## Vanilla JavaScript
+
+```js
+const input = document.querySelector('ekko-input');
+
+input.addEventListener('ekko-input', (event) => {
+  console.log(event.detail.value);            // current string value
+  console.log(event.detail.originalEvent);    // native InputEvent
+});
+
+input.addEventListener('ekko-change', (event) => {
+  console.log('committed value:', event.detail.value);
+});
+```
+
+Standard `addEventListener` works because Ekko events bubble and compose.
+
+---
+
+## React (with the wrappers)
+
+The React wrappers from `@ekko-ds/components/react` map every event to a typed prop in
+the camelCase `onEkko{Action}` form:
+
+```tsx
+import { EkkoInput } from '@ekko-ds/components/react';
+
+<EkkoInput
+  label="Email"
+  onEkkoInput={(event) => {
+    // event.detail is fully typed
+    setEmail(event.detail.value);
+  }}
+  onEkkoChange={(event) => {
+    // commit handler
+  }}
+/>
+```
+
+Every `ekko-{action}` event becomes an `onEkko{Action}` prop. Detail types are exported
+from `@ekko-ds/components/react`. See [React Wrappers](/?path=/docs/foundations-react-wrappers--docs).
+
+---
+
+## React without wrappers
+
+React handles standard DOM events on custom elements, but **`onEkkoChange`-style
+attribute names don't work** — React doesn't know how to map them to
+`addEventListener('ekko-change', ...)`. Use a ref:
+
+```tsx
+import { useEffect, useRef } from 'react';
+
+function MyInput() {
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const handler = (e: Event) => console.log((e as CustomEvent).detail);
+    node.addEventListener('ekko-input', handler);
+    return () => node.removeEventListener('ekko-input', handler);
+  }, []);
+
+  return <ekko-input ref={ref} label="Email" />;
+}
+```
+
+This is exactly why the wrappers exist. Use them.
+
+---
+
+## Vue
+
+Vue maps `@ekko-input="..."` directly:
+
+```vue
+<template>
+  <ekko-input
+    label="Email"
+    @ekko-input="onInput"
+    @ekko-change="onChange"
+  />
+</template>
+
+<script setup>
+function onInput(event) {
+  console.log(event.detail.value);
+}
+</script>
+```
+
+Vue's `v-model` works on `ekko-input` because the inner native input dispatches
+standard `input` events that escape the shadow boundary.
+
+---
+
+## Angular
+
+Angular template syntax works:
+
+```html
+<ekko-input
+  label="Email"
+  (ekko-input)="onInput($event)"
+  (ekko-change)="onChange($event)">
+</ekko-input>
+```
+
+```ts
+onInput(event: CustomEvent<{ value: string }>) {
+  console.log(event.detail.value);
+}
+```
+
+For two-way binding without a wrapper, listen for `ekko-input` and write back to the
+model.
+
+---
+
+## Svelte
+
+```svelte
+<script>
+  function onInput(event) {
+    console.log(event.detail.value);
+  }
+</script>
+
+<ekko-input label="Email" on:ekko-input={onInput} />
+```
+
+Svelte 5's runes and Svelte 4's stores both work — there's no Ekko-specific glue.
+
+---
+
+## Solid
+
+```jsx
+<ekko-input
+  label="Email"
+  on:ekko-input={(event) => setEmail(event.detail.value)}
+/>
+```
+
+Use Solid's `on:` namespace for custom events to bypass JSX prop normalisation.
+
+---
+
+## Stopping propagation across Shadow DOM
+
+`composed: true` events appear on every ancestor. If you only want a specific listener
+to fire, use the standard `event.stopPropagation()` or `event.stopImmediatePropagation()`:
+
+```js
+parent.addEventListener('ekko-click', (e) => {
+  /* runs only if no closer listener stopped propagation */
+});
+
+target.addEventListener('ekko-click', (e) => {
+  e.stopPropagation();   // parent listener won't fire
+});
+```
+
+The bubbling and composing rules are entirely standard — nothing Ekko-specific.
+
+---
+
+## Things to know
+
+### Native events still escape
+
+Ekko components don't suppress native events. A click on `ekko-button` still fires a
+`click` event that you can listen for. Use `click` for "any activation" handling and
+`ekko-click` when you specifically want the post-guard event (i.e. only when the
+button is actually active and not disabled/loading).
+
+### `event.target` after `composed: true`
+
+When a `composed: true` event crosses the Shadow boundary, `event.target` is **retargeted**
+to the host element — not the inner shadow node. This is the standard browser behaviour.
+If you need the original target, use `event.composedPath()`:
+
+```js
+host.addEventListener('ekko-click', (e) => {
+  console.log(e.target);            // <ekko-button>
+  console.log(e.composedPath()[0]); // inner <button> node
+});
+```
+
+### Event listener cleanup
+
+Custom elements don't automatically remove listeners on unmount the way some frameworks
+do. Always pair `addEventListener` with a `removeEventListener` in your cleanup —
+React's `useEffect` return, Vue's `onBeforeUnmount`, etc.
+
+---
+
+Next: [React Wrappers](/?path=/docs/foundations-react-wrappers--docs).

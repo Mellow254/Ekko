@@ -1,0 +1,281 @@
+import { Meta, Title, Subtitle, Primary, Controls, Stories } from '@storybook/addon-docs/blocks';
+import * as SwitchStories from './ekko-switch.stories';
+
+<Meta of={SwitchStories} />
+
+<Title />
+<Subtitle>A binary on/off control whose change takes effect immediately.</Subtitle>
+
+`ekko-switch` is a [Form-Associated Custom Element](/?path=/docs/foundations-forms-face--docs)
+that wraps a visually-hidden native `<input type="checkbox">` carrying `role="switch"`. The
+input handles keyboard, focus, and `FormData` participation; a styled track and thumb in
+Shadow DOM provide the visual on/off state. Per [WAI-ARIA APG](https://www.w3.org/WAI/ARIA/apg/patterns/switch/),
+assistive technology announces the control as a switch with "on" / "off" rather than
+"checked" / "not checked".
+
+---
+
+## When to use
+
+- Settings that flip a feature on or off **in real time** — Wi-Fi, Bluetooth, dark mode, notifications
+- Per-row toggles in a settings panel where each row independently activates a behaviour
+- Live preference toggles that mutate state the moment the user interacts
+
+**Do not use** `ekko-switch` for form fields awaiting submission — use
+[`ekko-checkbox`](/?path=/docs/components-checkbox--docs) when the value is staged until
+the user clicks Submit. **Do not use** it to choose between two equivalent options — use
+[`ekko-radio`](/?path=/docs/components-radio--docs) for mutually-exclusive choices.
+
+---
+
+## Anatomy
+
+```
+<ekko-switch>
+  ┌────────────────────────────────────────────────────┐
+  │  Shadow DOM                                        │
+  │  <label>                                           │
+  │    <input part="base" type="checkbox"              │  ← visually hidden, focusable
+  │           role="switch" />                         │
+  │    <span class="track" aria-hidden="true">         │  ← visible track
+  │      <span class="thumb" />                        │  ← sliding thumb
+  │    </span>                                         │
+  │    <span class="label-text">                       │
+  │      <slot />                                      │  ← your label text
+  │    </span>                                         │
+  │  </label>                                          │
+  └────────────────────────────────────────────────────┘
+</ekko-switch>
+```
+
+---
+
+## Examples
+
+<Primary />
+
+<Controls />
+
+<Stories />
+
+---
+
+## Properties & attributes
+
+| Attribute | Property | Type | Default | Description |
+| --- | --- | --- | --- | --- |
+| `checked` | `checked` | `boolean` | `false` | On/off state. Reflects to/from the inner input. |
+| `disabled` | `disabled` | `boolean` | `false` | Disables interaction. Sets `aria-disabled="true"` on the inner input. |
+| `name` | `name` | `string` | `''` | Form submission name. |
+| `value` | `value` | `string` | `'on'` | Form submission value when on. Matches native checkbox default. |
+| `size` | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size scale. |
+| `aria-label` | — | `string` | — | Accessible name when no slotted label is provided. Forwarded to the inner input. |
+| `aria-describedby` | — | `string` | — | Describing element id(s). Forwarded to the inner input. |
+
+The `form` getter returns the host form (`HTMLFormElement | null`).
+
+---
+
+## Methods
+
+| Method | Returns | Description |
+| --- | --- | --- |
+| `click()` | `void` | Inherited from `HTMLElement`. Programmatic click. Toggles the on/off state and fires `change`. |
+| `focus(options?)` | `void` | Inherited from `HTMLElement`. Moves keyboard focus to the host (which retargets to the inner input). |
+| `blur()` | `void` | Inherited from `HTMLElement`. Removes focus. |
+
+There is no separate `toggle()` method — set the `checked` property directly.
+
+---
+
+## Events
+
+| Event | `detail` shape | When fired |
+| --- | --- | --- |
+| `ekko-change` | `{ checked: boolean, originalEvent: Event }` | When the user toggles the switch via click or keyboard. Not fired when `checked` is set programmatically. |
+| `change` | native `Event` | Standard DOM change. Bubbles out of Shadow DOM — listen here if you don't need the typed detail. |
+
+`ekko-change` `bubbles` and `composes` (crosses the Shadow boundary).
+
+---
+
+## Slots
+
+| Slot | Accepts | Notes |
+| --- | --- | --- |
+| _default_ | text or inline elements | The visible label. Click target spans both the track and the label. |
+
+---
+
+## CSS Parts
+
+| Part | Targets | Use case |
+| --- | --- | --- |
+| `base` | The inner native `<input>` | Rare. The input is visually hidden — most styling targets the track and thumb via custom properties. |
+
+The `track` and `thumb` are intentionally **not** exposed as parts — their geometry is
+fully driven by tokens. Override the size and colour tokens listed below rather than
+reaching into the Shadow DOM.
+
+---
+
+## CSS Custom Properties
+
+Every styled value reads from a custom property with a fallback. Override at any scope —
+`:root`, a section, or per-instance. See [Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+### Shared
+
+| Property | Default | Controls |
+| --- | --- | --- |
+| `--ekko-switch-shared-background` | `#f5f5f5` | Track background when off. |
+| `--ekko-switch-shared-background-hover` | `#e5e5e5` | Track background on hover (off). |
+| `--ekko-switch-shared-background-checked` | `#2563eb` | Track background when on. |
+| `--ekko-switch-shared-background-checked-hover` | `#1d4ed8` | Track background on hover when on. Also drives the hover border. |
+| `--ekko-switch-shared-border` | `#d4d4d4` | Track border colour when off. |
+| `--ekko-switch-shared-border-checked` | `#2563eb` | Track border colour when on. |
+| `--ekko-switch-shared-border-width` | `1px` | Track border width. |
+| `--ekko-switch-shared-border-style` | `solid` | Track border style. |
+| `--ekko-switch-shared-border-radius` | `9999px` | Track and thumb corner radius. |
+| `--ekko-switch-shared-thumb-color` | `#ffffff` | Thumb fill colour. |
+| `--ekko-switch-shared-thumb-shadow-color` | `rgba(0, 0, 0, 0.15)` | Subtle shadow beneath the thumb for elevation. |
+| `--ekko-switch-shared-thumb-shadow-offset` | `1px` | Thumb shadow Y offset. |
+| `--ekko-switch-shared-thumb-shadow-blur` | `2px` | Thumb shadow blur radius. |
+| `--ekko-switch-shared-label-text` | `#171717` | Label text colour. |
+| `--ekko-switch-shared-label-text-disabled` | `#a3a3a3` | Label text colour when disabled. |
+| `--ekko-switch-shared-disabled-opacity` | `0.5` | Opacity for the disabled state. |
+| `--ekko-switch-shared-font-family` | `system-ui, sans-serif` | Label font. |
+| `--ekko-switch-shared-font-weight` | `400` | Label weight. |
+| `--ekko-switch-shared-line-height` | `1.25` | Label line-height. |
+| `--ekko-switch-shared-letter-spacing` | `0.01rem` | Label tracking. |
+| `--ekko-switch-shared-gap` | `0.5rem` | Gap between the track and the label. |
+| `--ekko-switch-shared-transition-duration` | `100ms` | Transition speed for state changes (background, border, thumb travel). |
+| `--ekko-switch-shared-focus-ring-color` | `#2563eb` | Focus ring colour. |
+| `--ekko-switch-shared-focus-ring-width` | `2px` | Focus ring width. |
+| `--ekko-switch-shared-focus-ring-offset` | `2px` | Focus ring offset from the track. |
+
+### Per size (sm, md, lg)
+
+| Property pattern | Defaults (sm / md / lg) | Controls |
+| --- | --- | --- |
+| `--ekko-switch-size-{size}-track-width` | `1.75rem / 2.25rem / 2.75rem` | Track width. |
+| `--ekko-switch-size-{size}-track-height` | `1rem / 1.25rem / 1.5rem` | Track height. |
+| `--ekko-switch-size-{size}-thumb-size` | `0.75rem / 1rem / 1.25rem` | Thumb width and height. |
+| `--ekko-switch-size-{size}-thumb-offset` | `0.125rem / 0.125rem / 0.125rem` | Thumb inset from the track edge when off. |
+| `--ekko-switch-size-{size}-thumb-travel` | `0.75rem / 1rem / 1.25rem` | Distance the thumb translates when on. |
+| `--ekko-switch-size-{size}-font-size` | `0.75rem / 0.875rem / 1rem` | Label font size. |
+
+---
+
+## Accessibility
+
+### Role
+
+The inner `<input>` carries `role="switch"`, so screen readers announce it as a switch
+rather than a checkbox. The native `checked` property still drives state — the role only
+changes how the state is verbalised.
+
+### Keyboard
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move focus to/from the switch |
+| `Space` | Toggle on/off (native `<input type="checkbox">` behaviour) |
+| `Enter` | Toggle on/off on most platforms (browser/AT dependent) |
+
+### Screen reader announcements
+
+| State | Announcement |
+| --- | --- |
+| Off | "&#123;label&#125;, switch, off" |
+| On | "&#123;label&#125;, switch, on" |
+| Disabled | "&#123;label&#125;, switch, dimmed" (varies by reader) |
+
+### Focus
+
+The native `<input>` inside the shadow tree is the focus target. The visible track renders
+the focus ring via `:focus-visible ~ .track` (sibling combinator) using the
+`--ekko-switch-shared-focus-ring-*` tokens. The hidden input is positioned absolutely with a
+1×1 clip — it stays in the tab order without affecting layout.
+
+### Labelling
+
+Slotted text is the visible label. If you don't slot a label, set `aria-label` on the host
+so the inner input has an accessible name.
+
+```html
+<!-- preferred — visible label -->
+<ekko-switch name="wifi">Wi-Fi</ekko-switch>
+
+<!-- no visible label — use aria-label -->
+<ekko-switch name="dark-mode" aria-label="Dark mode"></ekko-switch>
+```
+
+---
+
+## Form integration
+
+```html
+<form>
+  <ekko-switch name="notifications" checked>Notifications</ekko-switch>
+  <ekko-switch name="newsletter">Weekly digest</ekko-switch>
+  <ekko-button type="submit">Save preferences</ekko-button>
+</form>
+```
+
+`FormData` includes `name=value` only when the switch is **on**. When off, the entry is
+omitted entirely (matching native `<input type="checkbox">` behaviour).
+
+The `value` attribute defaults to `'on'` to match native semantics. Set it explicitly when
+sending a meaningful value (e.g. `value="enabled"`).
+
+`<fieldset disabled>` propagates automatically through `formDisabledCallback` — every
+switch inside becomes disabled and stops contributing to `FormData`. No code change needed.
+
+`form.reset()` restores the initial `checked` attribute via `formResetCallback`. If the
+switch was authored with `<ekko-switch checked>`, reset returns it to on; otherwise it
+returns it to off.
+
+See [Forms (FACE)](/?path=/docs/foundations-forms-face--docs) for the full form integration story.
+
+---
+
+## Things to know
+
+### "On / off" is the right mental model
+
+A switch announces and behaves as on/off. Phrase labels as the **thing being toggled**, not
+as a verb — "Notifications" with a switch, not "Enable notifications" with a switch. The
+verb is implied by the control type.
+
+### Switches indicate immediate effect
+
+Toggling a switch should mutate state right away. If the user has to click Save afterwards
+for the change to apply, you've picked the wrong control — use a checkbox instead. This is
+the single biggest reason teams reach for switches when they shouldn't.
+
+### Programmatic `checked = true` does not fire `ekko-change`
+
+Only user interaction fires the event — same as native. If you need to react to programmatic
+changes (e.g. syncing two switches), wire it up explicitly in your state-update code.
+
+### Announced as a switch, not a checkbox
+
+The component matches the [WAI-ARIA APG Switch pattern](https://www.w3.org/WAI/ARIA/apg/patterns/switch/).
+Even though the underlying element is `<input type="checkbox">`, `role="switch"` overrides
+how assistive technology verbalises the state. Don't rely on the word "checkbox" appearing
+anywhere in the announcement.
+
+### The hidden input is the focus target
+
+If you grab the host's focused state via `:focus-within`, it works. If you read
+`document.activeElement`, you'll see the host element (focus retargets at the Shadow
+boundary). Use `event.composedPath()` if you need the inner input.
+
+---
+
+## Source
+
+- [`packages/components/src/switch/index.ts`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/switch/index.ts)
+- [`packages/components/src/switch/index.css`](https://github.com/your-org/ekko-ds/blob/main/packages/components/src/switch/index.css)
+- [`packages/tokens/tokens/component/switch.json`](https://github.com/your-org/ekko-ds/blob/main/packages/tokens/tokens/component/switch.json)

@@ -1,0 +1,178 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Contributing" />
+
+# Contributing
+
+Ekko is open source. Contributions of all kinds are welcome — bug fixes, accessibility
+improvements, new components, tokens, docs.
+
+---
+
+## Quick start
+
+```bash
+git clone https://github.com/your-org/ekko-ds.git
+cd ekko-ds
+pnpm install
+pnpm build         # build tokens + components in dependency order
+pnpm docs          # start Storybook at http://localhost:6006
+```
+
+You're up and running.
+
+---
+
+## What to read before opening a PR
+
+These are the load-bearing docs in the repo:
+
+| File | Purpose |
+| --- | --- |
+| `CLAUDE.md` | Top-level guidance — code style, build commands, verification checklist |
+| `.claude/rules/components.md` | Component implementation rules (file layout, ARIA contract, lifecycle order) |
+| `.claude/rules/tokens.md` | Token rules (DTCG format, tier hierarchy, units) |
+| `.claude/rules/docs.md` | Story file conventions for Storybook |
+| `README.md` | Package overview, install, brand-override pattern |
+
+If a PR conflicts with one of these, the rules win — change the PR or update the rule
+in the same PR with a clear rationale.
+
+---
+
+## Filing an issue
+
+Useful issue reports include:
+
+- The component, version, and browser
+- A minimal reproduction (StackBlitz, CodeSandbox, or a small repo)
+- What you expected vs. what happened
+- Whether the issue affects accessibility (we treat a11y bugs as high priority)
+
+For feature requests, please include the use case before the proposed API. Knowing
+*why* helps us decide whether the right answer is the proposed feature, an existing
+escape hatch (CSS parts, custom events), or a token addition.
+
+---
+
+## Adding a component
+
+The full process:
+
+1. Open an issue first to discuss the API. Components are public surface — getting the
+   attribute/slot/event shape right up front saves a major bump later.
+2. Add tokens in `packages/tokens/tokens/component/{name}.json`.
+3. Implement in `packages/components/src/{name}/`:
+   - `index.ts` — class extending `EkkoBase`
+   - `index.css` — every value via `var(--ekko-{name}-..., fallback)`
+4. Export from `packages/components/src/index.ts`.
+5. Add the React wrapper in `packages/components/src/wrappers/react/index.ts`.
+6. Add tests in `packages/components/tests/ekko-{name}.test.ts` covering rendering,
+   attributes, ARIA, keyboard, events.
+7. Add stories + docs in `packages/docs/src/stories/{name}/ekko-{name}.stories.ts` plus
+   `packages/docs/src/stories/{name}/ekko-{name}.mdx`.
+8. Add the tag to `packages/components/src/styles/fouce.css`.
+9. Run the full verification:
+   ```bash
+   pnpm build && pnpm typecheck && pnpm test && pnpm test:a11y && pnpm lint
+   ```
+10. Create a changeset (`pnpm changeset`) describing the new component.
+
+---
+
+## Making a smaller change
+
+For component-internal fixes (a11y bug, behaviour fix, token tweak):
+
+1. Branch from `main`.
+2. Make the change. Update tests.
+3. Run `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm test:a11y`, `pnpm lint`.
+4. `pnpm changeset` — pick `patch` for bug fixes, `minor` for additive changes.
+5. Open a PR. The CI matrix runs lint, build, tests, and a11y scans on Ubuntu.
+
+---
+
+## Code style
+
+[Biome v2](https://biomejs.dev/) handles formatting and linting. A pre-commit hook
+runs `biome check --fix` so you generally don't think about it.
+
+A few rules worth calling out:
+
+- **No `any`.** TypeScript strict mode is on. Use proper types or generics.
+- **No comments that restate code.** Only add a comment when the *why* isn't obvious from
+  the code.
+- **No new files unless necessary.** Prefer editing existing files. Don't create
+  documentation files (`*.md`, `README.md`) unless the task explicitly asks for them.
+- **CSS values are tokens, not literals.** Read [`.claude/rules/components.md`](https://github.com/your-org/ekko-ds/blob/main/.claude/rules/components.md)
+  for the exhaustive policy.
+- **Units are `rem` or `px`.** No `em` anywhere — neither in token sources nor in CSS
+  fallbacks.
+
+---
+
+## Testing
+
+Component tests run in real Chromium via [Web Test Runner + Playwright](https://modern-web.dev/docs/test-runner/overview/):
+
+```bash
+pnpm test                                                    # all components
+cd packages/components && npx web-test-runner 'tests/ekko-button.test.ts'
+```
+
+Tests should cover:
+
+- **Rendering** — Shadow DOM present, inner element rendered, slots, CSS parts
+- **Attributes** — defaults, reflection, property setters
+- **ARIA** — `aria-disabled`, `aria-busy`, `aria-label` forwarding, `aria-pressed`
+- **Keyboard** — Enter/Space activation, disabled suppression
+- **Events** — custom event fires, bubbles, composes, detail shape
+
+Accessibility scanning (`axe-core` against every Storybook story) runs separately:
+
+```bash
+pnpm test:a11y
+```
+
+---
+
+## Documentation expectations
+
+Every component PR includes documentation updates:
+
+- A complete story file with `Default`, `Variants`, `Sizes`, `States`, plus
+  component-specific stories (e.g. `WithIcons`, `InAForm`)
+- A complete MDX docs page covering: Overview, Anatomy, Properties, Methods, Events,
+  Slots, CSS Parts, **CSS Custom Properties** (every token), Accessibility, Things to know
+- All `argTypes` filled out with `description`, `control`, and `table.defaultValue`
+
+The accessibility section needs to list keyboard interactions and screen reader
+expectations explicitly. "It's accessible" doesn't help anyone.
+
+---
+
+## Reviewing PRs
+
+If you're a maintainer reviewing a PR, the checklist:
+
+- [ ] Tokens added before referencing — never introduce a `var(--ekko-foo, ...)` in
+      component CSS without a corresponding token in `packages/tokens/tokens/component/`.
+- [ ] CSS values are tokens. Literal numerics or colors are bugs.
+- [ ] `connectedCallback` calls `this.upgradeProperty(prop)` for every public property
+      with a setter, **before** setting default attributes.
+- [ ] All observed attributes appear in `static get observedAttributes()`.
+- [ ] Tests cover rendering, attributes, ARIA, keyboard, events.
+- [ ] The a11y job passes.
+- [ ] Storybook stories cover every state and have descriptions.
+- [ ] Changeset present with the right severity.
+
+---
+
+## Licensing
+
+Ekko is MIT-licensed. By contributing you agree that your contributions are MIT-licensed
+under the same terms.
+
+---
+
+That's it. Thanks for contributing.

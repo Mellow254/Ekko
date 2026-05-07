@@ -1,0 +1,136 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Browser Support" />
+
+# Browser Support
+
+Ekko is built for the **modern web platform**. The browsers below are tested in CI and
+fully supported.
+
+| Browser | Minimum version | Notes |
+| --- | --- | --- |
+| Chrome | 120+ | Tested in CI on every PR (headless Chromium) |
+| Edge | 120+ | Same engine as Chrome |
+| Firefox | 121+ | Manual testing across releases |
+| Safari | 17.4+ | Constructable stylesheets are stable from 16.4; we require 17.4 for full ARIA + FACE coverage |
+| iOS Safari | 17.4+ | Same engine as Safari |
+| Android Chrome | 120+ | Same engine as Chrome |
+
+If you need Internet Explorer support, this is not the system for you. If you need
+older Edge/Safari/Firefox, evaluate carefully — see [Required platform features](#required-platform-features)
+below.
+
+---
+
+## Required platform features
+
+Every Ekko feature relies on:
+
+| Feature | Standard | Stable since |
+| --- | --- | --- |
+| [Custom Elements v1](https://html.spec.whatwg.org/multipage/custom-elements.html) | HTML Living Standard | 2018 |
+| [Shadow DOM v1](https://dom.spec.whatwg.org/#shadow-trees) | DOM Living Standard | 2018 |
+| [Constructable stylesheets](https://wicg.github.io/construct-stylesheets/) | CSSOM | Chrome 73, Safari 16.4, Firefox 101 |
+| [`adoptedStyleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot/adoptedStyleSheets) | DOM | Chrome 73, Safari 16.4, Firefox 101 |
+| [`ElementInternals`](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals) | HTML Living Standard | Chrome 77, Safari 16.4, Firefox 98 |
+| [Form-Associated Custom Elements](https://web.dev/articles/more-capable-form-controls) | HTML Living Standard | Chrome 77, Safari 16.4, Firefox 98 |
+| [`::part`](https://developer.mozilla.org/en-US/docs/Web/CSS/::part) | CSS Shadow Parts | Chrome 73, Safari 13.1, Firefox 72 |
+| [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) | CSS Variables | All current browsers |
+| [Native CSS nesting](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting) | CSS Nesting Module | Chrome 120, Safari 16.4, Firefox 117 |
+
+The narrowest gate is **Safari 17.4** — that's where every feature in the table above
+is reliably available.
+
+---
+
+## Polyfills
+
+We do not ship polyfills. The features above are too foundational to polyfill cleanly,
+and the supported browsers don't need them. If you must support older browsers:
+
+- **Custom Elements / Shadow DOM** — the [`@webcomponents/webcomponentsjs`](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs)
+  loader covers the basics. Note that `adoptedStyleSheets` is not fully polyfillable;
+  the polyfill falls back to inline `<style>` tags inside each shadow root.
+- **Form-Associated Custom Elements** — the [`element-internals-polyfill`](https://github.com/calebdwilliams/element-internals-polyfill)
+  package covers `ElementInternals` and form participation. It's well-maintained but
+  adds runtime overhead.
+
+We don't test against polyfills. PRs that add polyfill-specific workarounds will
+likely be rejected.
+
+---
+
+## TypeScript support
+
+The `@ekko-ds/components` package ships type declarations alongside its JavaScript.
+TypeScript 5.0+ is supported. Older versions may miss some method overloads.
+
+For JSX intrinsic element augmentation (so you can write `<ekko-button />` without
+errors in React), see [Getting Started](/?path=/docs/foundations-getting-started--docs)
+or use the React wrappers.
+
+---
+
+## Bundle considerations
+
+The full `@ekko-ds/components` ESM bundle is ~XX KB minified + gzipped (target — actual
+size shown in PR comments via the size-limit check). Per-component subpath imports keep
+the cost proportional to what you use:
+
+```js
+import '@ekko-ds/components/button';  // only ekko-button + base, ~4 KB
+import '@ekko-ds/components/input';   // only ekko-input + base, ~6 KB
+```
+
+Tree-shakers respect the subpath exports automatically.
+
+---
+
+## Preventing flash of unstyled content
+
+Until each component's definition has loaded and run, the host element renders as plain
+HTML — typically with no styles. To hide it during that window, import the FOUCE CSS:
+
+```js
+import '@ekko-ds/components/fouce.css';
+```
+
+Or as a `<link>`:
+
+```html
+<link rel="stylesheet" href="@ekko-ds/components/fouce.css">
+```
+
+The file uses [`:not(:defined)`](https://developer.mozilla.org/en-US/docs/Web/CSS/:defined)
+to hide every Ekko element until `customElements.define()` has been called for its tag.
+This is most useful when you lazy-load components or split definitions across chunks.
+
+---
+
+## Mobile
+
+The components are touch-first. They use `touch-action: manipulation` to remove the
+300ms tap delay where applicable, respect `pointer-events`, and ship sensible default
+sizes that meet the WCAG 2.5.5 target-size minimum (24×24 CSS pixels).
+
+iOS-specific notes:
+
+- `<input type="date">` and friends use the native iOS picker via the inner native input.
+- `font-size` < 16px on inputs causes iOS Safari to zoom on focus. Default Ekko sizes
+  are 16px+ to avoid this. If you override `--ekko-input-size-*-font-size` to a smaller
+  value, plan for the zoom.
+
+---
+
+## Server environments
+
+Ekko components are pure DOM — they need a browser to function. They render correctly
+as inert HTML when stringified by SSR frameworks (Next.js, Remix, SvelteKit, Astro).
+Hydration upgrades them on the client.
+
+Ekko has **no Node.js runtime API**. Don't try to import components into a Node-only
+script — there is no `document` or `customElements` registry there.
+
+---
+
+Next: [Versioning](/?path=/docs/foundations-versioning--docs).

@@ -1,0 +1,347 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/React Wrappers" />
+
+# React Wrappers
+
+`@ekko-ds/components/react` ships React components that wrap each Ekko custom element.
+You get **typed props**, **typed events**, and **forwarded refs** — without any of the
+boilerplate that custom elements normally need in React.
+
+The wrappers are built with [`@lit/react`](https://lit.dev/docs/frameworks/react/) under
+the hood. They don't pull in Lit at runtime — only the createComponent helper.
+
+---
+
+## When to use the wrappers
+
+**Use them** in any React or Next.js project. They are strictly better than bare custom
+elements in React for three reasons:
+
+1. **Custom events become camelCased props.** `onEkkoChange` instead of a `useEffect`
+   plus `addEventListener('ekko-change', ...)` plus cleanup.
+2. **Boolean attributes work as `true` / `false`.** React's quirky string coercion is
+   handled for you (`disabled={true}` becomes the attribute, `disabled={false}` removes
+   it).
+3. **TypeScript knows the props.** No `as unknown as` casts, no augmented intrinsic
+   element types.
+
+The wrappers are tree-shakable — importing `EkkoButton` does not pull in `EkkoDialog`.
+
+---
+
+## Installation
+
+```bash
+pnpm add @ekko-ds/components @ekko-ds/tokens react react-dom
+```
+
+`react` is an **optional peer dependency** of `@ekko-ds/components`. Install it
+yourself.
+
+---
+
+## Importing
+
+```tsx
+import { EkkoButton, EkkoInput, EkkoCheckbox } from '@ekko-ds/components/react';
+```
+
+The full export list:
+
+| React component | Element class export | Native tag |
+| --- | --- | --- |
+| `EkkoButton` | `EkkoButtonElement` | `ekko-button` |
+| `EkkoCheckbox` | `EkkoCheckboxElement` | `ekko-checkbox` |
+| `EkkoDialog` | `EkkoDialogElement` | `ekko-dialog` |
+| `EkkoInput` | `EkkoInputElement` | `ekko-input` |
+| `EkkoRadio` | `EkkoRadioElement` | `ekko-radio` |
+| `EkkoSelect` | `EkkoSelectElement` | `ekko-select` |
+| `EkkoSwitch` | `EkkoSwitchElement` | `ekko-switch` |
+| `EkkoTextarea` | `EkkoTextareaElement` | `ekko-textarea` |
+| `EkkoToggletip` | `EkkoToggletipElement` | `ekko-toggletip` |
+| `EkkoTooltip` | `EkkoTooltipElement` | `ekko-tooltip` |
+
+Element classes (`*Element`) are exported as types only. Use them for `useRef<EkkoButtonElement>`.
+
+---
+
+## Loading tokens once
+
+Token CSS is global — load it once at the application root:
+
+```tsx
+// app/layout.tsx (Next.js App Router)
+import '@ekko-ds/tokens/css';
+import './globals.css';
+
+export default function RootLayout({ children }) {
+  return <html lang="en"><body>{children}</body></html>;
+}
+```
+
+```tsx
+// _app.tsx (Next.js Pages Router) or src/main.tsx (Vite/CRA)
+import '@ekko-ds/tokens/css';
+```
+
+---
+
+## Basic usage
+
+```tsx
+import { EkkoButton, EkkoInput } from '@ekko-ds/components/react';
+
+export function LoginForm() {
+  return (
+    <form action="/api/login" method="POST">
+      <EkkoInput name="email" type="email" label="Email" required />
+      <EkkoInput name="password" type="password" label="Password" required />
+      <EkkoButton type="submit" variant="primary">Sign in</EkkoButton>
+    </form>
+  );
+}
+```
+
+Props mirror the underlying element's attributes 1:1. Boolean attributes become
+booleans:
+
+```tsx
+<EkkoButton disabled={isSaving} loading={isSaving}>
+  Save changes
+</EkkoButton>
+```
+
+---
+
+## Handling events
+
+Every custom event becomes an `onEkko{Action}` prop:
+
+```tsx
+<EkkoInput
+  label="Search"
+  onEkkoInput={(event) => {
+    // event.detail is typed: { value: string; originalEvent: Event }
+    setQuery(event.detail.value);
+  }}
+  onEkkoChange={(event) => {
+    submitSearch(event.detail.value);
+  }}
+/>
+```
+
+Standard React events still work alongside:
+
+```tsx
+<EkkoButton
+  onClick={() => /* native click */ }
+  onEkkoClick={(event) => /* post-guard ekko-click */ }
+>
+  Submit
+</EkkoButton>
+```
+
+Event detail types are exported:
+
+```tsx
+import type { EkkoInputElement } from '@ekko-ds/components/react';
+// detail types are reachable via the wrappers' event prop signatures
+```
+
+---
+
+## Refs
+
+```tsx
+import { useRef } from 'react';
+import { EkkoInput, type EkkoInputElement } from '@ekko-ds/components/react';
+
+export function FocusOnMount() {
+  const ref = useRef<EkkoInputElement>(null);
+
+  useEffect(() => {
+    ref.current?.focus();
+  }, []);
+
+  return <EkkoInput ref={ref} label="Email" type="email" />;
+}
+```
+
+The ref points at the underlying custom element instance, so all of its public methods
+(`focus`, `blur`, `select`, `checkValidity`, `reportValidity`, `setCustomValidity`)
+are typed and available.
+
+---
+
+## Controlled inputs
+
+Ekko inputs work as both controlled and uncontrolled. For controlled, drive `value`
+from state and listen to `onEkkoInput`:
+
+```tsx
+import { useState } from 'react';
+import { EkkoInput } from '@ekko-ds/components/react';
+
+export function ControlledEmail() {
+  const [email, setEmail] = useState('');
+
+  return (
+    <EkkoInput
+      label="Email"
+      type="email"
+      value={email}
+      onEkkoInput={(e) => setEmail(e.detail.value)}
+    />
+  );
+}
+```
+
+For uncontrolled, set `defaultValue`-style by using the `value` attribute on first
+render and reading the value via `FormData` on submit. No state required.
+
+---
+
+## Server-side rendering (Next.js, Remix)
+
+Web Components need a browser to upgrade. In Next.js App Router, any file using Ekko
+React components must be a **Client Component**:
+
+```tsx
+'use client';
+
+import { EkkoButton } from '@ekko-ds/components/react';
+
+export function MyComponent() {
+  return <EkkoButton variant="primary">Save</EkkoButton>;
+}
+```
+
+What this means in practice:
+
+- The HTML still renders on the server with the unstyled custom element tag.
+- On hydration, the browser registers the components and they upgrade.
+- Briefly, before upgrade completes, the elements appear unstyled. Pair with
+  `@ekko-ds/components/fouce.css` to hide them until defined.
+
+```tsx
+// app/layout.tsx
+import '@ekko-ds/tokens/css';
+import '@ekko-ds/components/fouce.css';
+```
+
+### Server Components for layout, Client Components for interaction
+
+Wrap interactive sections in Client Components. Layout, headings, prose, and
+non-interactive content can stay as Server Components — the FOUCE CSS imports are
+fine in either.
+
+```tsx
+// app/page.tsx — Server Component
+import { LoginForm } from './LoginForm';
+
+export default function Page() {
+  return (
+    <main>
+      <h1>Sign in</h1>
+      <LoginForm />  {/* this file has 'use client' */}
+    </main>
+  );
+}
+```
+
+---
+
+## Forms in React
+
+The form components participate in standard React form handlers — `<form onSubmit>`,
+React 19's `useFormStatus`, etc. — because they emit native `submit` events through
+the underlying `<form>`.
+
+```tsx
+function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  event.preventDefault();
+  const data = new FormData(event.currentTarget);
+  // data.get('email'), data.get('password'), etc.
+}
+
+<form onSubmit={handleSubmit}>
+  <EkkoInput name="email" type="email" required />
+  <EkkoButton type="submit">Sign in</EkkoButton>
+</form>
+```
+
+For React 19 `<form action={fn}>`:
+
+```tsx
+async function login(formData: FormData) {
+  'use server';
+  // ...
+}
+
+<form action={login}>
+  <EkkoInput name="email" type="email" required />
+  <EkkoButton type="submit">Sign in</EkkoButton>
+</form>
+```
+
+---
+
+## TypeScript
+
+Element instance types are exported for refs:
+
+```tsx
+import type {
+  EkkoButtonElement,
+  EkkoInputElement,
+  EkkoDialogElement,
+} from '@ekko-ds/components/react';
+
+const buttonRef = useRef<EkkoButtonElement>(null);
+const inputRef = useRef<EkkoInputElement>(null);
+```
+
+Prop types are inferred from the `createComponent` helper — hover any prop in your
+editor for the full signature.
+
+---
+
+## Things to know
+
+### React 19 supports custom elements natively
+
+If you don't want the wrappers, React 19 handles custom elements directly — including
+boolean attributes and custom events. The wrappers are still recommended for typed
+events and DX, but they aren't strictly necessary in 19+.
+
+### React 18 has rough edges with custom elements
+
+Boolean attributes coerce to strings, custom events need `addEventListener`. The
+wrappers paper over both.
+
+### `key` and `ref` work as expected
+
+These are React-level concerns, not custom-element concerns. The wrappers are pure
+React components — `key` controls reconciliation, `ref` accesses the underlying element.
+
+### Don't pass `class` directly
+
+React uses `className`. The wrappers honor that — `className="hero"` becomes the
+host element's class attribute correctly.
+
+### Children render as slot content
+
+Anything you nest inside an `<EkkoButton>` becomes the default slot content. Named
+slots are supplied via the `slot` attribute on the slotted element:
+
+```tsx
+<EkkoButton variant="primary">
+  <svg slot="start" width={16} height={16}>...</svg>
+  Save changes
+</EkkoButton>
+```
+
+---
+
+Next: [Browser Support](/?path=/docs/foundations-browser-support--docs).

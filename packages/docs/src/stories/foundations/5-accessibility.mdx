@@ -1,0 +1,227 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Accessibility" />
+
+# Accessibility
+
+Every Ekko component is built to **WCAG 2.2 Level AA**. Accessibility is a property of the
+component itself, not something you add later — and not something you should have to test
+yourself before each release. This page documents what's done for you, and what you still
+have to do.
+
+---
+
+## What Ekko handles automatically
+
+For every component:
+
+- **Keyboard navigation** following [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/) —
+  Tab order, Enter/Space activation, arrow-key navigation where applicable, Escape to close
+  overlays, etc.
+- **Visible focus indicators** that cannot be suppressed accidentally. Every component
+  exposes its focus ring through CSS custom properties (`--ekko-{component}-shared-focus-ring-*`)
+  so brands can tune the colour and width — but not turn it off.
+- **Correct ARIA roles and states** — buttons announce as buttons, switches as switches,
+  alerts as alerts. State changes (`aria-pressed`, `aria-expanded`, `aria-busy`,
+  `aria-disabled`) update on every relevant attribute change.
+- **`prefers-reduced-motion` support** — every transition and animation has an
+  `@media (prefers-reduced-motion: reduce)` block that disables motion when the user has
+  asked for it.
+- **Screen reader–first disabled state** — components use `aria-disabled="true"` rather
+  than the native `disabled` attribute on the inner element. This keeps disabled controls
+  in the tab order so screen reader users know they exist (the WCAG-recommended pattern).
+- **Forwarded `aria-label` and `aria-describedby`** — set them on the host element and
+  the component copies them onto the inner interactive element so they work through the
+  Shadow boundary.
+
+---
+
+## What you still have to do
+
+The component cannot enforce these from the outside. They are your responsibility:
+
+### Provide an accessible name
+
+Every interactive control needs a name. The component does not invent one for you.
+
+- Buttons with text content — name comes from the slotted text. Done.
+- **Icon-only buttons** — must set `aria-label` explicitly:
+  ```html
+  <ekko-button icon-only aria-label="Close">
+    <svg slot="start">...</svg>
+  </ekko-button>
+  ```
+- Inputs without a visible label — set `label` (preferred) or `aria-label`:
+  ```html
+  <ekko-input label="Email" type="email" />
+  <ekko-input aria-label="Search the site" type="search" />
+  ```
+- Dialogs — set `aria-labelledby` to the id of the heading, or `aria-label`.
+
+The `axe-core` scan in CI catches most missing names, but it cannot catch a label that is
+present but wrong (e.g. "Click here").
+
+### Manage focus across navigation
+
+Components manage focus **inside** their own tree (e.g. dialog focus trap, return focus
+on close). Cross-component focus — such as moving focus to a new page heading after route
+change — is your responsibility.
+
+### Respect heading hierarchy
+
+Ekko components do not render headings. You decide where `<h1>`–`<h6>` belong.
+
+### Test with real assistive tech
+
+Automated checks catch about a third of accessibility issues. The rest only show up under
+manual testing. We test against:
+
+- **NVDA + Firefox** on Windows
+- **VoiceOver + Safari** on macOS and iOS
+- **JAWS + Chrome** when changes touch form components
+
+If your product has a different target, run those combinations against the relevant
+component pages.
+
+---
+
+## Automated scanning
+
+Storybook runs [`axe-core`](https://github.com/dequelabs/axe-core) against every story
+via `@storybook/addon-a11y`. Open the **Accessibility** tab in any story to see live
+violation reports.
+
+In CI, `pnpm test:a11y` runs the same scans against every story in headless Chromium.
+This job is **required** to pass before merge. If a new component or story introduces a
+regression, the PR is blocked.
+
+The default rule set treats every violation as an error, with these explicit toggles:
+
+```ts
+a11y: {
+  test: 'error',
+  config: {
+    rules: [
+      { id: 'color-contrast', enabled: true },
+      { id: 'button-name', enabled: true },
+    ],
+  },
+}
+```
+
+You can configure additional rules per-story via story `parameters.a11y`.
+
+---
+
+## Patterns adopted from APG
+
+Each component implements the [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
+pattern that matches its purpose:
+
+| Component | APG pattern |
+| --- | --- |
+| `ekko-button` | [Button](https://www.w3.org/WAI/ARIA/apg/patterns/button/) |
+| `ekko-checkbox` | [Checkbox (single & dual-state)](https://www.w3.org/WAI/ARIA/apg/patterns/checkbox/) |
+| `ekko-dialog` | [Dialog (modal)](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) |
+| `ekko-input` | Native `<input>` semantics |
+| `ekko-radio` | [Radio Group](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) |
+| `ekko-select` | [Combobox / Listbox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/) |
+| `ekko-switch` | [Switch](https://www.w3.org/WAI/ARIA/apg/patterns/switch/) |
+| `ekko-textarea` | Native `<textarea>` semantics |
+| `ekko-toggletip` | [Disclosure](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/) (toggletip variant) |
+| `ekko-tooltip` | [Tooltip](https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/) |
+
+Each component's docs page expands the keyboard map and screen reader expectations.
+
+---
+
+## Focus ring philosophy
+
+Every Ekko component shows a focus ring on `:focus-visible`. The ring is **driven by
+tokens** so brands can customize it:
+
+```css
+:root {
+  --ekko-focus-ring-color: #0D9488;
+  --ekko-focus-ring-width: 2px;
+  --ekko-focus-ring-offset: 2px;
+}
+```
+
+These cascade into the per-component focus tokens (`--ekko-button-shared-focus-ring-color`,
+etc.). You can also override per-component if you want a different focus colour for, say,
+form fields versus buttons.
+
+The focus ring is **never set to `none`** internally. If you find a state where it doesn't
+appear, that's a bug to report.
+
+---
+
+## Reduced motion
+
+Animations and transitions are wrapped in `@media (prefers-reduced-motion: reduce)`:
+
+```css
+.btn {
+  transition: background-color 100ms ease-out;
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.spinner {
+  animation: ekko-spin 0.6s linear infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+```
+
+The spinner shows a static "busy" indicator (reduced opacity) instead of rotating when
+motion is reduced. Modal dialogs skip their open transition. Tooltips appear and disappear
+instantly. No component breaks — they all become motion-free.
+
+---
+
+## Forms and validation
+
+Form components participate in native HTML validation. They report validation messages
+through the standard browser UI by default. See [Forms (FACE)](/?path=/docs/foundations-forms-face--docs)
+for the patterns:
+
+- Pair `error` text with `invalid` to surface a custom error message
+- Hook `setCustomValidity()` for cross-field validation
+- Use `formNoValidate` to submit without validation
+
+---
+
+## Color contrast
+
+Every default token combination meets WCAG AA contrast minimums in both light and dark
+modes:
+
+- Body text: ≥ 4.5:1
+- Large text and UI components: ≥ 3:1
+- Disabled controls: not held to AA (per [WCAG 1.4.3 disabled exception](https://www.w3.org/WAI/WCAG21/Understanding/contrast-minimum.html))
+
+When you build a brand, the contrast contract becomes yours. Test the ratio of every
+`--ekko-color-action-*` against its paired `*-text` token before shipping.
+
+---
+
+## What's not covered
+
+Ekko does not provide:
+
+- A **skip link** — that's a layout concern, not a component concern. Add one yourself.
+- **Live regions** for arbitrary content updates — use `<output>`, `aria-live`, or
+  similar primitives in your application code. Ekko adds `role="alert"` only on its own
+  error messages.
+- **Translation infrastructure.** Internal strings that face users (e.g. dialog default
+  close-label) are configurable via attributes (`close-label="..."`). The component does
+  not detect locale or pluralize.
+
+---
+
+Next: [Forms (FACE)](/?path=/docs/foundations-forms-face--docs).

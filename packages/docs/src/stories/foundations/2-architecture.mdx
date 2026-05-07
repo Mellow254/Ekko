@@ -1,0 +1,189 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Architecture" />
+
+# Architecture
+
+Ekko is intentionally small in concept and small in code. This page walks through every
+piece of the architecture so you can predict how the system will behave in your app.
+
+---
+
+## The pipeline
+
+```
+┌──────────────────┐    ┌─────────────────────┐    ┌──────────────────────┐
+│  DTCG token      │    │  Style Dictionary   │    │  CSS custom          │
+│  source files    │ →  │  v5 build pipeline  │ →  │  properties + JS     │
+│  (JSON)          │    │                     │    │  constants + JSON    │
+└──────────────────┘    └─────────────────────┘    └──────────┬───────────┘
+                                                              │
+                                                              ▼
+┌──────────────────┐    ┌─────────────────────┐    ┌──────────────────────┐
+│  Component       │    │  Constructable      │    │  Shadow DOM          │
+│  TypeScript      │ →  │  stylesheets        │ →  │  encapsulated UI     │
+│  (.ts) + CSS     │    │  + EkkoBase class   │    │  with declarative    │
+│                  │    │                     │    │  attributes          │
+└──────────────────┘    └─────────────────────┘    └──────────────────────┘
+```
+
+Tokens compile down to a CSS file. Components import their CSS as a string and adopt it
+into Shadow DOM. The host page provides token values; the Shadow DOM consumes them. That's
+the whole story.
+
+---
+
+## Web Components
+
+Each Ekko component is a [custom element](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements)
+registered with the browser. The browser does most of the heavy lifting — lifecycle
+callbacks, attribute observation, slot projection, focus management — so the component
+implementation can stay small.
+
+You'll see five lifecycle hooks across the codebase:
+
+- `constructor()` — runs once when the element is instantiated. Sets up Shadow DOM and
+  caches references to internal nodes.
+- `connectedCallback()` — runs every time the element is inserted into the DOM. Adds
+  event listeners and applies default attributes.
+- `disconnectedCallback()` — runs every time the element is removed. Cleans up listeners.
+- `attributeChangedCallback(name, oldValue, newValue)` — runs whenever an observed
+  attribute changes. Components use this to keep ARIA state in sync with declarative
+  attributes.
+- `formAssociatedCallback`, `formDisabledCallback`, `formResetCallback` — only on
+  form-associated elements, see [Forms](/?path=/docs/foundations-forms-face--docs).
+
+---
+
+## Shadow DOM
+
+Every component attaches an **open** Shadow DOM. Three things follow from that:
+
+1. **Internal markup is encapsulated.** The host page cannot accidentally select
+   `.btn` or any other internal class — the Shadow boundary blocks selectors.
+2. **Styles are scoped.** Styles defined inside a component cannot leak out, and CSS
+   defined on the host page does not leak in.
+3. **CSS custom properties pierce the boundary.** This is what makes theming possible —
+   see [Theming & Styling](/?path=/docs/foundations-theming-styling--docs).
+
+Shadow DOM is **open**, which means consumers can introspect with
+`element.shadowRoot.querySelector(...)` if they really need to. We don't recommend it —
+the internal structure is not part of the public API and may change between versions.
+The contract is: attributes, properties, slots, CSS parts, custom events, and CSS custom
+properties.
+
+---
+
+## Constructable stylesheets
+
+Each component has exactly one CSS file. At construction time, the file is loaded as a
+string, parsed into a single `CSSStyleSheet` object, and adopted into Shadow DOM via
+[`adoptedStyleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot/adoptedStyleSheets):
+
+```ts
+import css from './index.css?inline';
+
+const styles = new CSSStyleSheet();
+styles.replaceSync(css);
+
+class EkkoButton extends EkkoBase {
+  constructor() {
+    super(styles);  // Adopts both base + component sheets
+  }
+}
+```
+
+Why this approach:
+
+- **One sheet per component definition, not per instance.** A page with 1,000 buttons has
+  one button stylesheet in memory, shared across all of them. Inline `<style>` tags in
+  shadow roots would create 1,000 copies.
+- **No FOUC inside the shadow.** Styles are present before the first paint of the
+  component's children.
+- **Hot-reloadable in dev.** Vite serves the CSS as a string with `?inline`; updating the
+  file reloads the sheet without re-running the JS.
+
+---
+
+## The base class
+
+All components extend `EkkoBase`, a tiny abstract that provides:
+
+- Shadow DOM setup with both the shared base stylesheet and the component's own sheet
+  pre-adopted
+- `upgradeProperty(prop)` — handles framework race conditions where a property is set on
+  the element before its custom element definition has loaded
+- `forwardAriaLabel(target)` and `forwardAriaDescribedby(target)` — copy the host's
+  `aria-label` / `aria-describedby` onto the inner interactive element so screen readers
+  see them through the Shadow boundary
+
+The shared base stylesheet handles three host-level concerns:
+
+- `:host { display: inline-block; contain: none; }` — sane default; opt in to
+  `contain: content` per component if outlines never paint outside the host.
+- `:host([hidden]) { display: none; }` — without this, the global `hidden` attribute has
+  no effect on a custom element with an explicit `:host { display }`.
+- `:host([full-width]) { display: block; width: 100%; }` — declarative full-width handling
+  used across components.
+
+You don't extend `EkkoBase` directly as a consumer. It's documented because reading a
+component's source becomes much easier once you know what's inherited.
+
+---
+
+## Form-associated custom elements (FACE)
+
+Form components — `ekko-input`, `ekko-textarea`, `ekko-select`, `ekko-checkbox`,
+`ekko-radio`, `ekko-switch`, `ekko-button` (when `type="submit"`) — declare
+`static formAssociated = true` and use [`ElementInternals`](https://developer.mozilla.org/en-US/docs/Web/API/ElementInternals)
+to participate in native forms.
+
+This means:
+
+- They contribute values to `FormData`
+- They are reset by `form.reset()`
+- They are disabled by `<fieldset disabled>`
+- They participate in constraint validation (`form.checkValidity()`)
+- They support implicit submit (Enter inside the form)
+
+You don't write a single line of glue code to make this work. Form handling is described
+in detail in [Forms (FACE)](/?path=/docs/foundations-forms-face--docs).
+
+---
+
+## Custom events
+
+Components dispatch custom events using the `ekko-{action}` naming convention:
+`ekko-click`, `ekko-change`, `ekko-input`, `ekko-open`, `ekko-close`, `ekko-show`,
+`ekko-hide`, `ekko-cancel`. Every Ekko event:
+
+- `bubbles: true` — propagates up the DOM
+- `composed: true` — crosses the Shadow boundary so listeners on ancestors fire
+- `detail: { ... originalEvent }` — typed payload, always includes the underlying native
+  event when applicable
+
+See [Events](/?path=/docs/foundations-events--docs) for the framework integration patterns.
+
+---
+
+## File layout (for contributors)
+
+A component is two files:
+
+```
+packages/components/src/{name}/
+├── index.ts    — class definition, types, self-registration
+└── index.css   — native CSS, imported via Vite's ?inline
+```
+
+Tests are in `packages/components/tests/ekko-{name}.test.ts`. Tokens are in
+`packages/tokens/tokens/component/{name}.json`. Stories are in
+`packages/docs/src/stories/{name}/ekko-{name}.stories.ts`.
+
+There is exactly one inheritance step: every component extends `EkkoBase`, which extends
+`HTMLElement`. No mixins, no decorators, no base class hierarchies.
+
+---
+
+Next: [Theming & Styling](/?path=/docs/foundations-theming-styling--docs) — the page that
+ties this all together.
