@@ -1,6 +1,6 @@
 {
   "name": "@ekko-ds/tokens",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Ekko Design System — design tokens (DTCG format)",
   "license": "MIT",
   "type": "module",
