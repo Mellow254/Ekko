@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Ekko Design System — design tokens (DTCG format)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mellow254/Ekko.git",
+    "directory": "packages/tokens"
+  },
   "type": "module",
   "exports": {
     "./css": "./dist/css/tokens.all.css",
