@@ -8,7 +8,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -o storybook-static",
     "test:a11y": "vitest --project=storybook --run",
-    "clean": "rm -rf storybook-static node_modules/.cache"
+    "clean": "rm -rf storybook-static node_modules/.cache",
+    "chromatic": "npx chromatic --project-token=chpt_2208d1f21fe6465"
   },
   "dependencies": {
     "@ekko-ds/components": "workspace:*",
@@ -22,6 +23,7 @@
     "@storybook/web-components": "^10.3.3",
     "@storybook/web-components-vite": "^10.3.3",
     "@vitest/browser-playwright": "^4.1.2",
+    "chromatic": "^16.10.0",
     "lit": "^3.3.2",
     "playwright": "^1.59.0",
     "storybook": "^10.3.3",
